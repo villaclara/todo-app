@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TodoListApp.WebApi.Entities;
 
 namespace TodoListApp.WebApi.Data;
 
@@ -8,4 +9,6 @@ public class TodoListDbContext : DbContext
         : base(options)
     {
     }
+
+    public DbSet<TodoListEntity> Todos { get; set; }
 }
