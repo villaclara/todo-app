@@ -1,11 +1,6 @@
-using System.ComponentModel.DataAnnotations;
+namespace TodoListApp.WebApi.Models;
 
-namespace TodoListApp.WebApi.Entities;
-
-/// <summary>
-/// Represents the list of Todos.
-/// </summary>
-public class TodoListEntity
+public class TodoListModel
 {
     /// <summary>
     /// Gets or sets the Id of the TodoList entity.
@@ -15,20 +10,15 @@ public class TodoListEntity
     /// <summary>
     /// Gets or sets the Title of TodoList entity.
     /// </summary>
-    [MaxLength(100)]
-    [Required(ErrorMessage = "TodoList Title is mandatory.")]
     public string Title { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the Description of the TodoList entity.
     /// </summary>
-    [MaxLength(200)]
-    [Required(ErrorMessage = "TodoList Description is mandatory.")]
     public string Description { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the User Id of TodoList entity.
     /// </summary>
-    [Required(ErrorMessage = "User Id is mandatory.")]
     public int UserId { get; set; }
 }
