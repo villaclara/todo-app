@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TodoListApp.WebApi.Models;
 using TodoListApp.WebApi.Services.Interfaces;
 using TodoListApp.WebApi.Services.Models;
@@ -10,13 +11,16 @@ namespace TodoListApp.WebApi.Controllers;
 public class TodoListController : ControllerBase
 {
     private readonly ITodoListDatabaseService todoListDatabaseService;
+    private readonly ILogger<TodoListController> logger;
 
-    public TodoListController(ITodoListDatabaseService todoListDatabaseService)
+    public TodoListController(ITodoListDatabaseService todoListDatabaseService, ILogger<TodoListController> logger)
     {
         this.todoListDatabaseService = todoListDatabaseService;
+        this.logger = logger;
     }
 
     [HttpGet("{userId:int}/lists")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TodoListModel>))]
     public async Task<ActionResult<List<TodoListModel>>> GetAllTodosForUser(int userId)
     {
         var todos = await this.todoListDatabaseService.GetAllForUserAsync(userId);
@@ -33,12 +37,15 @@ public class TodoListController : ControllerBase
     }
 
     [HttpGet("{userId:int}/lists/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TodoListModel))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<TodoListModel>> GetTodoListById(int userId, int id)
     {
         var todo = await this.todoListDatabaseService.GetByIdAsync(userId, id);
 
         if (todo == null)
         {
+            this.logger.LogWarning("Todolist with id {@id} not found for user id {@userId}.", id, userId);
             return this.NotFound();
         }
 
@@ -54,6 +61,10 @@ public class TodoListController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(TodoListModel))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<TodoListModel>> AddTodoList([FromBody] TodoListModel model)
     {
         if (!this.ModelState.IsValid)
@@ -70,20 +81,91 @@ public class TodoListController : ControllerBase
                 UserId = model.UserId,
             };
 
-            var result = await this.todoListDatabaseService.AddAsync(todo);
+            var result = await this.todoListDatabaseService.CreateAsync(todo);
 
             if (result == null)
             {
-                // TODO change to other error
-                return this.BadRequest("internal error");
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error happened.");
             }
 
-            return this.Ok(result);
+            return this.CreatedAtAction(actionName: nameof(this.GetTodoListById), new { userId = result.UserId, id = result.Id }, result);
+        }
+        catch (DbUpdateException dbEx)
+        {
+            this.logger.LogError("{@Method} - Exception - {@ex}.", nameof(this.AddTodoList), dbEx.Message);
+
+            // e.g. SQL unique constraint violation
+            return this.Conflict("Database update failed. A list with the same name may already exist.");
+        }
+        catch (ArgumentException argEx)
+        {
+            return this.BadRequest(argEx.Message);
         }
         catch (Exception ex)
         {
-            // TODO log exception
-            return this.StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error happened.");
+            this.logger.LogError("{@Method} - Exception thrown - {@ex}.", nameof(this.AddTodoList), ex.Message);
+            throw;
         }
+    }
+
+    [HttpPut("{userId:int}/lists/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> UpdateTodoList(int userId, int id, [FromBody] TodoListModel model)
+    {
+        // TODO - Not sure if this is correct. As I dont know if I want to expose the Id to TodoListModel.
+        if (id != model.Id)
+        {
+            return this.BadRequest();
+        }
+
+        var todolist = new TodoList()
+        {
+            UserId = userId,
+            Id = id,
+            Title = model.Title,
+            Description = model.Description,
+        };
+
+        try
+        {
+            var result = await this.todoListDatabaseService.UpdateAsync(todolist);
+            return this.NoContent();
+        }
+        catch (KeyNotFoundException knfEx)
+        {
+            this.logger.LogError("{@Method} - {@ex}.", nameof(this.UpdateTodoList), knfEx.Message);
+            return this.NotFound();
+        }
+        catch (DbUpdateException dbUpdateEx)
+        {
+            this.logger.LogError("{@Method} - Exception - {@ex}.", nameof(this.AddTodoList), dbUpdateEx.Message);
+
+            // e.g. SQL unique constraint violation
+            return this.Conflict("Database update failed. A list with the same name may already exist.");
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError("{@Method} - Exception thrown - {@ex}.", nameof(this.AddTodoList), ex.Message);
+            throw;
+        }
+    }
+
+    [HttpDelete("{userId:int}/lists/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteTodoList(int userId, int id)
+    {
+        // TODO - It also looks not very good as the false is also called when the todolist does not belong to the user.
+        var result = await this.todoListDatabaseService.DeleteByIdAsync(userId, id);
+        if (!result)
+        {
+            this.logger.LogWarning("{@Method} - Todolist with {@id} not deleted due to not found.", nameof(this.DeleteTodoList), id);
+            return this.NotFound();
+        }
+
+        return this.NoContent();
     }
 }

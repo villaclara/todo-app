@@ -7,14 +7,22 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-// Adding DbContext
 builder.Services.AddDbContext<TodoListDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<ITodoListDatabaseService, TodoListDatabaseService>();
 
-// Add services to the container.
 var app = builder.Build();
+
+// Its for global exception handling. But i do not know what I really need.
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler("/error");
+}
 
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
