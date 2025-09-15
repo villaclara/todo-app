@@ -10,25 +10,23 @@ public class TodoListEntity
     /// <summary>
     /// Gets or sets the Id of the TodoList entity.
     /// </summary>
+    [Key]
     public int Id { get; set; }
 
     /// <summary>
     /// Gets or sets the Title of TodoList entity.
     /// </summary>
     [MaxLength(100)]
-    [Required(ErrorMessage = "TodoList Title is mandatory.")]
     public string Title { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the Description of the TodoList entity.
     /// </summary>
     [MaxLength(200)]
-    [Required(ErrorMessage = "TodoList Description is mandatory.")]
     public string Description { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the User Id of TodoList entity.
     /// </summary>
-    [Required(ErrorMessage = "User Id is mandatory.")]
     public int UserId { get; set; }
 }

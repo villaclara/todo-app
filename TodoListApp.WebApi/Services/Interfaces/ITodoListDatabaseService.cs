@@ -8,4 +8,8 @@ namespace TodoListApp.WebApi.Services.Interfaces;
 public interface ITodoListDatabaseService
 {
     Task<List<TodoList>> GetAllForUserAsync(int userId);
+
+    Task<TodoList?> GetByIdAsync(int userId, int todoListId);
+
+    Task<TodoList?> AddAsync(TodoList todo);
 }
