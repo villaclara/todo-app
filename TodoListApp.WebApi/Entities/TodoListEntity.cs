@@ -29,4 +29,6 @@ public class TodoListEntity
     /// Gets or sets the User Id of TodoList entity.
     /// </summary>
     public int UserId { get; set; }
+
+    public List<TodoTaskEntity> Tasks { get; set; } = new List<TodoTaskEntity>();
 }
