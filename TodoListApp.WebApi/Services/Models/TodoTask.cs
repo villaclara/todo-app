@@ -11,9 +11,9 @@ public class TodoTask
 
     public string Description { get; set; } = null!;
 
-    public DateOnly CreatedAtDate { get; set; }
+    public DateTime CreatedAtDate { get; set; }
 
-    public DateOnly DueToDate { get; set; }
+    public DateTime DueToDate { get; set; }
 
     public TodoTaskStatus TaskStatus { get; set; }
 
@@ -25,5 +25,5 @@ public class TodoTask
 
     public TodoListEntity TodoList { get; set; } = null!;
 
-    public bool IsOverdue => this.TaskStatus != TodoTaskStatus.Completed && this.DueToDate < DateOnly.FromDateTime(DateTime.UtcNow);
+    public bool IsOverdue => this.TaskStatus != TodoTaskStatus.Completed && this.DueToDate < DateTime.UtcNow;
 }

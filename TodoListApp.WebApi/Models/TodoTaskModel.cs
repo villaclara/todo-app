@@ -12,21 +12,19 @@ public class TodoTaskModel
     [Required(ErrorMessage = "Description is mandatory.")]
     public string Description { get; set; } = null!;
 
-    [Required]
-    public DateOnly CreatedAtDate { get; set; }
+    public DateTime CreatedAtDate { get; set; }
 
     [Required]
-    public DateOnly DueToDate { get; set; }
+    public DateTime DueToDate { get; set; }
 
-    [Required(ErrorMessage = "Task Status is mandatory.")]
-    public string Status { get; set; } = null!;
+    public string? Status { get; set; } = null!;
 
     [Required(ErrorMessage = "Assignee is mandatory.")]
     public string Assignee { get; set; } = null!;
 
-    [Required(ErrorMessage = "TodoList Name for this Task is mandatory.")]
-    public string TodoListName { get; set; } = null!;
+    public string? TodoListName { get; set; }
 
-    [Required]
+    public int TodoListId { get; set; }
+
     public bool IsOverdue { get; set; }
 }

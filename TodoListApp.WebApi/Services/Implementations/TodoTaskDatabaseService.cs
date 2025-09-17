@@ -29,21 +29,22 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             Status = todoTask.TaskStatus,
         };
 
-        _ = this.ctx.TodoTasks.Add(entity);
+        var a = this.ctx.TodoTasks.Add(entity);
         _ = await this.ctx.SaveChangesAsync();
 
-        return new TodoTask()
+        // TODO - doing this to include the TodoList navigation property
+        return await this.ctx.TodoTasks.Where(t => t.Id == entity.Id).Select(t => new TodoTask()
         {
-            TodoListId = entity.TodoListId,
-            Id = entity.Id,
-            Assignee = entity.Assignee,
+            TodoListId = t.TodoListId,
+            Id = t.Id,
+            Assignee = t.Assignee,
             CreatedAtDate = entity.CreatedAtDate,
-            DueToDate = entity.DueToDate,
-            Description = entity.Description,
-            Title = entity.Title,
-            TaskStatus = entity.Status,
-            TodoListName = entity.TodoList.Title,
-        };
+            DueToDate = t.DueToDate,
+            Description = t.Description,
+            Title = t.Title,
+            TaskStatus = t.Status,
+            TodoListName = t.TodoList.Title,
+        }).FirstAsync();
     }
 
     public Task<bool> DeleteAsync(int id)
@@ -67,7 +68,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
 
     public async Task<TodoTask> GetByIdAsync(int id)
     {
-        var entity = await this.ctx.TodoTasks.FindAsync(id);
+        var entity = await this.ctx.TodoTasks.Include(x => x.TodoList).FirstOrDefaultAsync(t => t.Id == id);
         return entity == null
             ? throw new KeyNotFoundException($"TodoTask with Key {id} not found.")
             : new TodoTask()

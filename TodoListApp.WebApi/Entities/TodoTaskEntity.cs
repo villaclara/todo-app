@@ -15,9 +15,9 @@ public class TodoTaskEntity
     [MaxLength(200)]
     public string Description { get; set; } = null!;
 
-    public DateOnly CreatedAtDate { get; set; }
+    public DateTime CreatedAtDate { get; set; }
 
-    public DateOnly DueToDate { get; set; }
+    public DateTime DueToDate { get; set; }
 
     public TodoTaskStatus Status { get; set; }
 
