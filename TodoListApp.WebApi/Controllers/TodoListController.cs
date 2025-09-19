@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TodoListApp.WebApi.Models;
 using TodoListApp.WebApi.Models.TodoListModels;
 using TodoListApp.WebApi.Services.Interfaces;
 using TodoListApp.WebApi.Services.Models;
@@ -21,11 +22,11 @@ public class TodoListController : ControllerBase
 
     [HttpGet("{userId:int}/lists")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TodoListModel>))]
-    public async Task<ActionResult<List<TodoListModel>>> GetAllTodosForUser(int userId)
+    public async Task<ActionResult<ApiResponse<TodoListModel>>> GetAllTodosForUser(int userId)
     {
         var todos = await this.todoListDatabaseService.GetAllForUserAsync(userId);
 
-        var result = todos.Select(x => new TodoListModel()
+        var result = todos.Select(x => new TodoListModel
         {
             Id = x.Id,
             Description = x.Description,
@@ -33,20 +34,25 @@ public class TodoListController : ControllerBase
             UserId = x.UserId,
         });
 
-        return this.Ok(result);
+        var response = new ApiResponse<TodoListModel>()
+        {
+            Data = result,
+        };
+
+        return this.Ok(response);
     }
 
     [HttpGet("{userId:int}/lists/{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TodoListModel))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TodoListModel>> GetTodoListById(int userId, int id)
+    public async Task<ActionResult<ApiResponse<TodoListModel>>> GetTodoListById(int userId, int id)
     {
         var todo = await this.todoListDatabaseService.GetByIdAsync(userId, id);
 
         if (todo == null)
         {
             this.logger.LogWarning("Todolist with id {@id} not found for user id {@userId}.", id, userId);
-            return this.NotFound();
+            return this.NotFound(new ApiResponse<TodoListModel>());
         }
 
         var result = new TodoListModel()
@@ -57,7 +63,12 @@ public class TodoListController : ControllerBase
             UserId = todo.UserId,
         };
 
-        return this.Ok(result);
+        var response = new ApiResponse<TodoListModel>()
+        {
+            Data = new List<TodoListModel> { result },
+        };
+
+        return this.Ok(response);
     }
 
     [HttpPost]
@@ -65,7 +76,7 @@ public class TodoListController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<TodoListModel>> AddTodoList([FromBody] CreateTodoListModel model)
+    public async Task<IActionResult> AddTodoList([FromBody] CreateTodoListModel model)
     {
         if (!this.ModelState.IsValid)
         {
@@ -85,9 +96,11 @@ public class TodoListController : ControllerBase
 
             if (result == null)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error happened.");
+                //return this.StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error happened.");
+                return this.StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<TodoListModel>());
             }
 
+            // TODO - think if we need to return API response in Create, Update, Delete methods.
             return this.CreatedAtAction(actionName: nameof(this.GetTodoListById), new { userId = result.UserId, id = result.Id }, result);
         }
         catch (DbUpdateException dbEx)

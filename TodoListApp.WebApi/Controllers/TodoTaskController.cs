@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TodoListApp.WebApi.Models;
 using TodoListApp.WebApi.Models.TodoTaskModels;
 using TodoListApp.WebApi.Services.Interfaces;
 using TodoListApp.WebApi.Services.Models;
@@ -19,9 +20,9 @@ public class TodoTaskController : ControllerBase
         this.logger = logger;
     }
 
-    [HttpGet("{listId:int}")]
+    [HttpGet("{listId:int}/tasks")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllTasksForList(int listId)
+    public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetAllTasksForList(int listId)
     {
         var todoTasks = await this.taskService.GetAllForTodoListAsync(listId);
         var result = todoTasks.Select(x => new TodoTaskModel
@@ -37,11 +38,16 @@ public class TodoTaskController : ControllerBase
             TodoListName = x.TodoListName,
         });
 
-        return this.Ok(result);
+        var response = new ApiResponse<TodoTaskModel>()
+        {
+            Data = result,
+        };
+
+        return this.Ok(response);
     }
 
-    [HttpGet("{listId:int}/task/{id:int}")]
-    public async Task<IActionResult> GetTaskById(int listId, int id)
+    [HttpGet("{listId:int}/tasks/{id:int}")]
+    public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetTaskById(int listId, int id)
     {
         var a = listId;
         var todotask = await this.taskService.GetByIdAsync(id);
@@ -59,7 +65,12 @@ public class TodoTaskController : ControllerBase
             TodoListId = todotask.TodoListId,
         };
 
-        return this.Ok(result);
+        var response = new ApiResponse<TodoTaskModel>()
+        {
+            Data = new List<TodoTaskModel> { result },
+        };
+
+        return this.Ok(response);
     }
 
     [HttpPost]
