@@ -6,17 +6,25 @@ using TodoListApp.WebApi.Services.Models;
 
 namespace TodoListApp.WebApi.Services.Implementations;
 
+/// <summary>
+/// Provides CRUD operations for <see cref="TodoListEntity"/> entities.
+/// Encapsulates the database access using <see cref="TodoListDbContext"/>.
+/// </summary>
 public class TodoListDatabaseService : ITodoListDatabaseService
 {
     private readonly TodoListDbContext ctx;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TodoListDatabaseService"/> class.
+    /// </summary>
+    /// <param name="ctx">Database context.</param>
     public TodoListDatabaseService(TodoListDbContext context)
     {
         this.ctx = context;
     }
 
     /// <inheritdoc/>
-    public async Task<TodoList?> CreateAsync(TodoList todo)
+    public async Task<TodoList> CreateAsync(TodoList todo)
     {
         var entity = new TodoListEntity()
         {
@@ -64,16 +72,23 @@ public class TodoListDatabaseService : ITodoListDatabaseService
         var entity = await this.ctx.TodoLists.FindAsync(todo.Id)
             ?? throw new KeyNotFoundException($"TodoList with Id {todo.Id} not found.");
 
-        entity.Title = todo.Title;
-        entity.Description = todo.Description;
+        if (!string.IsNullOrEmpty(todo.Title))
+        {
+            entity.Title = todo.Title;
+        }
+
+        if (!string.IsNullOrEmpty(todo.Description))
+        {
+            entity.Description = todo.Description;
+        }
 
         _ = await this.ctx.SaveChangesAsync();
         return new TodoList()
         {
-            Id = todo.Id,
-            Description = todo.Description,
-            Title = todo.Title,
-            UserId = todo.UserId,
+            Id = entity.Id,
+            Description = entity.Description,
+            Title = entity.Title,
+            UserId = entity.UserId,
         };
     }
 

@@ -21,7 +21,7 @@ public class TodoListController : ControllerBase
     }
 
     [HttpGet("{userId:int}/lists")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TodoListModel>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<TodoListModel>))]
     public async Task<ActionResult<ApiResponse<TodoListModel>>> GetAllTodosForUser(int userId)
     {
         var todos = await this.todoListDatabaseService.GetAllForUserAsync(userId);
@@ -43,7 +43,7 @@ public class TodoListController : ControllerBase
     }
 
     [HttpGet("{userId:int}/lists/{id:int}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TodoListModel))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<TodoListModel>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<TodoListModel>>> GetTodoListById(int userId, int id)
     {
@@ -72,7 +72,7 @@ public class TodoListController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(TodoListModel))]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -154,14 +154,14 @@ public class TodoListController : ControllerBase
         }
         catch (DbUpdateException dbUpdateEx)
         {
-            this.logger.LogError("{@Method} - Exception - {@ex}.", nameof(this.AddTodoList), dbUpdateEx.Message);
+            this.logger.LogError("{@Method} - Exception - {@ex}.", nameof(this.UpdateTodoList), dbUpdateEx.Message);
 
             // e.g. SQL unique constraint violation
             return this.Conflict("Database update failed. A list with the same name may already exist.");
         }
         catch (Exception ex)
         {
-            this.logger.LogError("{@Method} - Exception thrown - {@ex}.", nameof(this.AddTodoList), ex.Message);
+            this.logger.LogError("{@Method} - Exception thrown - {@ex}.", nameof(this.UpdateTodoList), ex.Message);
             throw;
         }
     }

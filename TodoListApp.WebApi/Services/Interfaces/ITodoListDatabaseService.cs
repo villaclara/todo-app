@@ -8,11 +8,11 @@ namespace TodoListApp.WebApi.Services.Interfaces;
 public interface ITodoListDatabaseService
 {
     /// <summary>
-    /// Asynchronously adds new TodoList object into database. May return <see langword="null"/>.
+    /// Asynchronously adds new TodoList object into database.
     /// </summary>
     /// <param name="todo">List model to add.</param>
-    /// <returns>Task that represents async operation. Taks contains created object as <see cref="TodoList"/> if success, <see langword="null"/> if fail.</returns>
-    Task<TodoList?> CreateAsync(TodoList todo);
+    /// <returns>Task that represents async operation. Taks contains created object as <see cref="TodoList"/> if success.</returns>
+    Task<TodoList> CreateAsync(TodoList todo);
 
     /// <summary>
     /// Asynchronously gets the list of TodoList object for specified user.
@@ -33,7 +33,7 @@ public interface ITodoListDatabaseService
     /// Asynchronously updates the Todolist entity.
     /// </summary>
     /// <param name="todo"><see cref="TodoList"/> object that contains updates values.</param>
-    /// <returns>Updated <see cref="TodoList"/> object.</returns>
+    /// <returns>Task that represents async operation. Task contains updated <see cref="TodoList"/> object.</returns>
     /// <exception cref="KeyNotFoundException">If the todolist was not found.</exception>
     Task<TodoList> UpdateAsync(TodoList todo);
 
@@ -42,6 +42,6 @@ public interface ITodoListDatabaseService
     /// </summary>
     /// <param name="userId">Id of user the todolist belongs to.</param>
     /// <param name="todoListId">Id of wanted todolist to delete.</param>
-    /// <returns><see langword="true"/> if deleted, <see langword="false"/> otherwise.</returns>
+    /// <returns>Task that represents async operation. Task returns <see langword="true"/> if deleted, <see langword="false"/> otherwise.</returns>
     Task<bool> DeleteByIdAsync(int userId, int todoListId);
 }

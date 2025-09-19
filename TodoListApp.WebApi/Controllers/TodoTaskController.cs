@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoListApp.WebApi.Models;
+using TodoListApp.WebApi.Models.TodoListModels;
 using TodoListApp.WebApi.Models.TodoTaskModels;
 using TodoListApp.WebApi.Services.Interfaces;
 using TodoListApp.WebApi.Services.Models;
@@ -21,7 +22,7 @@ public class TodoTaskController : ControllerBase
     }
 
     [HttpGet("{listId:int}/tasks")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<TodoTaskModel>))]
     public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetAllTasksForList(int listId)
     {
         var todoTasks = await this.taskService.GetAllForTodoListAsync(listId);
@@ -47,10 +48,19 @@ public class TodoTaskController : ControllerBase
     }
 
     [HttpGet("{listId:int}/tasks/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<TodoTaskModel>))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetTaskById(int listId, int id)
     {
         var a = listId;
         var todotask = await this.taskService.GetByIdAsync(id);
+
+        if (todotask == null)
+        {
+            this.logger.LogWarning("Todotask with id {@id} not found for list id {@userId}.", id, listId);
+            return this.NotFound(new ApiResponse<TodoListModel>());
+        }
+
         var result = new TodoTaskModel()
         {
             Id = todotask.Id,
@@ -74,6 +84,10 @@ public class TodoTaskController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> AddTodoTask([FromBody] CreateTodoTaskModel model)
     {
         if (!this.ModelState.IsValid)
@@ -119,5 +133,64 @@ public class TodoTaskController : ControllerBase
             this.logger.LogError("{@Method} - Exception thrown - {@ex}.", nameof(this.AddTodoTask), ex.Message);
             throw;
         }
+    }
+
+    [HttpPut("{listId:int}/tasks/{id:int}")]
+    public async Task<IActionResult> UpdateTodoTask(int listId, int id, [FromBody] TodoTaskModel model)
+    {
+        // TODO - Not sure if this is correct. As I dont know if I want to expose the Id to TodoListModel.
+        if (id != model.Id)
+        {
+            return this.BadRequest();
+        }
+
+        var todoTask = new TodoTask()
+        {
+            Id = id,
+            Assignee = model.Assignee,
+            DueToDate = model.DueToDate,
+            TaskStatus = Entities.Enums.TodoTaskStatus.InProgress,
+            Title = model.Title,
+            Description = model.Description,
+        };
+
+        try
+        {
+            var result = await this.taskService.UpdateAsync(todoTask);
+            return this.NoContent();
+        }
+        catch (KeyNotFoundException knfEx)
+        {
+            this.logger.LogError("{@Method} - {@ex}.", nameof(this.UpdateTodoTask), knfEx.Message);
+            return this.NotFound();
+        }
+        catch (DbUpdateException dbUpdateEx)
+        {
+            this.logger.LogError("{@Method} - Exception - {@ex}.", nameof(this.UpdateTodoTask), dbUpdateEx.Message);
+
+            // e.g. SQL unique constraint violation
+            return this.Conflict("Database update failed.");
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError("{@Method} - Exception thrown - {@ex}.", nameof(this.UpdateTodoTask), ex.Message);
+            throw;
+        }
+    }
+
+    [HttpDelete("{lsitId:int}/tasks/{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteTodoTask(int listId, int id)
+    {
+        // TODO - It also looks not very good as the false is also called when the todolist does not belong to the user.
+        var result = await this.taskService.DeleteAsync(id);
+        if (!result)
+        {
+            this.logger.LogWarning("{@Method} - TodoTask with {@id} not deleted due to not found.", nameof(this.DeleteTodoTask), id);
+            return this.NotFound();
+        }
+
+        return this.NoContent();
     }
 }

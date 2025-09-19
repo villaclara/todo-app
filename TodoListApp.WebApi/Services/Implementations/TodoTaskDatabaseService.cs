@@ -6,15 +6,24 @@ using TodoListApp.WebApi.Services.Models;
 
 namespace TodoListApp.WebApi.Services.Implementations;
 
+/// <summary>
+/// Provides CRUD operations for <see cref="TodoTaskEntity"/> entities.
+/// Encapsulates the database access using <see cref="TodoListDbContext"/>.
+/// </summary>
 public class TodoTaskDatabaseService : ITodoTaskDatabaseService
 {
     private readonly TodoListDbContext ctx;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TodoTaskDatabaseService"/> class.
+    /// </summary>
+    /// <param name="ctx">Database context.</param>
     public TodoTaskDatabaseService(TodoListDbContext ctx)
     {
         this.ctx = ctx;
     }
 
+    /// <inheritdoc/>
     public async Task<TodoTask> CreateAsync(TodoTask todoTask)
     {
         var entity = new TodoTaskEntity()
@@ -47,11 +56,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
         }).FirstAsync();
     }
 
-    public Task<bool> DeleteAsync(int id)
-    {
-        throw new NotImplementedException();
-    }
-
+    /// <inheritdoc/>
     public async Task<List<TodoTask>> GetAllForTodoListAsync(int todoListId) =>
         await this.ctx.TodoTasks.Where(x => x.TodoListId == todoListId).Select(x => new TodoTask()
         {
@@ -66,27 +71,77 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             TodoListName = x.TodoList.Title,
         }).ToListAsync() ?? new List<TodoTask>();
 
-    public async Task<TodoTask> GetByIdAsync(int id)
+    /// <inheritdoc/>
+    public async Task<TodoTask?> GetByIdAsync(int id)
     {
         var entity = await this.ctx.TodoTasks.Include(x => x.TodoList).FirstOrDefaultAsync(t => t.Id == id);
-        return entity == null
-            ? throw new KeyNotFoundException($"TodoTask with Key {id} not found.")
-            : new TodoTask()
-            {
-                TodoListId = entity.TodoListId,
-                Id = entity.Id,
-                Assignee = entity.Assignee,
-                CreatedAtDate = entity.CreatedAtDate,
-                DueToDate = entity.DueToDate,
-                Description = entity.Description,
-                Title = entity.Title,
-                TaskStatus = entity.Status,
-                TodoListName = entity.TodoList.Title,
-            };
+
+        if (entity == null)
+        {
+            return null;
+        }
+
+        return new TodoTask()
+        {
+            TodoListId = entity.TodoListId,
+            Id = entity.Id,
+            Assignee = entity.Assignee,
+            CreatedAtDate = entity.CreatedAtDate,
+            DueToDate = entity.DueToDate,
+            Description = entity.Description,
+            Title = entity.Title,
+            TaskStatus = entity.Status,
+            TodoListName = entity.TodoList.Title,
+        };
     }
 
-    public Task<TodoTask> UpdateAsync(TodoTask todoTask)
+    /// <inheritdoc/>
+    public async Task<TodoTask> UpdateAsync(TodoTask todoTask)
     {
-        throw new NotImplementedException();
+        var entity = await this.ctx.TodoTasks.FindAsync(todoTask.Id)
+            ?? throw new KeyNotFoundException($"TodoList with Id {todoTask.Id} not found.");
+
+        if (!string.IsNullOrEmpty(todoTask.Title))
+        {
+            entity.Title = todoTask.Title;
+        }
+
+        if (!string.IsNullOrEmpty(todoTask.Description))
+        {
+            entity.Description = todoTask.Description;
+        }
+
+        if (!string.IsNullOrEmpty(todoTask.Assignee))
+        {
+            entity.Assignee = todoTask.Assignee;
+        }
+
+        _ = await this.ctx.SaveChangesAsync();
+        return new TodoTask()
+        {
+            TodoListId = entity.TodoListId,
+            Id = entity.Id,
+            Assignee = entity.Assignee,
+            CreatedAtDate = entity.CreatedAtDate,
+            DueToDate = entity.DueToDate,
+            Description = entity.Description,
+            Title = entity.Title,
+            TaskStatus = entity.Status,
+            TodoListName = entity.TodoList.Title,
+        };
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> DeleteAsync(int id)
+    {
+        var todoTask = await this.ctx.TodoTasks.FirstOrDefaultAsync(x => x.Id == id);
+        if (todoTask == null)
+        {
+            return false;
+        }
+
+        _ = this.ctx.TodoTasks.Remove(todoTask);
+        _ = await this.ctx.SaveChangesAsync();
+        return true;
     }
 }
