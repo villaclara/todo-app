@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TodoListApp.WebApi.Models;
+using TodoListApp.WebApi.Models.TodoTaskModels;
 using TodoListApp.WebApi.Services.Interfaces;
 using TodoListApp.WebApi.Services.Models;
 
@@ -43,6 +43,7 @@ public class TodoTaskController : ControllerBase
     [HttpGet("{listId:int}/task/{id:int}")]
     public async Task<IActionResult> GetTaskById(int listId, int id)
     {
+        var a = listId;
         var todotask = await this.taskService.GetByIdAsync(id);
         var result = new TodoTaskModel()
         {
@@ -62,7 +63,7 @@ public class TodoTaskController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddTodoTask([FromBody] TodoTaskModel model)
+    public async Task<IActionResult> AddTodoTask([FromBody] CreateTodoTaskModel model)
     {
         if (!this.ModelState.IsValid)
         {
@@ -74,7 +75,7 @@ public class TodoTaskController : ControllerBase
             var todoTask = new TodoTask()
             {
                 Title = model.Title,
-                Assignee = model.Assignee,  // Current user should be assigned
+                Assignee = "user",  // TODO - Current user should be assigned
                 CreatedAtDate = DateTime.UtcNow,
                 DueToDate = model.DueToDate,
                 Description = model.Description,

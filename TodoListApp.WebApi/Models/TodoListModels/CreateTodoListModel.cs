@@ -1,14 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TodoListApp.WebApi.Models;
+namespace TodoListApp.WebApi.Models.TodoListModels;
 
-public class TodoListModel
+/// <summary>
+/// Data Transfer Object for creating new TodoList.
+/// Used to transfer data between from request to service layer.
+/// </summary>
+public class CreateTodoListModel
 {
-    /// <summary>
-    /// Gets or sets the Id of the TodoList entity.
-    /// </summary>
-    public int Id { get; set; }
-
     /// <summary>
     /// Gets or sets the Title of TodoList entity.
     /// </summary>
@@ -24,6 +23,6 @@ public class TodoListModel
     /// <summary>
     /// Gets or sets the User Id of TodoList entity.
     /// </summary>
-    [Required(ErrorMessage = "User Id is mandatory.")]
+    [Range(1, int.MaxValue, ErrorMessage = "The value must be greater or equal to 1.")]
     public int UserId { get; set; }
 }

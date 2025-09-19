@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TodoListApp.WebApi.Models;
+using TodoListApp.WebApi.Models.TodoListModels;
 using TodoListApp.WebApi.Services.Interfaces;
 using TodoListApp.WebApi.Services.Models;
 
@@ -65,7 +65,7 @@ public class TodoListController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<TodoListModel>> AddTodoList([FromBody] TodoListModel model)
+    public async Task<ActionResult<TodoListModel>> AddTodoList([FromBody] CreateTodoListModel model)
     {
         if (!this.ModelState.IsValid)
         {
