@@ -116,7 +116,15 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             entity.Assignee = todoTask.Assignee;
         }
 
+        // TODO - idk if its okay. This works, but we should allow user only specify the dateonly, not full datetime.
+        if (todoTask.DueToDate.TimeOfDay.Hours == 0)
+        {
+            entity.DueToDate = todoTask.DueToDate;
+        }
+
         _ = await this.ctx.SaveChangesAsync();
+        await this.ctx.Entry(entity).Reference(e => e.TodoList).LoadAsync();
+
         return new TodoTask()
         {
             TodoListId = entity.TodoListId,

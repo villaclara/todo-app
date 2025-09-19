@@ -136,22 +136,22 @@ public class TodoTaskController : ControllerBase
     }
 
     [HttpPut("{listId:int}/tasks/{id:int}")]
-    public async Task<IActionResult> UpdateTodoTask(int listId, int id, [FromBody] TodoTaskModel model)
+    public async Task<IActionResult> UpdateTodoTask(int listId, int id, [FromBody] UpdateTodoTaskModel model)
     {
         // TODO - Not sure if this is correct. As I dont know if I want to expose the Id to TodoListModel.
-        if (id != model.Id)
-        {
-            return this.BadRequest();
-        }
+        //if (id != model.Id)
+        //{
+        //    return this.BadRequest();
+        //}
 
         var todoTask = new TodoTask()
         {
             Id = id,
-            Assignee = model.Assignee,
-            DueToDate = model.DueToDate,
+            Title = model.Title ?? string.Empty,
+            Description = model.Description ?? string.Empty,
+            DueToDate = model.DueToDate ?? DateTime.UtcNow,
             TaskStatus = Entities.Enums.TodoTaskStatus.InProgress,
-            Title = model.Title,
-            Description = model.Description,
+            Assignee = model.Assignee ?? string.Empty,
         };
 
         try

@@ -1,18 +1,15 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace TodoListApp.WebApi.Models.TodoTaskModels;
 
 /// <summary>
 /// Data Transfer Object for Todo Task.
-/// Used to transfer data between API and service layers.
+/// Used to transfer data between API Update request and service layers.
 /// </summary>
 public class UpdateTodoTaskModel
 {
     /// <summary>
     /// Gets or sets the Title.
     /// </summary>
-    [Required(ErrorMessage = "Title is mandatory.")]
-    public string Title { get; set; } = null!;
+    public string? Title { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the Description.
