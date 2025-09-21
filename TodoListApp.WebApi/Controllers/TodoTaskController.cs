@@ -21,9 +21,9 @@ public class TodoTaskController : ControllerBase
         this.logger = logger;
     }
 
-    [HttpGet("{listId:int}/tasks")]
+    [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<TodoTaskModel>))]
-    public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetAllTasksForList(int listId)
+    public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetAllTasksForList([FromQuery] int listId)
     {
         var todoTasks = await this.taskService.GetAllForTodoListAsync(listId);
         var result = todoTasks.Select(x => new TodoTaskModel
@@ -47,10 +47,10 @@ public class TodoTaskController : ControllerBase
         return this.Ok(response);
     }
 
-    [HttpGet("{listId:int}/tasks/{id:int}")]
+    [HttpGet("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<TodoTaskModel>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetTaskById(int listId, int id)
+    public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetTaskById(int id, [FromQuery] int listId)
     {
         var a = listId;
         var todotask = await this.taskService.GetByIdAsync(id);
@@ -135,8 +135,8 @@ public class TodoTaskController : ControllerBase
         }
     }
 
-    [HttpPut("{listId:int}/tasks/{id:int}")]
-    public async Task<IActionResult> UpdateTodoTask(int listId, int id, [FromBody] UpdateTodoTaskModel model)
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateTodoTask(int id, [FromQuery] int listId, [FromBody] UpdateTodoTaskModel model)
     {
         // TODO - Not sure if this is correct. As I dont know if I want to expose the Id to TodoListModel.
         //if (id != model.Id)
@@ -178,10 +178,10 @@ public class TodoTaskController : ControllerBase
         }
     }
 
-    [HttpDelete("{lsitId:int}/tasks/{id:int}")]
+    [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteTodoTask(int listId, int id)
+    public async Task<IActionResult> DeleteTodoTask(int id, [FromQuery] int listId)
     {
         // TODO - It also looks not very good as the false is also called when the todolist does not belong to the user.
         var result = await this.taskService.DeleteAsync(id);

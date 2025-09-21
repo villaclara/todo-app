@@ -20,10 +20,16 @@ public class TodoListController : ControllerBase
         this.logger = logger;
     }
 
-    [HttpGet("{userId:int}/lists")]
+    [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<TodoListModel>))]
-    public async Task<ActionResult<ApiResponse<TodoListModel>>> GetAllTodosForUser(int userId)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ApiResponse<TodoListModel>>> GetAllTodosForUser([FromQuery] int userId)
     {
+        if (userId <= 0)
+        {
+            return this.BadRequest("UserId should be greater or equal to 1.");
+        }
+
         var todos = await this.todoListDatabaseService.GetAllForUserAsync(userId);
 
         var result = todos.Select(x => new TodoListModel
@@ -42,10 +48,10 @@ public class TodoListController : ControllerBase
         return this.Ok(response);
     }
 
-    [HttpGet("{userId:int}/lists/{id:int}")]
+    [HttpGet("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<TodoListModel>))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ApiResponse<TodoListModel>>> GetTodoListById(int userId, int id)
+    public async Task<ActionResult<ApiResponse<TodoListModel>>> GetTodoListById(int id, [FromQuery] int userId)
     {
         var todo = await this.todoListDatabaseService.GetByIdAsync(userId, id);
 
@@ -121,12 +127,12 @@ public class TodoListController : ControllerBase
         }
     }
 
-    [HttpPut("{userId:int}/lists/{id:int}")]
+    [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> UpdateTodoList(int userId, int id, [FromBody] TodoListModel model)
+    public async Task<IActionResult> UpdateTodoList(int id, [FromQuery] int userId, [FromBody] TodoListModel model)
     {
         // TODO - Not sure if this is correct. As I dont know if I want to expose the Id to TodoListModel.
         if (id != model.Id)
@@ -166,10 +172,10 @@ public class TodoListController : ControllerBase
         }
     }
 
-    [HttpDelete("{userId:int}/lists/{id:int}")]
+    [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteTodoList(int userId, int id)
+    public async Task<IActionResult> DeleteTodoList(int id, [FromQuery] int userId)
     {
         // TODO - It also looks not very good as the false is also called when the todolist does not belong to the user.
         var result = await this.todoListDatabaseService.DeleteByIdAsync(userId, id);
