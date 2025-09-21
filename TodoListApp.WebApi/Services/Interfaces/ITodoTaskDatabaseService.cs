@@ -15,11 +15,12 @@ public interface ITodoTaskDatabaseService
     Task<TodoTask> CreateAsync(TodoTask todoTask);
 
     /// <summary>
-    /// Asynchronously gets the list of TodoTask object for specified user.
+    /// Asynchronously gets the list of TodoTask object for specified list.
     /// </summary>
     /// <param name="todoListId">List id to retrieve the tasks.</param>
+    /// <param name="assignee">Name of user to retrieve the assigned tasks.</param>
     /// <returns>Task that represents async operation. Task contains the list of <see cref="TodoTask"/> object. Might be empty.</returns>
-    Task<List<TodoTask>> GetAllForTodoListAsync(int todoListId);
+    Task<List<TodoTask>> GetAllTodoTasksWithParamsAsync(int? todoListId, string? assignee);
 
     /// <summary>
     /// Asynchronously get the <see cref="TodoTask"/> object for specific user. <see langword="null"/>.

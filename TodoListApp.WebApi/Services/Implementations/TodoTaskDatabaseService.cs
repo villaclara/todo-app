@@ -42,25 +42,42 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
         _ = await this.ctx.SaveChangesAsync();
 
         // TODO - doing this to include the TodoList navigation property
-        return await this.ctx.TodoTasks.Where(t => t.Id == entity.Id).Select(t => new TodoTask()
-        {
-            TodoListId = t.TodoListId,
-            Id = t.Id,
-            Assignee = t.Assignee,
-            CreatedAtDate = entity.CreatedAtDate,
-            DueToDate = t.DueToDate,
-            Description = t.Description,
-            Title = t.Title,
-            TaskStatus = t.Status,
-            TodoListName = t.TodoList.Title,
-        }).FirstAsync();
+        return await this.ctx.TodoTasks
+            .Where(t => t.Id == entity.Id)
+            .Select(t => new TodoTask()
+            {
+                TodoListId = t.TodoListId,
+                Id = t.Id,
+                Assignee = t.Assignee,
+                CreatedAtDate = entity.CreatedAtDate,
+                DueToDate = t.DueToDate,
+                Description = t.Description,
+                Title = t.Title,
+                TaskStatus = t.Status,
+                TodoListName = t.TodoList.Title,
+            })
+            .FirstAsync();
     }
 
     /// <inheritdoc/>
-    public async Task<List<TodoTask>> GetAllForTodoListAsync(int todoListId) =>
-        await this.ctx.TodoTasks.Where(x => x.TodoListId == todoListId).Select(x => new TodoTask()
+    public async Task<List<TodoTask>> GetAllTodoTasksWithParamsAsync(int? todoListId, string? assignee)
+    {
+        var query = this.ctx.TodoTasks.Include(x => x.TodoList).AsQueryable();
+
+        if (!string.IsNullOrEmpty(assignee))
         {
-            TodoListId = todoListId,
+            query = query.Where(t => t.Assignee == assignee);
+        }
+
+        if (todoListId.HasValue)
+        {
+            query = query.Where(t => t.TodoListId == todoListId.Value);
+        }
+
+        return await query
+        .Select(x => new TodoTask()
+        {
+            TodoListId = x.TodoListId,
             Id = x.Id,
             Assignee = x.Assignee,
             CreatedAtDate = x.CreatedAtDate,
@@ -69,12 +86,16 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             Title = x.Title,
             TaskStatus = x.Status,
             TodoListName = x.TodoList.Title,
-        }).ToListAsync() ?? new List<TodoTask>();
+        })
+        .ToListAsync();
+    }
 
     /// <inheritdoc/>
     public async Task<TodoTask?> GetByIdAsync(int id)
     {
-        var entity = await this.ctx.TodoTasks.Include(x => x.TodoList).FirstOrDefaultAsync(t => t.Id == id);
+        var entity = await this.ctx.TodoTasks
+            .Include(x => x.TodoList)
+            .FirstOrDefaultAsync(t => t.Id == id);
 
         if (entity == null)
         {

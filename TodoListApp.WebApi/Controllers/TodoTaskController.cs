@@ -23,9 +23,15 @@ public class TodoTaskController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<TodoTaskModel>))]
-    public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetAllTasksForList([FromQuery] int listId)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetAllTasksForList([FromQuery] int? listId, [FromQuery] string? assignee)
     {
-        var todoTasks = await this.taskService.GetAllForTodoListAsync(listId);
+        if (listId.HasValue && listId <= 0)
+        {
+            return this.BadRequest("ListId should be greater or equal to 1.");
+        }
+
+        var todoTasks = await this.taskService.GetAllTodoTasksWithParamsAsync(listId, assignee);
         var result = todoTasks.Select(x => new TodoTaskModel
         {
             Id = x.Id,
