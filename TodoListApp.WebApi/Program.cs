@@ -13,12 +13,17 @@ builder.Services.AddDbContext<TodoListDbContext>(options =>
 builder.Services.AddScoped<ITodoListDatabaseService, TodoListDatabaseService>();
 builder.Services.AddScoped<ITodoTaskDatabaseService, TodoTaskDatabaseService>();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 // Its for global exception handling. But i do not know what I really need.
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 else
 {
