@@ -1,7 +1,17 @@
+using TodoListApp.WebApp.Services.Implementations;
+using TodoListApp.WebApp.Services.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<ITodoListWebApiService, TodoListWebApiService>();
+
+builder.Services.AddHttpClient<ITodoListWebApiService, TodoListWebApiService>("ApiClient", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseAddress"]);
+});
 
 var app = builder.Build();
 
