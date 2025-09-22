@@ -1,4 +1,4 @@
-namespace TodoListApp.WebApi.Models;
+namespace Shared.Models;
 
 /// <summary>
 /// Represents a standard API response wrapper.
