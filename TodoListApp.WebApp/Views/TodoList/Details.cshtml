@@ -1,0 +1,72 @@
+@model TodoList
+
+<div class="container py-4">
+    <!-- TodoList Title -->
+    <h1 class="mb-2">@Model.Title</h1>
+
+    <!-- TodoList Description -->
+    <p class="text-muted mb-4">@Model.Description</p>
+
+    <!-- Tasks -->
+    @* @if (Model.Tasks == null || !Model.Tasks.Any())
+    {
+        <p class="text-muted">No tasks in this list.</p>
+    } *@
+    else
+    {
+       @*  <div class="row g-3">
+            @foreach (var task in Model.Tasks)
+            {
+                <div class="col-12">
+                    <div class="card shadow-sm rounded border-0">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <!-- Task title and description -->
+                                    <h5 class="card-title mb-1">@task.Name</h5>
+                                    <p class="card-text text-muted mb-2">@task.Description</p>
+
+                                    <!-- Assignee and due date -->
+                                    <div class="text-muted mb-2">
+                                        <small>
+                                            <strong>Assignee:</strong> @task.Assignee ?? "Unassigned"
+                                            &nbsp;|&nbsp;
+                                            <strong>Due:</strong> @(task.DueDate?.ToString("MMM dd, yyyy") ?? "No due date")
+                                        </small>
+                                    </div>
+
+                                    <!-- Tags -->
+                                    @if (task.Tags != null && task.Tags.Any())
+                                    {
+                                        <div>
+                                            @foreach (var tag in task.Tags)
+                                            {
+                                                <span class="badge bg-primary me-1">@tag</span>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                                <div class="ms-3 text-muted">
+                                    <!-- Optional icon or status could go here -->
+                                    <i class="bi bi-clipboard-check fs-4"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div> *@
+    }
+</div>
+
+<style>
+    /* Optional: card hover effect */
+    .card:hover {
+        transform: translateY(-2px);
+        transition: transform 0.2s;
+    }
+
+    .badge {
+        font-size: 0.8rem;
+    }
+</style>

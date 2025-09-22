@@ -1,0 +1,68 @@
+@using TodoListApp.WebApp.Services.Models
+@model List<TodoList>
+
+<div class="d-flex" style="height:100vh;">
+    <!-- Sidebar -->
+    <div class="border-end p-3" style="width:250px; background:#fafafa;">
+        <h5 class="mb-3">Lists</h5>
+        <ul class="list-unstyled">
+            @* @foreach (var list in Model)
+            {
+                <li class="mb-2">
+                    <a asp-action="Index" asp-route-id="@list.Id" class="d-block px-2 py-1 text-decoration-none
+                            @(ViewBag.SelectedListId == list.Id ? "bg-primary text-white rounded" : "text-dark")">
+                        @list.Title
+                        <span class="badge bg-secondary float-end">@list.Tasks.Count</span>
+                    </a>
+                </li>
+            } *@
+        </ul>
+        <a asp-action="CreateList" class="btn btn-sm btn-outline-primary w-100 mt-3">+ New list</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-fill p-4">
+        @if (ViewBag.SelectedList != null)
+        {
+            var currentList = (TodoList)ViewBag.SelectedList;
+
+            <h3>@currentList.Title</h3>
+
+            <div class="d-flex mb-3">
+                <input type="text" class="form-control me-2" placeholder="Add a task..." id="newTask" />
+                <button class="btn btn-primary">Add</button>
+            </div>
+
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Due Date</th>
+                        <th>Importance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @* @foreach (var task in currentList.Tasks)
+                    {
+                        <tr>
+                            <td>
+                                <input type="checkbox" @(task.IsDone ? "checked" : "") />
+                                <span class="ms-2">@task.Description</span>
+                            </td>
+                            <td>
+                                @task.DueDate.ToShortDateString()
+                            </td>
+                            <td>
+                                <span class="@(task.IsImportant ? "text-warning" : "text-muted")">★</span>
+                            </td>
+                        </tr>
+                    } *@
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p class="text-muted">Select a list to view tasks.</p>
+        }
+    </div>
+</div>

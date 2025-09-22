@@ -1,0 +1,42 @@
+@using TodoListApp.WebApp.Services.Models
+@model List<TodoList>
+
+<div class="container py-3">
+    <h2 class="mb-4">My Todo Lists</h2>
+
+    @if (!Model.Any())
+    {
+        <p class="text-muted">No todo lists yet.</p>
+    }
+    else
+    {
+        <div class="list-group">
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                var list = Model[i];
+                <a asp-controller="TodoList" asp-action="Details" asp-route-listId="@Model[i].Id"
+                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center shadow-sm mb-2 rounded">
+                    <div>
+                        <div class="fw-bold">@list.Title</div>
+                        <small class="text-muted">@list.Description</small>
+                    </div>
+                    <span class="chevron">&#8250;</span>
+                </a>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .chevron {
+        font-size: 1.5rem;
+        color: #6c757d; /* muted gray */
+        transition: transform 0.2s;
+    }
+
+    /* Optional hover effect */
+    .list-group-item:hover .chevron {
+        transform: translateX(5px);
+    }
+</style>
+
