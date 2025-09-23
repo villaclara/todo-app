@@ -34,15 +34,32 @@ public class TodoListDatabaseService : ITodoListDatabaseService
         };
         _ = this.ctx.TodoLists.Add(entity);
         _ = await this.ctx.SaveChangesAsync();
-        return new TodoList() { Id = entity.Id, UserId = entity.UserId, Title = entity.Title, Description = entity.Description };
+
+        return new TodoList()
+        {
+            Id = entity.Id,
+            UserId = entity.UserId,
+            Title = entity.Title,
+            Description = entity.Description,
+        };
     }
 
     /// <inheritdoc/>
-    public async Task<List<TodoList>> GetAllForUserAsync(int userId)
+    public async Task<List<TodoList>> GetAllForUserAsync(int userId, int pageNumber = 1, int pageSize = 10)
     {
-        return await this.ctx.TodoLists.Where(x => x.UserId == userId)
-            .Select(x => new TodoList() { Id = x.Id, Description = x.Description, Title = x.Title, UserId = x.UserId })
-            .ToListAsync() ?? new List<TodoList>();
+        var items = await this.ctx.TodoLists.Where(x => x.UserId == userId).OrderBy(x => x.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new TodoList()
+            {
+                Id = x.Id,
+                Description = x.Description,
+                Title = x.Title,
+                UserId = x.UserId,
+            })
+            .ToListAsync();
+
+        return items;
     }
 
     /// <inheritdoc/>

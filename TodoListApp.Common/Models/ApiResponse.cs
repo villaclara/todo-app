@@ -19,4 +19,10 @@ public class ApiResponse<T>
     /// Gets or sets the data returned by API.
     /// </summary>
     public IEnumerable<T> Data { get; set; }
+
+    /// <summary>
+    /// Gets or sets the pagination parameters.
+    /// </summary>
+    public PaginationMetadata? Pagination { get; set; }
+
 }

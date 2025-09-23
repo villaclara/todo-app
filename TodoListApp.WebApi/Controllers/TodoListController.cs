@@ -23,14 +23,19 @@ public class TodoListController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<TodoListModel>))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ApiResponse<TodoListModel>>> GetAllTodosForUser([FromQuery] int userId)
+    public async Task<ActionResult<ApiResponse<TodoListModel>>> GetAllTodosForUser([FromQuery] int userId, [FromQuery] PaginationParameters pagination)
     {
         if (userId <= 0)
         {
             return this.BadRequest("UserId should be greater or equal to 1.");
         }
 
-        var todos = await this.todoListDatabaseService.GetAllForUserAsync(userId);
+        if (pagination == null)
+        {
+            pagination = new PaginationParameters();
+        }
+
+        var todos = await this.todoListDatabaseService.GetAllForUserAsync(userId, pagination.PageNumber, pagination.PageSize);
 
         var result = todos.Select(x => new TodoListModel
         {
@@ -40,9 +45,12 @@ public class TodoListController : ControllerBase
             UserId = x.UserId,
         });
 
-        var response = new ApiResponse<TodoListModel>()
+        var paginationMetadata = new PaginationMetadata(todos.Count, pagination.PageSize, pagination.PageNumber);
+
+        var response = new ApiResponse<TodoListModel>
         {
             Data = result,
+            Pagination = paginationMetadata,
         };
 
         return this.Ok(response);

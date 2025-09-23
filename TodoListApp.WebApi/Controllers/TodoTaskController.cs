@@ -24,11 +24,16 @@ public class TodoTaskController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<TodoTaskModel>))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetAllTasksForList([FromQuery] int? listId, [FromQuery] string? assignee)
+    public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetAllTasksForList([FromQuery] int? listId, [FromQuery] string? assignee, [FromQuery] PaginationParameters pagination)
     {
         if (listId.HasValue && listId <= 0)
         {
             return this.BadRequest("ListId should be greater or equal to 1.");
+        }
+
+        if (pagination == null)
+        {
+            pagination = new PaginationParameters();
         }
 
         var todoTasks = await this.taskService.GetAllTodoTasksWithParamsAsync(listId, assignee);
@@ -45,9 +50,12 @@ public class TodoTaskController : ControllerBase
             TodoListName = x.TodoListName,
         });
 
+        var paginationMetadata = new PaginationMetadata(todoTasks.Count, pagination.PageSize, pagination.PageNumber);
+
         var response = new ApiResponse<TodoTaskModel>()
         {
             Data = result,
+            Pagination = paginationMetadata,
         };
 
         return this.Ok(response);
