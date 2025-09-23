@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TodoListApp.Shared.Models.TodoTaskModels;
+namespace TodoListApp.Common.Models.TodoTaskModels;
 
 public class CreateTodoTaskModel
 {

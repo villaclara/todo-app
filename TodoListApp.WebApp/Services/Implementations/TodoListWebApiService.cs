@@ -1,5 +1,5 @@
-using TodoListApp.Shared.Models;
-using TodoListApp.Shared.Models.TodoListModels;
+using TodoListApp.Common.Models;
+using TodoListApp.Common.Models.TodoListModels;
 using TodoListApp.WebApp.Services.Interfaces;
 using TodoListApp.WebApp.Services.Models;
 

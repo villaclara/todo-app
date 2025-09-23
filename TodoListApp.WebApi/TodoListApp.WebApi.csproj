@@ -24,7 +24,7 @@
     <AdditionalFiles Include="..\stylecop.json" Link="Properties\stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TodoListApp.Shared\TodoListApp.Shared.csproj" />
+    <ProjectReference Include="..\TodoListApp.Common\TodoListApp.Common.csproj" />
   </ItemGroup>
 
 </Project>
