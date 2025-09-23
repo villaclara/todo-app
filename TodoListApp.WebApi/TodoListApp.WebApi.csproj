@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -24,7 +24,7 @@
     <AdditionalFiles Include="..\stylecop.json" Link="Properties\stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\TodoListApp.Shared\TodoListApp.Shared.csproj" />
   </ItemGroup>
 
 </Project>

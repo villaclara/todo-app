@@ -1,4 +1,4 @@
-namespace Shared.Models.TodoListModels;
+namespace TodoListApp.Shared.Models.TodoListModels;
 
 /// <summary>
 /// Data Transfer Object for TodoList.

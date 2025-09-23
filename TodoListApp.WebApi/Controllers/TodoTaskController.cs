@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Shared.Models;
-using Shared.Models.TodoListModels;
-using Shared.Models.TodoTaskModels;
+using TodoListApp.Shared.Models;
+using TodoListApp.Shared.Models.TodoListModels;
+using TodoListApp.Shared.Models.TodoTaskModels;
 using TodoListApp.WebApi.Services.Interfaces;
 using TodoListApp.WebApi.Services.Models;
 
