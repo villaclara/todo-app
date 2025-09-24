@@ -1,8 +1,21 @@
+@model ErrorViewModel
+
 @{
     ViewBag.Title = "Error";
 }
 
-<h2>Error</h2>
-<p>@ViewBag.ErrorMessage</p>
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title text-danger">An error occurred</h2>
 
-<a asp-action="Index" asp-controller="Products" class="btn btn-secondary">Back to Products</a>
+            <p class="card-text">
+                <strong>Request ID:</strong> @Model.RequestId
+            </p>
+
+            <a href="@Model.ReturnUrl" class="btn btn-primary">
+                Go Back
+            </a>
+        </div>
+    </div>
+</div>

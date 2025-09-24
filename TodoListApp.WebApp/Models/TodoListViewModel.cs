@@ -24,6 +24,5 @@ public class TodoListViewModel
     /// <summary>
     /// Gets or sets the User Id of TodoList.
     /// </summary>
-    [Range(1, int.MaxValue, ErrorMessage = "The value must be greater or equal to 1.")]
     public int UserId { get; set; }
 }

@@ -54,7 +54,12 @@ public class TodoListController : Controller
             return this.View(new TodoListViewModel());
         }
 
-        var todo = await this.listService.GetTodoListByIdAsync(id, 1);   // userId
+        var todo = await this.listService.GetTodoListByIdAsync(100, 1);   // userId
+
+        if (todo == null)
+        {
+            return this.View("Error", new ErrorViewModel { RequestId = $"List with id {id} could not be found.", ReturnUrl = new Uri($"/todolist/details?listId={id}", UriKind.Relative) });
+        }
 
         var model = new TodoListViewModel
         {
@@ -104,7 +109,7 @@ public class TodoListController : Controller
         catch (ApplicationException ex)
         {
             this.ViewBag.ErrorMessage = ex.Message;
-            return this.View("Error");
+            return this.View("Error", new ErrorViewModel { RequestId = ex.Message, ReturnUrl = new Uri("/todolist", UriKind.Relative) });
         }
     }
 
@@ -124,7 +129,7 @@ public class TodoListController : Controller
         if (!result)
         {
             this.ViewBag.ErrorMessage = "Error when deleting todolist.";
-            return this.View("Error");
+            return this.View("Error", new ErrorViewModel { RequestId = "Internal Error when deleting list", ReturnUrl = new Uri("/todolist", UriKind.Relative) });
         }
 
         return this.RedirectToAction(nameof(this.Index));

@@ -99,9 +99,9 @@ public class TodoListWebApiService : ITodoListWebApiService
         }).FirstOrDefault();
     }
 
-    public async Task<IEnumerable<TodoList>> GetTodoListsAsync(int ownerId)
+    public async Task<IEnumerable<TodoList>> GetTodoListsAsync(int userId)
     {
-        var request = await this.http.GetFromJsonAsync<ApiResponse<TodoListModel>>($"api/todolist?userId={ownerId}");
+        var request = await this.http.GetFromJsonAsync<ApiResponse<TodoListModel>>($"api/todolist?userId={userId}");
         if (request == null)
         {
             return new List<TodoList>();
