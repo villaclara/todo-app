@@ -3,8 +3,8 @@
 <div class="container py-3">
     <h2 class="mb-4">My Todo Lists</h2>
 
-    <div>
-        <a type="button" class="btn btn-primary" asp-controller="TodoList" asp-action="CreateEdit" asp-route-id="0">Create new TodoList</a>
+    <div class="m-3">
+        <a type="button" class="btn btn-primary" asp-controller="TodoList" asp-action="CreateEdit" asp-route-id="0">Create new</a>
     </div>
 
     @if (!Model.TodoLists.Any())

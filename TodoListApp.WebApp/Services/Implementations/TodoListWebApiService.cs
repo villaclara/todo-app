@@ -18,9 +18,9 @@ public class TodoListWebApiService : ITodoListWebApiService
         this.logger = logger;
     }
 
-    public async Task<TodoList?> CreateTodoList(TodoList list)
+    public async Task<TodoList?> CreateTodoListAsync(TodoList list)
     {
-        var todoModel = new CreateTodoListModel
+        var model = new CreateTodoListModel
         {
             Title = list.Title,
             Description = list.Description,
@@ -29,7 +29,7 @@ public class TodoListWebApiService : ITodoListWebApiService
 
         try
         {
-            var response = await this.http.PostAsJsonAsync($"api/todolist", todoModel);
+            var response = await this.http.PostAsJsonAsync($"api/todolist", model);
             _ = response.EnsureSuccessStatusCode();
 
             var added = await response.Content.ReadFromJsonAsync<TodoList>();
@@ -37,12 +37,17 @@ public class TodoListWebApiService : ITodoListWebApiService
         }
         catch (HttpRequestException ex)
         {
-            this.logger.LogWarning("Error sending request to create a Todolist {@todolist}, ex - {@ex}.", todoModel, ex.Message);
-            return null;
+            this.logger.LogWarning("Error sending request to create a Todolist {@todolist}, ex - {@ex}.", model, ex.Message);
+            throw new ApplicationException($"Internal error when processing the request - {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogWarning("Unknow exception, ex - {@ex}", ex.Message);
+            throw new ApplicationException($"Internal error when processing the request - {ex.Message}");
         }
     }
 
-    public async Task<bool> DeleteTodoList(int listId, int userId)
+    public async Task<bool> DeleteTodoListAsync(int listId, int userId)
     {
         var response = await this.http.DeleteAsync($"api/todolist/{listId}?userId={userId}");
 
@@ -54,9 +59,9 @@ public class TodoListWebApiService : ITodoListWebApiService
         return true;
     }
 
-    public async Task<PagedResults<TodoList>> GetPagedTodoLists(int userId, int page = 1, int pageSize = 1)
+    public async Task<PagedResults<TodoList>> GetPagedTodoListsAsync(int userId, int page = 1, int pageSize = 1)
     {
-        var request = await this.http.GetFromJsonAsync<ApiResponse<Common.Models.TodoListModels.TodoListModel>>($"api/todolist?userId={userId}&pagenumber={page}&pagesize={pageSize}");
+        var request = await this.http.GetFromJsonAsync<ApiResponse<TodoListModel>>($"api/todolist?userId={userId}&pagenumber={page}&pagesize={pageSize}");
         if (request == null)
         {
             return new PagedResults<TodoList>();
@@ -77,12 +82,12 @@ public class TodoListWebApiService : ITodoListWebApiService
         return result;
     }
 
-    public async Task<TodoList> GetTodoListById(int listId, int userId)
+    public async Task<TodoList?> GetTodoListByIdAsync(int listId, int userId)
     {
-        var request = await this.http.GetFromJsonAsync<ApiResponse<Common.Models.TodoListModels.TodoListModel>>($"api/todolist/{listId}?userId={userId}");
+        var request = await this.http.GetFromJsonAsync<ApiResponse<TodoListModel>>($"api/todolist/{listId}?userId={userId}");
         if (request == null)
         {
-            return new TodoList();
+            return null;
         }
 
         return request.Data.Select(x => new TodoList()
@@ -91,12 +96,12 @@ public class TodoListWebApiService : ITodoListWebApiService
             Description = x.Description,
             Title = x.Title,
             UserId = x.UserId,
-        }).First();
+        }).FirstOrDefault();
     }
 
-    public async Task<IEnumerable<TodoList>> GetTodoLists(int ownerId)
+    public async Task<IEnumerable<TodoList>> GetTodoListsAsync(int ownerId)
     {
-        var request = await this.http.GetFromJsonAsync<ApiResponse<Common.Models.TodoListModels.TodoListModel>>($"api/todolist?userId={ownerId}");
+        var request = await this.http.GetFromJsonAsync<ApiResponse<TodoListModel>>($"api/todolist?userId={ownerId}");
         if (request == null)
         {
             return new List<TodoList>();
@@ -111,9 +116,9 @@ public class TodoListWebApiService : ITodoListWebApiService
         });
     }
 
-    public async Task<TodoList?> UpdateTodoList(TodoList list)
+    public async Task<TodoList?> UpdateTodoListAsync(TodoList list)
     {
-        var model = new TodoListApp.Common.Models.TodoListModels.TodoListModel()
+        var model = new TodoListModel()
         {
             Id = list.Id,
             Description = list.Description,
@@ -130,8 +135,13 @@ public class TodoListWebApiService : ITodoListWebApiService
         }
         catch (HttpRequestException ex)
         {
-            this.logger.LogWarning("Error sending request to create a Todolist {@todolist}, ex - {@ex}.", model, ex.Message);
-            return null;
+            this.logger.LogWarning("Error sending request to update a Todolist {@todolist}, ex - {@ex}.", model, ex.Message);
+            throw new ApplicationException($"Internal error when processing the request - {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogWarning("Unknow exception, ex - {@ex}", ex.Message);
+            throw new ApplicationException($"Internal error when processing the request - {ex.Message}");
         }
     }
 }

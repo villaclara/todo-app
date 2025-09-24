@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services.Interfaces;
+using TodoListApp.WebApp.Services.Models;
 
 namespace TodoListApp.WebApp.Controllers;
 
@@ -16,14 +17,11 @@ public class TodoListController : Controller
     [HttpGet]
     public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 2)
     {
-        // Call your service to get the ApiResponse<TodoListModel>
-        //var apiResponse = await this.listService.GetTodoLists(1);
-
-        var apiResponse = await this.listService.GetPagedTodoLists(1, pageNumber, pageSize);
+        var apiResponse = await this.listService.GetPagedTodoListsAsync(1, pageNumber, pageSize);
 
         var viewModel = new TodoListIndexViewModel
         {
-            TodoLists = apiResponse.Data.Select(x => new TodoListModel
+            TodoLists = apiResponse.Data.Select(x => new TodoListViewModel
             {
                 Id = x.Id,
                 Title = x.Title,
@@ -42,10 +40,9 @@ public class TodoListController : Controller
     }
 
     [HttpGet]
-    [Route("/details/{listId}")]    // not mandatory
     public async Task<IActionResult> Details(int listId)
     {
-        var todo = await this.listService.GetTodoListById(listId, 1);
+        var todo = await this.listService.GetTodoListByIdAsync(listId, 1);
         return this.View(todo);
     }
 
@@ -54,12 +51,12 @@ public class TodoListController : Controller
     {
         if (id == 0)
         {
-            return this.View(new TodoListModel());
+            return this.View(new TodoListViewModel());
         }
 
-        var todo = await this.listService.GetTodoListById(id, 1);   // userId
+        var todo = await this.listService.GetTodoListByIdAsync(id, 1);   // userId
 
-        var model = new TodoListModel
+        var model = new TodoListViewModel
         {
             Id = todo.Id,
             Title = todo.Title,
@@ -71,7 +68,7 @@ public class TodoListController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateEdit(TodoListModel model)
+    public async Task<IActionResult> CreateEdit(TodoListViewModel model)
     {
         if (!this.ModelState.IsValid)
         {
@@ -79,18 +76,57 @@ public class TodoListController : Controller
             return this.View("CreateEdit", model);
         }
 
-        if (model.Id == 0)
+        try
         {
-            // Create
+            TodoList todo = new TodoList
+            {
+                Id = model.Id,
+                Title = model.Title,
+                Description = model.Description,
+                UserId = 1, // TODO - Set user Id
+            };
 
+            var act = model.Id switch
+            {
+                not 0 => this.listService.UpdateTodoListAsync(todo),
+                _ => this.listService.CreateTodoListAsync(todo),
+            };
 
+            var result = await act;
+
+            if (result == null)
+            {
+                return this.RedirectToAction(nameof(this.Index));
+            }
+
+            return this.RedirectToAction(nameof(this.Details), new { listId = result.Id });
         }
-        else
+        catch (ApplicationException ex)
         {
+            this.ViewBag.ErrorMessage = ex.Message;
+            return this.View("Error");
+        }
+    }
 
-            // Edit
+    [HttpGet]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var todo = await this.listService.GetTodoListByIdAsync(id, 1);
+
+        if (todo == null)
+        {
+            this.ViewBag.ErrorMessage = "No lists found with this id.";
+            return this.View("Error");
         }
 
-        return this.RedirectToAction("Index");
+        var result = await this.listService.DeleteTodoListAsync(id, 1);
+
+        if (!result)
+        {
+            this.ViewBag.ErrorMessage = "Error when deleting todolist.";
+            return this.View("Error");
+        }
+
+        return this.RedirectToAction(nameof(this.Index));
     }
 }
