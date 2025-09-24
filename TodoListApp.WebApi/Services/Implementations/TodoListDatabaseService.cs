@@ -45,9 +45,12 @@ public class TodoListDatabaseService : ITodoListDatabaseService
     }
 
     /// <inheritdoc/>
-    public async Task<List<TodoList>> GetAllForUserAsync(int userId, int pageNumber = 1, int pageSize = 10)
+    public async Task<(int totalCount, List<TodoList> todos)> GetAllForUserAsync(int userId, int pageNumber = 1, int pageSize = 10)
     {
-        var items = await this.ctx.TodoLists.Where(x => x.UserId == userId).OrderBy(x => x.Id)
+        var todos = await this.ctx.TodoLists.Where(x => x.UserId == userId).ToListAsync();
+        var totalCount = todos.Count;
+        var items = todos
+            .OrderBy(x => x.Id)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .Select(x => new TodoList()
@@ -57,9 +60,9 @@ public class TodoListDatabaseService : ITodoListDatabaseService
                 Title = x.Title,
                 UserId = x.UserId,
             })
-            .ToListAsync();
+            .ToList();
 
-        return items;
+        return (totalCount, items);
     }
 
     /// <inheritdoc/>

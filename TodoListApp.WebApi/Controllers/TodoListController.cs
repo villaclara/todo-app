@@ -35,7 +35,7 @@ public class TodoListController : ControllerBase
             pagination = new PaginationParameters();
         }
 
-        var todos = await this.todoListDatabaseService.GetAllForUserAsync(userId, pagination.PageNumber, pagination.PageSize);
+        var (totalCount, todos) = await this.todoListDatabaseService.GetAllForUserAsync(userId, pagination.PageNumber, pagination.PageSize);
 
         var result = todos.Select(x => new TodoListModel
         {
@@ -45,7 +45,7 @@ public class TodoListController : ControllerBase
             UserId = x.UserId,
         });
 
-        var paginationMetadata = new PaginationMetadata(todos.Count, pagination.PageSize, pagination.PageNumber);
+        var paginationMetadata = new PaginationMetadata(totalCount, pagination.PageSize, pagination.PageNumber);
 
         var response = new ApiResponse<TodoListModel>
         {

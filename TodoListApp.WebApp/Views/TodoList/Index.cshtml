@@ -1,20 +1,22 @@
-@using TodoListApp.WebApp.Services.Models
-@model List<TodoList>
+@model TodoListIndexViewModel
 
 <div class="container py-3">
     <h2 class="mb-4">My Todo Lists</h2>
 
-    @if (!Model.Any())
+    <div>
+        <a type="button" class="btn btn-primary" asp-controller="TodoList" asp-action="CreateEdit" asp-route-id="0">Create new TodoList</a>
+    </div>
+
+    @if (!Model.TodoLists.Any())
     {
         <p class="text-muted">No todo lists yet.</p>
     }
     else
     {
-        <div class="list-group">
-            @for (int i = 0; i < Model.Count; i++)
+        <div class="list-group mb-4">
+            @foreach (var list in Model.TodoLists)
             {
-                var list = Model[i];
-                <a asp-controller="TodoList" asp-action="Details" asp-route-listId="@Model[i].Id"
+                <a asp-controller="TodoList" asp-action="Details" asp-route-listId="@list.Id"
                    class="list-group-item list-group-item-action d-flex justify-content-between align-items-center shadow-sm mb-2 rounded">
                     <div>
                         <div class="fw-bold">@list.Title</div>
@@ -25,6 +27,46 @@
             }
         </div>
     }
+
+    <nav aria-label="Todo lists pagination">
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(Model.HasPrevious ? "" : "disabled")">
+                <a class="page-link"
+                   asp-controller="TodoList"
+                   asp-action="Index"
+                   asp-route-pageNumber="@(Model.CurrentPage - 1)"
+                   asp-route-pageSize="@Model.PageSize">
+                    Previous
+                </a>
+            </li>
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <a class="page-link"
+                       asp-controller="TodoList"
+                       asp-action="Index"
+                       asp-route-pageNumber="@i"
+                       asp-route-pageSize="@Model.PageSize">
+                        @i
+                    </a>
+                </li>
+            }
+            <li class="page-item @(Model.HasNext ? "" : "disabled")">
+                <a class="page-link"
+                   asp-controller="TodoList"
+                   asp-action="Index"
+                   asp-route-pageNumber="@(Model.CurrentPage + 1)"
+                   asp-route-pageSize="@Model.PageSize">
+                    Next
+                </a>
+            </li>
+        </ul>
+        <div class="text-center text-muted">
+            <small>
+                Showing page @Model.CurrentPage of @Model.TotalPages (Total items: @Model.TotalCount)
+            </small>
+        </div>
+    </nav>
 </div>
 
 <style>
