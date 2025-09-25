@@ -23,10 +23,10 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
         var model = new CreateTodoTaskModel
         {
             Title = todo.Title,
-            TodoListId = todo.TodoListId,
             Description = todo.Description,
             DueToDate = todo.DueToDate,
             Assignee = todo.Assignee ?? "user", // TODO - Change user
+            TodoListId = todo.TodoListId,
         };
 
         try
@@ -135,8 +135,10 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
 
     public async Task<TodoTask?> UpdateTodoTaskAsync(TodoTask todo)
     {
-        var model = new CreateTodoTaskModel
+        var model = new TodoTaskModel
         {
+            Id = todo.Id,
+            Status = todo.TaskStatus,
             Title = todo.Title,
             TodoListId = todo.TodoListId,
             Description = todo.Description,
