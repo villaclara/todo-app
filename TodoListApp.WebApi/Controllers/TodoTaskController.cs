@@ -36,8 +36,8 @@ public class TodoTaskController : ControllerBase
             pagination = new PaginationParameters();
         }
 
-        var todoTasks = await this.taskService.GetAllTodoTasksWithParamsAsync(listId, assignee);
-        var result = todoTasks.Select(x => new TodoTaskModel
+        var todoTasks = await this.taskService.GetAllTodoTasksWithParamsAsync(listId, assignee, pagination.PageNumber, pagination.PageSize);
+        var result = todoTasks.todoTasks.Select(x => new TodoTaskModel
         {
             Id = x.Id,
             Assignee = x.Assignee,
@@ -50,7 +50,7 @@ public class TodoTaskController : ControllerBase
             TodoListName = x.TodoListName,
         });
 
-        var paginationMetadata = new PaginationMetadata(todoTasks.Count, pagination.PageSize, pagination.PageNumber);
+        var paginationMetadata = new PaginationMetadata(todoTasks.totalCount, pagination.PageSize, pagination.PageNumber);
 
         var response = new ApiResponse<TodoTaskModel>()
         {

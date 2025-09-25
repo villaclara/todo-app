@@ -7,8 +7,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<ITodoListWebApiService, TodoListWebApiService>();
+builder.Services.AddScoped<ITodoTaskWebApiService, TodoTaskWebApiService>();
 
 builder.Services.AddHttpClient<ITodoListWebApiService, TodoListWebApiService>("ApiClient", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseAddress"]);
+});
+
+builder.Services.AddHttpClient<ITodoTaskWebApiService, TodoTaskWebApiService>("ApiClient1", client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseAddress"]);
 });

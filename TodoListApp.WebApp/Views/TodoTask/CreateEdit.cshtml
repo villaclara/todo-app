@@ -1,0 +1,82 @@
+@model TodoTaskViewModel
+
+<div class="container py-4">
+    <div class="card shadow-sm rounded p-3 mb-3 col-md-8">
+        <h2 class="mb-3">Task Form</h2>
+
+        <form asp-controller="TodoTask" asp-action="Create" method="post" class="needs-validation" novalidate>
+            <!-- Hidden Id field -->
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mb-3 col-md-12">
+                <label asp-for="Title" class="form-label fw-bold"></label>
+                <input asp-for="Title" class="form-control shadow-sm rounded border-0" placeholder="Enter task title" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 col-md-12">
+                <label asp-for="Description" class="form-label fw-bold"></label>
+                <textarea asp-for="Description" rows="2" class="form-control shadow-sm rounded border-0" placeholder="Enter task description"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 col-md-12">
+                <label asp-for="Assignee" class="form-label fw-bold"></label>
+                <input asp-for="Assignee" class="form-control shadow-sm rounded border-0" placeholder="Enter assignee name" />
+                <span asp-validation-for="Assignee" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 col-md-12">
+                <label asp-for="DueToDate" class="form-label fw-bold"></label>
+                <input asp-for="DueToDate" type="date" class="form-control shadow-sm rounded border-0" />
+                <span asp-validation-for="DueToDate" class="text-danger"></span>
+            </div>
+
+            @* TaskStatus is shown only if editing an existing task *@
+            @if (Model.Id != 0)
+            {
+                <div class="mb-3 col-md-12">
+                    <label asp-for="TaskStatus" class="form-label fw-bold"></label>
+                    <select asp-for="TaskStatus" class="form-select shadow-sm rounded border-0">
+                        <option value="NotStarted">Not Started</option>
+                        <option value="InProgress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                    <span asp-validation-for="TaskStatus" class="text-danger"></span>
+                </div>
+            }
+
+            @* Tags can be added later *@
+            @* 
+            <div class="mb-3 col-md-12">
+                <label asp-for="Tags" class="form-label fw-bold"></label>
+                <input asp-for="Tags" class="form-control shadow-sm rounded border-0" placeholder="Enter tags separated by commas" />
+            </div> 
+            *@
+
+            <!-- Buttons -->
+            <div class="d-flex gap-2 mt-2">
+                <button type="submit" class="btn btn-primary shadow-sm rounded px-4">
+                    <i class="bi bi-plus-circle me-1"></i> Save Task
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary shadow-sm rounded px-4">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<style>
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+</style>

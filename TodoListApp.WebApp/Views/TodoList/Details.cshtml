@@ -1,10 +1,10 @@
-@model TodoList
+@model TodoListViewModel
 
 <div class="container py-4">
 
     <!-- TodoList Title -->
     <div class="d-flex justify-content-between align-items-center mb-2">
-    <h1>@Model.Title</h1>
+    <h2>@Model.Title</h2>
 
     <div class="d-flex gap-2">
         <a type="button" class="btn btn-primary" asp-controller="TodoList" asp-action="CreateEdit" asp-route-id="@Model.Id">
@@ -20,55 +20,179 @@
     <!-- TodoList Description -->
     <p class="text-muted mb-4">@Model.Description</p>
 
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Left: Add Task button -->
+        <div>
+            <a type="button" class="btn btn-primary"
+               asp-controller="TodoTask"
+               asp-action="CreateEdit"
+               asp-route-id="0"
+               asp-route-listId="@Model.Id">
+                Add Task
+            </a>
+        </div>
+
+        <!-- Right: Filter and Sort dropdowns -->
+        <div class="d-flex align-items-center">
+            <!-- Filter dropdown -->
+            <select class="form-select form-select-sm me-2">
+                <option value="">All Statuses</option>
+                <option value="NotStarted">Not Started</option>
+                <option value="InProgress">In Progress</option>
+                <option value="Completed">Completed</option>
+            </select>
+
+            <!-- Sort dropdown -->
+            <select class="form-select form-select-sm">
+                <option value="DueDateAsc">Due Date ↑</option>
+                <option value="DueDateDesc">Due Date ↓</option>
+                <option value="TitleAsc">Title A-Z</option>
+                <option value="TitleDesc">Title Z-A</option>
+            </select>
+        </div>
+    </div>
+
+
     <!-- Tasks -->
-    @* @if (Model.Tasks == null || !Model.Tasks.Any())
+    @if (Model.TodoTaskIndex == null || !Model.TodoTaskIndex.TodoTasks.Any())
     {
         <p class="text-muted">No tasks in this list.</p>
-    } *@
+    }
     else
     {
-       @*  <div class="row g-3">
-            @foreach (var task in Model.Tasks)
+         <div class="row g-2 m-md-3 mt-4">
+            @foreach (var task in Model.TodoTaskIndex.TodoTasks)
             {
                 <div class="col-12">
-                    <div class="card shadow-sm rounded border-0">
-                        <div class="card-body">
+                    <div class="card shadow-sm rounded border-0
+                                @(task.IsOverdue && task.TaskStatus != "Completed" ? "border-danger" : "")">
+                        <div class="card-body p-2">
                             <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <!-- Task title and description -->
-                                    <h5 class="card-title mb-1">@task.Name</h5>
-                                    <p class="card-text text-muted mb-2">@task.Description</p>
+                                <!-- Left side: title + badges + info -->
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-1">
+                                        <h6 class="card-title mb-0 me-2">@task.Title</h6>
 
-                                    <!-- Assignee and due date -->
-                                    <div class="text-muted mb-2">
-                                        <small>
-                                            <strong>Assignee:</strong> @task.Assignee ?? "Unassigned"
-                                            &nbsp;|&nbsp;
-                                            <strong>Due:</strong> @(task.DueDate?.ToString("MMM dd, yyyy") ?? "No due date")
-                                        </small>
+                                        <div>
+                                            <!-- Status badge -->
+                                            <span class="badge
+                                                @(task.TaskStatus == "Completed" ? "bg-success" :
+                                                                                    task.TaskStatus == "InProgress" ? "bg-primary" : "bg-secondary") me-1">
+                                                @task.TaskStatus
+                                            </span>
+                                        </div>
+
+                                        <div>
+
+                                        <!-- Overdue badge -->
+                                        @if (task.IsOverdue && task.TaskStatus != "Completed")
+                                        {
+                                            <span class="badge bg-danger">Overdue</span>
+                                        }
+                                        </div>
                                     </div>
 
-                                    <!-- Tags -->
-                                    @if (task.Tags != null && task.Tags.Any())
+                                    <!-- Description -->
+                                    <p class="card-text text-muted mb-1 small">@task.Description</p>
+
+                                    <!-- Assignee and due date -->
+                                    <div class="text-muted mb-2 small">
+                                        <strong>Assignee:</strong> @(task.Assignee ?? "Unassigned")
+                                        &nbsp;|&nbsp;
+                                        <strong>Due:</strong> @(task.DueToDate == default ? "No due date" : task.DueToDate.ToString("MMM dd, yyyy"))
+                                    </div>
+
+                                    <!-- Tags (currently commented out) -->
+                                    @* 
+                            @if (task.Tags != null && task.Tags.Any())
+                            {
+                                <div class="small mb-1">
+                                    @foreach (var tag in task.Tags)
                                     {
-                                        <div>
-                                            @foreach (var tag in task.Tags)
-                                            {
-                                                <span class="badge bg-primary me-1">@tag</span>
-                                            }
-                                        </div>
+                                        <span class="badge bg-primary me-1">@tag</span>
                                     }
                                 </div>
-                                <div class="ms-3 text-muted">
-                                    <!-- Optional icon or status could go here -->
-                                    <i class="bi bi-clipboard-check fs-4"></i>
+                            } 
+                            *@
+                                    <!-- Mark as Completed button (only if not completed) -->
+                                    @if (task.TaskStatus != "Completed")
+                                    {
+                                        <form asp-controller="TodoTask" asp-action="Complete" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@task.Id" />
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                Mark as Completed
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+
+                                <!-- Right: Edit button -->
+                                <div class="ms-2 d-flex flex-column align-items-end">
+                                    @if (task.TaskStatus != "Completed")
+                                    {
+                                        <i class="bi bi-clipboard-check fs-5 text-muted mb-2"></i>
+                                        <a asp-controller="TodoTask"
+                                            asp-action="CreateEdit"
+                                            asp-route-id="@task.Id"
+                                            asp-route-listId="@Model.Id"
+                                            class="btn btn-outline-primary btn-sm">
+                                            Edit
+                                        </a>
+                                    }
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             }
-        </div> *@
+        </div> 
+
+
+        @if (Model.TodoTaskIndex != null && Model.TodoTaskIndex.TotalPages > 1)
+{
+            <nav aria-label="Todo tasks pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(Model.TodoTaskIndex.HasPrevious ? "" : "disabled")">
+                        <a class="page-link"
+                           asp-controller="TodoList"
+                           asp-action="Details"
+                           asp-route-listId="@Model.Id"
+                           asp-route-pageNumber="@(Model.TodoTaskIndex.CurrentPage - 1)"
+                           asp-route-pageSize="@Model.TodoTaskIndex.PageSize">
+                            Previous
+                        </a>
+                    </li>
+                    @for (int i = 1; i <= Model.TodoTaskIndex.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.TodoTaskIndex.CurrentPage ? "active" : "")">
+                            <a class="page-link"
+                               asp-controller="TodoList"
+                               asp-action="Details"
+                               asp-route-listId="@Model.Id"
+                               asp-route-pageNumber="@i"
+                               asp-route-pageSize="@Model.TodoTaskIndex.PageSize">
+                                @i
+                            </a>
+                        </li>
+                    }
+                    <li class="page-item @(Model.TodoTaskIndex.HasNext ? "" : "disabled")">
+                        <a class="page-link"
+                           asp-controller="TodoList"
+                           asp-action="Details"
+                           asp-route-listId="@Model.Id"
+                           asp-route-pageNumber="@(Model.TodoTaskIndex.CurrentPage + 1)"
+                           asp-route-pageSize="@Model.TodoTaskIndex.PageSize">
+                            Next
+                        </a>
+                    </li>
+                </ul>
+                <div class="text-center text-muted">
+                    <small>
+                        Showing page @Model.TodoTaskIndex.CurrentPage of @Model.TodoTaskIndex.TotalPages (Total items: @Model.TodoTaskIndex.TotalCount)
+                    </small>
+                </div>
+            </nav>
+}
     }
 </div>
 

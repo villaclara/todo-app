@@ -15,12 +15,18 @@ public interface ITodoTaskDatabaseService
     Task<TodoTask> CreateAsync(TodoTask todoTask);
 
     /// <summary>
-    /// Asynchronously gets the list of TodoTask object for specified list.
+    /// Asynchronously retrieves a paginated list of todo tasks based on specified filters.
     /// </summary>
-    /// <param name="todoListId">List id to retrieve the tasks.</param>
-    /// <param name="assignee">Name of user to retrieve the assigned tasks.</param>
-    /// <returns>Task that represents async operation. Task contains the list of <see cref="TodoTask"/> object. Might be empty.</returns>
-    Task<List<TodoTask>> GetAllTodoTasksWithParamsAsync(int? todoListId, string? assignee);
+    /// <param name="todoListId">The ID of the todo list to filter tasks. If null, returns tasks from all lists.</param>
+    /// <param name="assignee">The name of the assignee to filter tasks. If null, returns tasks for all assignees.</param>
+    /// <param name="page">The page number for pagination (1-based). If null, defaults to first page.</param>
+    /// <param name="pageSize">The number of items per page. If null, uses default page size.</param>
+    /// <returns>
+    /// Task that represents async operation. Taks contains
+    /// - totalCount: The total number of tasks matching the filter criteria
+    /// - todoTasks: A list of <see cref="TodoTask"/> objects for the requested page.
+    /// </returns>
+    Task<(int totalCount, List<TodoTask> todoTasks)> GetAllTodoTasksWithParamsAsync(int? todoListId, string? assignee, int? page, int? pageSize);
 
     /// <summary>
     /// Asynchronously get the <see cref="TodoTask"/> object for specific user. <see langword="null"/>.

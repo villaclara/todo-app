@@ -8,10 +8,12 @@ namespace TodoListApp.WebApp.Controllers;
 public class TodoListController : Controller
 {
     private readonly ITodoListWebApiService listService;
+    private readonly ITodoTaskWebApiService taskService;
 
-    public TodoListController(ITodoListWebApiService service)
+    public TodoListController(ITodoListWebApiService service, ITodoTaskWebApiService taskService)
     {
         this.listService = service;
+        this.taskService = taskService;
     }
 
     [HttpGet]
@@ -40,10 +42,55 @@ public class TodoListController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Details(int listId)
+    public async Task<IActionResult> Details(int listId, int pageNumber = 1, int pageSize = 2)
     {
         var todo = await this.listService.GetTodoListByIdAsync(listId, 1);
-        return this.View(todo);
+
+        if (todo == null)
+        {
+            return this.NotFound();
+        }
+
+        var tasks = await this.taskService.GetPagedTodoTasksAsync(listId, pageNumber, pageSize);
+
+        var obj = new TodoListViewModel
+        {
+            Id = todo.Id,
+            Title = todo.Title,
+            Description = todo.Description,
+            UserId = todo.UserId,
+            Tasks = tasks.Data.Select(x => new TodoTaskViewModel
+            {
+                Id = x.Id,
+                Title = x.Title,
+                Description = x.Description,
+                Assignee = x.Assignee,
+                CreatedAtDate = x.CreatedAtDate,
+                DueToDate = x.DueToDate,
+                TaskStatus = x.TaskStatus,
+            }).ToList() ?? new List<TodoTaskViewModel>(),
+            TodoTaskIndex = new TodoTaskIndexViewModel()
+            {
+                TodoTasks = tasks.Data.Select(x => new TodoTaskViewModel
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    Description = x.Description,
+                    Assignee = x.Assignee,
+                    CreatedAtDate = x.CreatedAtDate,
+                    DueToDate = x.DueToDate,
+                    TaskStatus = x.TaskStatus,
+                }).ToList() ?? new List<TodoTaskViewModel>(),
+                CurrentPage = tasks.Pagination?.CurrentPage ?? 1,
+                HasNext = tasks.Pagination?.HasNext ?? false,
+                HasPrevious = tasks.Pagination?.HasPrevious ?? false,
+                PageSize = tasks.Pagination?.PageSize ?? 10,
+                TotalCount = tasks.Pagination?.TotalCount ?? 1,
+                TotalPages = tasks.Pagination?.TotalPages ?? 1,
+            },
+        };
+
+        return this.View(obj);
     }
 
     [HttpGet]
@@ -54,7 +101,7 @@ public class TodoListController : Controller
             return this.View(new TodoListViewModel());
         }
 
-        var todo = await this.listService.GetTodoListByIdAsync(100, 1);   // userId
+        var todo = await this.listService.GetTodoListByIdAsync(id, 1);   // userId
 
         if (todo == null)
         {
@@ -116,7 +163,7 @@ public class TodoListController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var todo = await this.listService.GetTodoListByIdAsync(id, 1);
+        var todo = await this.listService.GetTodoListByIdAsync(id, 1);  // TODO - id
 
         if (todo == null)
         {
@@ -124,7 +171,7 @@ public class TodoListController : Controller
             return this.View("Error");
         }
 
-        var result = await this.listService.DeleteTodoListAsync(id, 1);
+        var result = await this.listService.DeleteTodoListAsync(id, 1); // TODO - id
 
         if (!result)
         {

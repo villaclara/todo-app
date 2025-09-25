@@ -60,7 +60,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
     }
 
     /// <inheritdoc/>
-    public async Task<List<TodoTask>> GetAllTodoTasksWithParamsAsync(int? todoListId, string? assignee)
+    public async Task<(int totalCount, List<TodoTask> todoTasks)> GetAllTodoTasksWithParamsAsync(int? todoListId, string? assignee, int? page, int? pageSize)
     {
         var query = this.ctx.TodoTasks.Include(x => x.TodoList).AsQueryable();
 
@@ -74,7 +74,14 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             query = query.Where(t => t.TodoListId == todoListId.Value);
         }
 
-        return await query
+        var totalCount = query.Count();
+
+        if (page.HasValue && pageSize.HasValue)
+        {
+            query = query.Skip((page.Value - 1) * pageSize.Value).Take(pageSize.Value);
+        }
+
+        var todos = await query
         .Select(x => new TodoTask()
         {
             TodoListId = x.TodoListId,
@@ -88,6 +95,8 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             TodoListName = x.TodoList.Title,
         })
         .ToListAsync();
+
+        return (totalCount, todos);
     }
 
     /// <inheritdoc/>

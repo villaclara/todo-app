@@ -25,4 +25,8 @@ public class TodoListViewModel
     /// Gets or sets the User Id of TodoList.
     /// </summary>
     public int UserId { get; set; }
+
+    public List<TodoTaskViewModel>? Tasks { get; set; }
+
+    public TodoTaskIndexViewModel? TodoTaskIndex { get; set; }
 }

@@ -1,37 +1,41 @@
 @model TodoListViewModel
 
 <div class="container py-4">
-    <!-- Page Title -->
-    <h1 class="mb-4">Todo List</h1>
+    <div class="card shadow-sm rounded p-3 mb-3 col-md-8">
+        <!-- Page Title -->
+        <h2 class="mb-3">Todo List</h2>
 
-    <!-- Form -->
-    <form asp-action="CreateEdit" method="post" class="needs-validation" novalidate>
-        <div class="mb-3 col-md-6">
-            <label asp-for="Title" class="form-label fw-bold"></label>
-            <input asp-for="Title" class="form-control shadow-sm rounded border-0" placeholder="Enter a title for your todo list" />
-            <span asp-validation-for="Title" class="text-danger"></span>
-        </div>
+        <!-- Form -->
+        <form asp-action="CreateEdit" method="post" class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label fw-bold"></label>
+                <input asp-for="Title" class="form-control shadow-sm rounded border-0" placeholder="Enter a title for your todo list" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
 
-        <div class="mb-3 col-md-6">
-            <label asp-for="Description" class="form-label fw-bold"></label>
-            <textarea asp-for="Description" rows="3" class="form-control shadow-sm rounded border-0" placeholder="Enter a description (optional)"></textarea>
-            <span asp-validation-for="Description" class="text-danger"></span>
-        </div>
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label fw-bold"></label>
+                <textarea asp-for="Description" rows="3" class="form-control shadow-sm rounded border-0" placeholder="Enter a description (optional)"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
 
-        <!-- Buttons -->
-        <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-primary shadow-sm rounded px-4">
-                <i class="bi bi-plus-circle me-1"></i> Save
-            </button>
-            <a asp-action="Index" class="btn btn-outline-secondary shadow-sm rounded px-4">
-                Cancel
-            </a>
-        </div>
-    </form>
+            <!-- Buttons -->
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary shadow-sm rounded px-4">
+                    <i class="bi bi-plus-circle me-1"></i> Save
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary shadow-sm rounded px-4">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
 
 <style>
