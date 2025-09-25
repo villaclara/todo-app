@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services.Interfaces;
+using TodoListApp.WebApp.Services.Models;
 
 namespace TodoListApp.WebApp.Controllers;
 public class TodoTaskController : Controller
@@ -41,6 +42,8 @@ public class TodoTaskController : Controller
             CreatedAtDate = todo.CreatedAtDate,
             DueToDate = todo.DueToDate,
             TaskStatus = todo.TaskStatus,
+            TodoListId = todo.TodoListId,
+            TodoListName = todo.TodoListName,
         };
 
         return this.View(model);
@@ -56,37 +59,37 @@ public class TodoTaskController : Controller
             return this.View("CreateEdit", model);
         }
 
-        //try
-        //{
-        //    TodoList todo = new TodoList
-        //    {
-        //        Id = model.Id,
-        //        Title = model.Title,
-        //        Description = model.Description,
-        //        UserId = 1, // TODO - Set user Id
-        //    };
+        try
+        {
+            TodoTask todo = new TodoTask
+            {
+                Id = model.Id,
+                Title = model.Title,
+                Description = model.Description,
+                DueToDate = model.DueToDate,
+                Assignee = model.Assignee ?? "bruh", // TODO - assignee
+                TodoListId = model.TodoListId,
+            };
 
-        //    var act = model.Id switch
-        //    {
-        //        not 0 => this.listService.UpdateTodoListAsync(todo),
-        //        _ => this.listService.CreateTodoListAsync(todo),
-        //    };
+            var act = model.Id switch
+            {
+                not 0 => this.taskService.UpdateTodoTaskAsync(todo),
+                _ => this.taskService.CreateTodoTaskAsync(todo),
+            };
 
-        //    var result = await act;
+            var result = await act;
 
-        //    if (result == null)
-        //    {
-        //        return this.RedirectToAction(nameof(this.Index));
-        //    }
+            if (result == null)
+            {
+                return this.RedirectToAction(actionName: "Details", controllerName: "TodoList", new { listId = model.TodoListId });
+            }
 
-        //    return this.RedirectToAction(nameof(this.Details), new { listId = result.Id });
-        //}
-        //catch (ApplicationException ex)
-        //{
-        //    this.ViewBag.ErrorMessage = ex.Message;
-        //    return this.View("Error", new ErrorViewModel { RequestId = ex.Message, ReturnUrl = new Uri("/todolist", UriKind.Relative) });
-        //}
-
-        return this.View(model);
+            return this.RedirectToAction(actionName: "Details", controllerName: "TodoList", new { listId = model.TodoListId });
+        }
+        catch (ApplicationException ex)
+        {
+            this.ViewBag.ErrorMessage = ex.Message;
+            return this.View("Error", new ErrorViewModel { RequestId = ex.Message, ReturnUrl = new Uri("/todolist", UriKind.Relative) });
+        }
     }
 }

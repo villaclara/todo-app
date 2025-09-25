@@ -48,6 +48,7 @@ public class TodoTaskController : ControllerBase
             Status = x.TaskStatus.ToString(),
             Title = x.Title,
             TodoListName = x.TodoListName,
+            TodoListId = x.TodoListId,
         });
 
         var paginationMetadata = new PaginationMetadata(todoTasks.totalCount, pagination.PageSize, pagination.PageNumber);

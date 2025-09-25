@@ -11,9 +11,9 @@ public interface ITodoTaskWebApiService
 
     Task<TodoTask?> GetTodoTaskByIdAsync(int id, int listId);
 
-    Task<TodoTask?> CreateTodoTaskAsync(TodoTask list);
+    Task<TodoTask?> CreateTodoTaskAsync(TodoTask todo);
 
-    Task<TodoTask?> UpdateTodoTaskAsync(TodoTask list);
+    Task<TodoTask?> UpdateTodoTaskAsync(TodoTask todo);
 
     Task<bool> DeleteTodoTaskAsync(int id, int listId);
 }

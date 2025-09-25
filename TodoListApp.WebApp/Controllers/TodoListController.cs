@@ -68,6 +68,7 @@ public class TodoListController : Controller
                 CreatedAtDate = x.CreatedAtDate,
                 DueToDate = x.DueToDate,
                 TaskStatus = x.TaskStatus,
+                TodoListId = x.TodoListId,
             }).ToList() ?? new List<TodoTaskViewModel>(),
             TodoTaskIndex = new TodoTaskIndexViewModel()
             {
@@ -80,6 +81,7 @@ public class TodoListController : Controller
                     CreatedAtDate = x.CreatedAtDate,
                     DueToDate = x.DueToDate,
                     TaskStatus = x.TaskStatus,
+                    TodoListId = x.TodoListId,
                 }).ToList() ?? new List<TodoTaskViewModel>(),
                 CurrentPage = tasks.Pagination?.CurrentPage ?? 1,
                 HasNext = tasks.Pagination?.HasNext ?? false,
@@ -180,5 +182,7 @@ public class TodoListController : Controller
         }
 
         return this.RedirectToAction(nameof(this.Index));
+
+        // TODO - Delete the tasks with List Id too
     }
 }

@@ -18,15 +18,15 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
         this.logger = logger;
     }
 
-    public async Task<TodoTask?> CreateTodoTaskAsync(TodoTask list)
+    public async Task<TodoTask?> CreateTodoTaskAsync(TodoTask todo)
     {
         var model = new CreateTodoTaskModel
         {
-            Title = list.Title,
-            TodoListId = list.TodoListId,
-            Description = list.Description,
-            DueToDate = list.DueToDate,
-            Assignee = list.Assignee ?? "user", // TODO - Change user
+            Title = todo.Title,
+            TodoListId = todo.TodoListId,
+            Description = todo.Description,
+            DueToDate = todo.DueToDate,
+            Assignee = todo.Assignee ?? "user", // TODO - Change user
         };
 
         try

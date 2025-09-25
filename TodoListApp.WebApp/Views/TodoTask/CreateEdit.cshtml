@@ -2,7 +2,21 @@
 
 <div class="container py-4">
     <div class="card shadow-sm rounded p-3 mb-3 col-md-8">
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+
         <h2 class="mb-3">Task Form</h2>
+
+        @if (Model.Id != 0)
+        {
+            <div>
+            <a class="btn btn-danger">
+                Delete
+            </a>
+            </div>
+        }
+        </div>
+
 
         <form asp-controller="TodoTask" asp-action="Create" method="post" class="needs-validation" novalidate>
             <!-- Hidden Id field -->
@@ -59,7 +73,7 @@
                 <button type="submit" class="btn btn-primary shadow-sm rounded px-4">
                     <i class="bi bi-plus-circle me-1"></i> Save Task
                 </button>
-                <a asp-action="Index" class="btn btn-outline-secondary shadow-sm rounded px-4">
+                <a asp-action="Details" asp-controller="TodoList" asp-route-listId="@Model.TodoListId" class="btn btn-outline-secondary shadow-sm rounded px-4">
                     Cancel
                 </a>
             </div>
