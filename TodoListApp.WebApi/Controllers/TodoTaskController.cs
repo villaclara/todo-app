@@ -114,7 +114,7 @@ public class TodoTaskController : ControllerBase
             var todoTask = new TodoTask()
             {
                 Title = model.Title,
-                Assignee = "user",  // TODO - Current user should be assigned
+                Assignee = model.Assignee ?? "user",  // TODO - Current user should be assigned
                 CreatedAtDate = DateTime.UtcNow,
                 DueToDate = model.DueToDate,
                 Description = model.Description,

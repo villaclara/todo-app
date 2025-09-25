@@ -1,3 +1,4 @@
+using System.Net;
 using TodoListApp.Common.Models;
 using TodoListApp.Common.Models.TodoTaskModels;
 using TodoListApp.WebApp.Models;
@@ -17,14 +18,47 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
         this.logger = logger;
     }
 
-    public Task<TodoTask?> CreateTodoTaskAsync(TodoTask list)
+    public async Task<TodoTask?> CreateTodoTaskAsync(TodoTask list)
     {
-        throw new NotImplementedException();
+        var model = new CreateTodoTaskModel
+        {
+            Title = list.Title,
+            TodoListId = list.TodoListId,
+            Description = list.Description,
+            DueToDate = list.DueToDate,
+            Assignee = list.Assignee ?? "user", // TODO - Change user
+        };
+
+        try
+        {
+            var response = await this.http.PostAsJsonAsync($"api/todotask", model);
+            _ = response.EnsureSuccessStatusCode();
+
+            var added = await response.Content.ReadFromJsonAsync<TodoTask>();
+            return added;
+        }
+        catch (HttpRequestException ex)
+        {
+            this.logger.LogWarning("Error sending request to create a TodoTask {@todolist}, ex - {@ex}.", model, ex.Message);
+            throw new ApplicationException($"Internal error when processing the request - {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogWarning("Unknow exception, ex - {@ex}", ex.Message);
+            throw new ApplicationException($"Internal error when processing the request - {ex.Message}");
+        }
     }
 
-    public Task<bool> DeleteTodoTaskAsync(int listId, int userId)
+    public async Task<bool> DeleteTodoTaskAsync(int id, int listId)
     {
-        throw new NotImplementedException();
+        var response = await this.http.DeleteAsync($"api/todotask/{id}?listId={listId}");
+
+        if (response.StatusCode != HttpStatusCode.NoContent)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public async Task<PagedResults<TodoTask>> GetPagedTodoTasksAsync(int listId, int page = 1, int pageSize = 2)
@@ -77,13 +111,55 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
         }).FirstOrDefault();
     }
 
-    public Task<IEnumerable<TodoTask>> GetTodoTasksAsync(int userId)
+    public async Task<IEnumerable<TodoTask>> GetTodoTasksAsync(int listId)
     {
-        throw new NotImplementedException();
+        var request = await this.http.GetFromJsonAsync<ApiResponse<TodoTaskModel>>($"api/todotask?listId={listId}");
+        if (request == null)
+        {
+            return new List<TodoTask>();
+        }
+
+        return request.Data.Select(x => new TodoTask()
+        {
+            Id = x.Id,
+            Title = x.Title,
+            Description = x.Description,
+            TodoListId = x.TodoListId,
+            Assignee = x.Assignee,
+            CreatedAtDate = x.CreatedAtDate,
+            DueToDate = x.DueToDate,
+            TaskStatus = x.Status!,
+            TodoListName = x.TodoListName!,
+        });
     }
 
-    public Task<TodoTask?> UpdateTodoTaskAsync(TodoTask list)
+    public async Task<TodoTask?> UpdateTodoTaskAsync(TodoTask todo)
     {
-        throw new NotImplementedException();
+        var model = new CreateTodoTaskModel
+        {
+            Title = todo.Title,
+            TodoListId = todo.TodoListId,
+            Description = todo.Description,
+            DueToDate = todo.DueToDate,
+            Assignee = todo.Assignee ?? "user", // TODO - Change user
+        };
+
+        try
+        {
+            var response = await this.http.PutAsJsonAsync($"api/todotask", model);
+            _ = response.EnsureSuccessStatusCode();
+
+            return todo;
+        }
+        catch (HttpRequestException ex)
+        {
+            this.logger.LogWarning("Error sending request to update a TodoTask {@todolist}, ex - {@ex}.", model, ex.Message);
+            throw new ApplicationException($"Internal error when processing the request - {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogWarning("Unknow exception, ex - {@ex}", ex.Message);
+            throw new ApplicationException($"Internal error when processing the request - {ex.Message}");
+        }
     }
 }
