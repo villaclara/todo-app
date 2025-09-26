@@ -26,7 +26,5 @@ public class TodoListViewModel
     /// </summary>
     public int UserId { get; set; }
 
-    public List<TodoTaskViewModel>? Tasks { get; set; }
-
     public TodoTaskIndexViewModel? TodoTaskIndex { get; set; }
 }

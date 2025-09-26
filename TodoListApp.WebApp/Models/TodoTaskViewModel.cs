@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using TodoListApp.Common.Models.Enums;
 
 namespace TodoListApp.WebApp.Models;
 
@@ -15,7 +16,7 @@ public class TodoTaskViewModel
 
     public DateTime DueToDate { get; set; }
 
-    public string TaskStatus { get; set; } = null!;
+    public TodoTaskStatus Status { get; set; }
 
     public string Assignee { get; set; } = null!;
 
@@ -23,5 +24,5 @@ public class TodoTaskViewModel
 
     public string? TodoListName { get; set; }
 
-    public bool IsOverdue => this.TaskStatus.ToLower() != "completed" && this.DueToDate < DateTime.UtcNow;
+    public bool IsOverdue => this.Status != TodoTaskStatus.Completed && this.DueToDate < DateTime.UtcNow;
 }

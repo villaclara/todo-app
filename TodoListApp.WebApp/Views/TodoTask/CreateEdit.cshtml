@@ -35,8 +35,8 @@
             </div>
 
             <div class="mb-3 col-md-12">
-                <label asp-for="TaskStatus" class="form-label fw-bold"></label>
-                <input asp-for="TaskStatus" class="form-control shadow-sm rounded border-0" placeholder="Enter task title" />
+                <label asp-for="Status" class="form-label fw-bold"></label>
+                <input asp-for="Status" class="form-control shadow-sm rounded border-0" placeholder="Enter task title" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
@@ -62,13 +62,13 @@
             @if (Model.Id != 0)
             {
                 <div class="mb-3 col-md-12">
-                    <label asp-for="TaskStatus" class="form-label fw-bold"></label>
-                    <select asp-for="TaskStatus" class="form-select shadow-sm rounded border-0">
+                    <label asp-for="Status" class="form-label fw-bold"></label>
+                    <select asp-for="Status" class="form-select shadow-sm rounded border-0">
                         <option value="NotStarted">Not Started</option>
                         <option value="InProgress">In Progress</option>
                         <option value="Completed">Completed</option>
                     </select>
-                    <span asp-validation-for="TaskStatus" class="text-danger"></span>
+                    <span asp-validation-for="Status" class="text-danger"></span>
                 </div>
             }
 

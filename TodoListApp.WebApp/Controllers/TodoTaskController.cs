@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using TodoListApp.Common.Models.Enums;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services.Interfaces;
 using TodoListApp.WebApp.Services.Models;
+using TodoListApp.WebApp.Utility;
 
 namespace TodoListApp.WebApp.Controllers;
 public class TodoTaskController : Controller
@@ -34,7 +36,7 @@ public class TodoTaskController : Controller
                 // DueToDate will also be displayed in the Form in html file.
                 TodoListName = "defaultName",
                 DueToDate = DateTime.Now,
-                TaskStatus = "NotStarted",
+                Status = TodoTaskStatus.NotStarted,
                 TodoListId = listId,
             });
         }
@@ -46,18 +48,7 @@ public class TodoTaskController : Controller
             return this.View("Error", new ErrorViewModel { RequestId = $"Task with id {id} could not be found.", ReturnUrl = new Uri($"/todolist/details?listId={id}", UriKind.Relative) });
         }
 
-        var model = new TodoTaskViewModel
-        {
-            Id = todo.Id,
-            Title = todo.Title,
-            Description = todo.Description,
-            Assignee = todo.Assignee,
-            CreatedAtDate = todo.CreatedAtDate,
-            DueToDate = todo.DueToDate,
-            TaskStatus = todo.Status,
-            TodoListId = todo.TodoListId,
-            TodoListName = todo.TodoListName,
-        };
+        var model = WebAppMapper.MapTodoTask<TodoTask, TodoTaskViewModel>(todo);
 
         return this.View(model);
     }
@@ -80,7 +71,7 @@ public class TodoTaskController : Controller
                 Title = model.Title,
                 Description = model.Description,
                 DueToDate = model.DueToDate,
-                Assignee = model.Assignee ?? "bruh", // TODO - assignee
+                Assignee = model.Assignee ?? "bruh", // TODO - assignee and use Mapper
                 TodoListId = model.TodoListId,
             };
 

@@ -34,7 +34,7 @@ public class TodoListDatabaseService : ITodoListDatabaseService
         //    UserId = todo.UserId,
         //};
 
-        var entity = Mapper.MapTodoList<TodoList, TodoListEntity>(todo);
+        var entity = WebApiMapper.MapTodoList<TodoList, TodoListEntity>(todo);
 
         _ = this.ctx.TodoLists.Add(entity);
         _ = await this.ctx.SaveChangesAsync();
@@ -57,7 +57,7 @@ public class TodoListDatabaseService : ITodoListDatabaseService
             .OrderBy(x => x.Id)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .Select(x => Mapper.MapTodoList<TodoListEntity, TodoList>(x))
+            .Select(x => WebApiMapper.MapTodoList<TodoListEntity, TodoList>(x))
             .ToList();
 
         return (totalCount, items);
@@ -73,7 +73,7 @@ public class TodoListDatabaseService : ITodoListDatabaseService
             return null;
         }
 
-        var result = Mapper.MapTodoList<TodoListEntity, TodoList>(entity);
+        var result = WebApiMapper.MapTodoList<TodoListEntity, TodoList>(entity);
 
         return result;
     }
@@ -95,7 +95,7 @@ public class TodoListDatabaseService : ITodoListDatabaseService
         }
 
         _ = await this.ctx.SaveChangesAsync();
-        return Mapper.MapTodoList<TodoListEntity, TodoList>(entity);
+        return WebApiMapper.MapTodoList<TodoListEntity, TodoList>(entity);
     }
 
     /// <inheritdoc/>

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services.Interfaces;
 using TodoListApp.WebApp.Services.Models;
+using TodoListApp.WebApp.Utility;
 
 namespace TodoListApp.WebApp.Controllers;
 
@@ -23,13 +24,7 @@ public class TodoListController : Controller
 
         var viewModel = new TodoListIndexViewModel
         {
-            TodoLists = apiResponse.Data.Select(x => new TodoListViewModel
-            {
-                Id = x.Id,
-                Title = x.Title,
-                Description = x.Description,
-                UserId = x.UserId,
-            }).ToList(),
+            TodoLists = apiResponse.Data.Select(x => WebAppMapper.MapTodoList<TodoList, TodoListViewModel>(x)).ToList(),
             CurrentPage = apiResponse.Pagination?.CurrentPage ?? 1,
             TotalPages = apiResponse.Pagination?.TotalPages ?? 1,
             PageSize = apiResponse.Pagination?.PageSize ?? 10,
@@ -53,46 +48,19 @@ public class TodoListController : Controller
 
         var tasks = await this.taskService.GetPagedTodoTasksAsync(listId, pageNumber, pageSize);
 
-        var obj = new TodoListViewModel
+        var result = WebAppMapper.MapTodoList<TodoList, TodoListViewModel>(todo);
+        result.TodoTaskIndex = new TodoTaskIndexViewModel()
         {
-            Id = todo.Id,
-            Title = todo.Title,
-            Description = todo.Description,
-            UserId = todo.UserId,
-            Tasks = tasks.Data.Select(x => new TodoTaskViewModel
-            {
-                Id = x.Id,
-                Title = x.Title,
-                Description = x.Description,
-                Assignee = x.Assignee,
-                CreatedAtDate = x.CreatedAtDate,
-                DueToDate = x.DueToDate,
-                TaskStatus = x.Status,
-                TodoListId = x.TodoListId,
-            }).ToList() ?? new List<TodoTaskViewModel>(),
-            TodoTaskIndex = new TodoTaskIndexViewModel()
-            {
-                TodoTasks = tasks.Data.Select(x => new TodoTaskViewModel
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    Description = x.Description,
-                    Assignee = x.Assignee,
-                    CreatedAtDate = x.CreatedAtDate,
-                    DueToDate = x.DueToDate,
-                    TaskStatus = x.Status,
-                    TodoListId = x.TodoListId,
-                }).ToList() ?? new List<TodoTaskViewModel>(),
-                CurrentPage = tasks.Pagination?.CurrentPage ?? 1,
-                HasNext = tasks.Pagination?.HasNext ?? false,
-                HasPrevious = tasks.Pagination?.HasPrevious ?? false,
-                PageSize = tasks.Pagination?.PageSize ?? 10,
-                TotalCount = tasks.Pagination?.TotalCount ?? 1,
-                TotalPages = tasks.Pagination?.TotalPages ?? 1,
-            },
+            TodoTasks = tasks.Data.Select(x => WebAppMapper.MapTodoTask<TodoTask, TodoTaskViewModel>(x)).ToList() ?? new List<TodoTaskViewModel>(),
+            CurrentPage = tasks.Pagination?.CurrentPage ?? 1,
+            HasNext = tasks.Pagination?.HasNext ?? false,
+            HasPrevious = tasks.Pagination?.HasPrevious ?? false,
+            PageSize = tasks.Pagination?.PageSize ?? 10,
+            TotalCount = tasks.Pagination?.TotalCount ?? 1,
+            TotalPages = tasks.Pagination?.TotalPages ?? 1,
         };
 
-        return this.View(obj);
+        return this.View(result);
     }
 
     [HttpGet]
@@ -110,13 +78,7 @@ public class TodoListController : Controller
             return this.View("Error", new ErrorViewModel { RequestId = $"List with id {id} could not be found.", ReturnUrl = new Uri($"/todolist/details?listId={id}", UriKind.Relative) });
         }
 
-        var model = new TodoListViewModel
-        {
-            Id = todo.Id,
-            Title = todo.Title,
-            Description = todo.Description,
-            UserId = todo.UserId,
-        };
+        var model = WebAppMapper.MapTodoList<TodoList, TodoListViewModel>(todo);
 
         return this.View(model);
     }
@@ -137,7 +99,7 @@ public class TodoListController : Controller
                 Id = model.Id,
                 Title = model.Title,
                 Description = model.Description,
-                UserId = 1, // TODO - Set user Id
+                UserId = 1, // TODO - Set user Id and use Mapper
             };
 
             var act = model.Id switch

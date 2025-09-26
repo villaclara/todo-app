@@ -46,7 +46,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
         return await this.ctx.TodoTasks
             .Include(t => t.TodoList)
             .Where(t => t.Id == entity.Id)
-            .Select(t => Mapper.MapTodoTask<TodoTaskEntity, TodoTask>(t))
+            .Select(t => WebApiMapper.MapTodoTask<TodoTaskEntity, TodoTask>(t))
             .FirstAsync();
     }
 
@@ -73,7 +73,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
         }
 
         var todos = await query
-        .Select(x => Mapper.MapTodoTask<TodoTaskEntity, TodoTask>(x))
+        .Select(x => WebApiMapper.MapTodoTask<TodoTaskEntity, TodoTask>(x))
         .ToListAsync();
 
         return (totalCount, todos);
@@ -91,7 +91,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             return null;
         }
 
-        return Mapper.MapTodoTask<TodoTaskEntity, TodoTask>(entity);
+        return WebApiMapper.MapTodoTask<TodoTaskEntity, TodoTask>(entity);
     }
 
     /// <inheritdoc/>
@@ -129,7 +129,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
         _ = await this.ctx.SaveChangesAsync();
         await this.ctx.Entry(entity).Reference(e => e.TodoList).LoadAsync();
 
-        return Mapper.MapTodoTask<TodoTaskEntity, TodoTask>(entity);
+        return WebApiMapper.MapTodoTask<TodoTaskEntity, TodoTask>(entity);
     }
 
     /// <inheritdoc/>

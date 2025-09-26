@@ -38,8 +38,10 @@ public class TodoTaskController : ControllerBase
             pagination = new PaginationParameters();
         }
 
+        // TODO - check if the list exists by listId before getting data next.
+
         var todoTasks = await this.taskService.GetAllTodoTasksWithParamsAsync(listId, assignee, pagination.PageNumber, pagination.PageSize);
-        var result = todoTasks.todoTasks.Select(x => Mapper.MapTodoTask<TodoTask, TodoTaskModel>(x)).ToList();
+        var result = todoTasks.todoTasks.Select(x => WebApiMapper.MapTodoTask<TodoTask, TodoTaskModel>(x)).ToList();
 
         var paginationMetadata = new PaginationMetadata(todoTasks.totalCount, pagination.PageSize, pagination.PageNumber);
 
@@ -66,7 +68,7 @@ public class TodoTaskController : ControllerBase
             return this.NotFound(new ApiResponse<TodoListModel>());
         }
 
-        var result = Mapper.MapTodoTask<TodoTask, TodoTaskModel>(todotask);
+        var result = WebApiMapper.MapTodoTask<TodoTask, TodoTaskModel>(todotask);
 
         var response = new ApiResponse<TodoTaskModel>()
         {
@@ -108,7 +110,7 @@ public class TodoTaskController : ControllerBase
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error happened.");
             }
 
-            var mapped = Mapper.MapTodoTask<TodoTask, TodoTaskModel>(result);
+            var mapped = WebApiMapper.MapTodoTask<TodoTask, TodoTaskModel>(result);
 
             return this.CreatedAtAction(actionName: nameof(this.GetTaskById), new { listId = mapped.TodoListId, id = mapped.Id }, mapped);
         }

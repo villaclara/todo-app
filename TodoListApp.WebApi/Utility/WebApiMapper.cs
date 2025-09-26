@@ -5,7 +5,7 @@ using TodoListApp.WebApi.Services.Models;
 
 namespace TodoListApp.WebApi.Utility;
 
-public static class Mapper
+public static class WebApiMapper
 {
     public static TOut MapTodoList<TIn, TOut>(TIn obj)
         where TIn : class
@@ -13,6 +13,7 @@ public static class Mapper
     {
         var result = obj switch
         {
+            // entity -> domain
             TodoListEntity entity when typeof(TOut) == typeof(TodoList) => new TodoList
             {
                 Id = entity.Id,
@@ -21,6 +22,7 @@ public static class Mapper
                 UserId = entity.UserId,
             } as TOut,
 
+            // domain -> entity
             TodoList domain when typeof(TOut) == typeof(TodoListEntity) => new TodoListEntity
             {
                 Id = domain.Id,
@@ -29,6 +31,7 @@ public static class Mapper
                 UserId = domain.UserId,
             } as TOut,
 
+            // domain -> api response
             TodoList domain when typeof(TOut) == typeof(TodoListModel) => new TodoListModel
             {
                 Id = domain.Id,
@@ -37,6 +40,7 @@ public static class Mapper
                 UserId = domain.UserId,
             } as TOut,
 
+            // api response -> domain
             TodoListModel model when typeof(TOut) == typeof(TodoList) => new TodoList
             {
                 Id = model.Id,
@@ -58,6 +62,7 @@ public static class Mapper
     {
         var result = obj switch
         {
+            // entity -> domain
             TodoTaskEntity entity when typeof(TOut) == typeof(TodoTask) => new TodoTask
             {
                 TodoListId = entity.TodoListId,
@@ -71,6 +76,7 @@ public static class Mapper
                 TodoListName = entity.TodoList.Title,
             } as TOut,
 
+            // domain -> entity
             TodoTask domain when typeof(TOut) == typeof(TodoTaskEntity) => new TodoTaskEntity
             {
                 TodoListId = domain.TodoListId,
@@ -83,6 +89,7 @@ public static class Mapper
                 Status = domain.Status,
             } as TOut,
 
+            // domain -> api response
             TodoTask domain when typeof(TOut) == typeof(TodoTaskModel) => new TodoTaskModel
             {
                 Id = domain.Id,
@@ -97,6 +104,7 @@ public static class Mapper
                 TodoListId = domain.TodoListId,
             } as TOut,
 
+            // api response -> domain
             TodoTaskModel model when typeof(TOut) == typeof(TodoTask) => new TodoTask
             {
                 Id = model.Id,
@@ -115,5 +123,4 @@ public static class Mapper
 
         return result ?? throw new InvalidCastException("Invalid Cast. Result is null");
     }
-
 }

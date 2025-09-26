@@ -60,7 +60,7 @@
             {
                 <div class="col-12">
                     <div class="card shadow-sm rounded border-0
-                                @(task.IsOverdue && task.TaskStatus != "Completed" ? "border-danger" : "")">
+                                @(task.IsOverdue && task.Status != TodoTaskStatus.NotStarted ? "border-danger" : "")">
                         <div class="card-body p-2">
                             <div class="d-flex justify-content-between align-items-start">
                                 <!-- Left side: title + badges + info -->
@@ -71,16 +71,16 @@
                                         <div>
                                             <!-- Status badge -->
                                             <span class="badge
-                                                @(task.TaskStatus == "Completed" ? "bg-success" :
-                                                                                    task.TaskStatus == "InProgress" ? "bg-primary" : "bg-secondary") me-1">
-                                                @task.TaskStatus
+                                                @(task.Status == TodoTaskStatus.Completed ? "bg-success" :
+                                                                                    task.Status == TodoTaskStatus.InProgress ? "bg-primary" : "bg-secondary") me-1">
+                                                @task.Status
                                             </span>
                                         </div>
 
                                         <div>
 
                                         <!-- Overdue badge -->
-                                        @if (task.IsOverdue && task.TaskStatus != "Completed")
+                                        @if (task.IsOverdue && task.Status != TodoTaskStatus.Completed)
                                         {
                                             <span class="badge bg-danger">Overdue</span>
                                         }
@@ -110,8 +110,8 @@
                             } 
                             *@
                                     <!-- Mark as Completed button (only if not completed) -->
-                                    @if (task.TaskStatus != "Completed")
-                                    {
+                                    @if (task.IsOverdue && task.Status != TodoTaskStatus.Completed)
+                                        {
                                         <form asp-controller="TodoTask" asp-action="Complete" method="post" class="d-inline">
                                             <input type="hidden" name="id" value="@task.Id" />
                                             <button type="submit" class="btn btn-success btn-sm">
@@ -123,7 +123,7 @@
 
                                 <!-- Right: Edit button -->
                                 <div class="ms-2 d-flex flex-column align-items-end">
-                                    @if (task.TaskStatus != "Completed")
+                                    @if (task.Status != TodoTaskStatus.Completed)
                                     {
                                         <i class="bi bi-clipboard-check fs-5 text-muted mb-2"></i>
                                         <a asp-controller="TodoTask"
