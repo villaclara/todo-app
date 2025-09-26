@@ -21,9 +21,22 @@ public class TodoTaskController : Controller
     [HttpGet]
     public async Task<IActionResult> CreateEdit(int id = 0, int listId = 0)
     {
+        if (listId == 0)
+        {
+            return this.View("Error", new ErrorViewModel { RequestId = "Wrong Todo List Id specified.", ReturnUrl = new Uri($"/todolist/details?listId={id}", UriKind.Relative) });
+        }
+
         if (id == 0)
         {
-            return this.View(new TodoTaskViewModel());
+            return this.View(new TodoTaskViewModel()
+            {
+                // Setting Default values for the new TodoTask.
+                // DueToDate will also be displayed in the Form in html file.
+                TodoListName = "defaultName",
+                DueToDate = DateTime.Now,
+                TaskStatus = "NotStarted",
+                TodoListId = listId,
+            });
         }
 
         var todo = await this.taskService.GetTodoTaskByIdAsync(id, listId);   // TODO - id userId
@@ -56,7 +69,7 @@ public class TodoTaskController : Controller
         if (!this.ModelState.IsValid)
         {
             this.ModelState.AddModelError(" ", "Not Valid");
-            return this.View("CreateEdit", model);
+            return this.View("Error", new ErrorViewModel { RequestId = $"Validation Errors occurred.", ReturnUrl = new Uri($"/todolist/details?listId={model.TodoListId}", UriKind.Relative) });
         }
 
         try
@@ -73,8 +86,8 @@ public class TodoTaskController : Controller
 
             var act = model.Id switch
             {
+                0 => this.taskService.CreateTodoTaskAsync(todo),
                 not 0 => this.taskService.UpdateTodoTaskAsync(todo),
-                _ => this.taskService.CreateTodoTaskAsync(todo),
             };
 
             var result = await act;

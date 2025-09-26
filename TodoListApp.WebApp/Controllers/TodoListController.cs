@@ -17,7 +17,7 @@ public class TodoListController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 2)
+    public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5)
     {
         var apiResponse = await this.listService.GetPagedTodoListsAsync(1, pageNumber, pageSize);
 
@@ -42,7 +42,7 @@ public class TodoListController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Details(int listId, int pageNumber = 1, int pageSize = 2)
+    public async Task<IActionResult> Details(int listId, int pageNumber = 1, int pageSize = 5)
     {
         var todo = await this.listService.GetTodoListByIdAsync(listId, 1);
 

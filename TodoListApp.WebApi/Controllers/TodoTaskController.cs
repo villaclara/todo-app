@@ -181,6 +181,7 @@ public class TodoTaskController : ControllerBase
             DueToDate = model.DueToDate ?? DateTime.UtcNow,
             TaskStatus = Entities.Enums.TodoTaskStatus.InProgress,
             Assignee = model.Assignee ?? string.Empty,
+            TodoListId = listId,
         };
 
         try

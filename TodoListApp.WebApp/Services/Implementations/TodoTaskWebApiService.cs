@@ -148,7 +148,7 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
 
         try
         {
-            var response = await this.http.PutAsJsonAsync($"api/todotask", model);
+            var response = await this.http.PutAsJsonAsync($"api/todotask/{todo.Id}?listId={todo.TodoListId}", model);
             _ = response.EnsureSuccessStatusCode();
 
             return todo;
