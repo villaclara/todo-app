@@ -73,6 +73,7 @@ public class TodoTaskController : Controller
                 DueToDate = model.DueToDate,
                 Assignee = model.Assignee ?? "bruh", // TODO - assignee and use Mapper
                 TodoListId = model.TodoListId,
+                Status = model.Status,
             };
 
             var act = model.Id switch

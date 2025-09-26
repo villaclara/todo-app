@@ -34,11 +34,19 @@
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
-            <div class="mb-3 col-md-12">
-                <label asp-for="Status" class="form-label fw-bold"></label>
-                <input asp-for="Status" class="form-control shadow-sm rounded border-0" placeholder="Enter task title" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
+            @* TaskStatus is shown only if editing an existing task *@
+            @if (Model.Id != 0)
+            {
+                <div class="mb-3 col-md-12">
+                    <label asp-for="Status" class="form-label fw-bold"></label>
+                    <select asp-for="Status" class="form-select shadow-sm rounded border-0">
+                        <option value="NotStarted">Not Started</option>
+                        <option value="InProgress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+            }
 
             <div class="mb-3 col-md-12">
                 <label asp-for="Description" class="form-label fw-bold"></label>
@@ -57,20 +65,6 @@
                 <input asp-for="DueToDate" type="date" class="form-control shadow-sm rounded border-0" />
                 <span asp-validation-for="DueToDate" class="text-danger"></span>
             </div>
-
-            @* TaskStatus is shown only if editing an existing task *@
-            @if (Model.Id != 0)
-            {
-                <div class="mb-3 col-md-12">
-                    <label asp-for="Status" class="form-label fw-bold"></label>
-                    <select asp-for="Status" class="form-select shadow-sm rounded border-0">
-                        <option value="NotStarted">Not Started</option>
-                        <option value="InProgress">In Progress</option>
-                        <option value="Completed">Completed</option>
-                    </select>
-                    <span asp-validation-for="Status" class="text-danger"></span>
-                </div>
-            }
 
             @* Tags can be added later *@
             @* 
