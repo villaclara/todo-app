@@ -15,9 +15,21 @@ public class TodoTaskController : Controller
         this.taskService = taskService;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5)
     {
-        return this.View();
+        var apiResponse = await this.taskService.GetPagedTodoTasksByAssigneeAsync(1, pageNumber, pageSize); // TODO - Assignee Id put
+
+        var viewModel = new TodoTaskIndexViewModel
+        {
+            TodoTasks = apiResponse.Data.Select(x => WebAppMapper.MapTodoTask<TodoTask, TodoTaskViewModel>(x)).ToList(),
+            CurrentPage = apiResponse.Pagination?.CurrentPage ?? 1,
+            TotalPages = apiResponse.Pagination?.TotalPages ?? 1,
+            PageSize = apiResponse.Pagination?.PageSize ?? 10,
+            TotalCount = apiResponse.Pagination?.TotalCount ?? 0,
+            HasPrevious = apiResponse.Pagination?.HasPrevious ?? false,
+            HasNext = apiResponse.Pagination?.HasNext ?? false,
+        };
+        return this.View(viewModel);
     }
 
     [HttpGet]

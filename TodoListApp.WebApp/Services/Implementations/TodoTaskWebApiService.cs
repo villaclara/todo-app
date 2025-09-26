@@ -63,9 +63,26 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
         return true;
     }
 
-    public async Task<PagedResults<TodoTask>> GetPagedTodoTasksAsync(int listId, int page = 1, int pageSize = 2)
+    public async Task<PagedResults<TodoTask>> GetPagedTodoTasksByListAsync(int listId, int page = 1, int pageSize = 2)
     {
         var request = await this.http.GetFromJsonAsync<ApiResponse<TodoTaskModel>>($"api/todotask?listId={listId}&pagenumber={page}&pagesize={pageSize}");
+        if (request == null)
+        {
+            return new PagedResults<TodoTask>();
+        }
+
+        var result = new PagedResults<TodoTask>()
+        {
+            Data = request.Data.Select(x => WebAppMapper.MapTodoTask<TodoTaskModel, TodoTask>(x)),
+            Pagination = request.Pagination ?? new PaginationMetadata(0, 0, 0),
+        };
+
+        return result;
+    }
+
+    public async Task<PagedResults<TodoTask>> GetPagedTodoTasksByAssigneeAsync(int assigneeId, int page = 1, int pageSize = 2)
+    {
+        var request = await this.http.GetFromJsonAsync<ApiResponse<TodoTaskModel>>($"api/todotask?assigneeId={assigneeId}&pagenumber={page}&pagesize={pageSize}");
         if (request == null)
         {
             return new PagedResults<TodoTask>();

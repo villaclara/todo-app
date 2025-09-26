@@ -1,0 +1,126 @@
+@model TodoTaskIndexViewModel
+
+<div class="row g-2 m-md-3 mt-4">
+    @foreach (var task in Model.TodoTasks)
+    {
+        <div class="col-12">
+            <div class="card shadow-sm rounded border-0
+                            @(task.IsOverdue && task.Status != TodoTaskStatus.NotStarted ? "border-danger" : "")">
+                <div class="card-body p-2">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <!-- Left side: title + badges + info -->
+                        <div class="flex-grow-1">
+                            <!-- ✅ TodoList Name -->
+                            <h6 class="text-muted mb-1 small">
+                                List: @task.TodoListName
+                            </h6>
+
+                            <div class="d-flex align-items-center mb-1">
+                                <h5 class="card-title mb-0 me-2">@task.Title</h5>
+
+                                <div>
+                                    <!-- Status badge -->
+                                    <span class="badge
+                                            @(task.Status == TodoTaskStatus.Completed ? "bg-success" :
+                                                                                      task.Status == TodoTaskStatus.InProgress ? "bg-primary" : "bg-secondary") me-1">
+                                    @task.Status
+                                </span>
+                            </div>
+
+                                <div>
+                                    <!-- Overdue badge -->
+                                @if (task.IsOverdue && task.Status != TodoTaskStatus.Completed)
+                                    {
+                                        <span class="badge bg-danger">Overdue</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <p class="card-text text-muted mb-1 small">@task.Description</p>
+
+                            <!-- Assignee and due date -->
+                            <div class="text-muted mb-2 small">
+                                <strong>Assignee:</strong> @(task.AssigneeName ?? "Unassigned")
+                                &nbsp;|&nbsp;
+                                <strong>Due:</strong> @(task.DueToDate == default ? "No due date" : task.DueToDate.ToString("MMM dd, yyyy"))
+                            </div>
+
+                            <!-- Mark as Completed button (only if not completed) -->
+                            @if (task.IsOverdue && task.Status != TodoTaskStatus.Completed)
+                            {
+                                <form asp-controller="TodoTask" asp-action="Complete" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@task.Id" />
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        Mark as Completed
+                                    </button>
+                                </form>
+                            }
+                        </div>
+
+                        <!-- Right: Edit button -->
+                        <div class="ms-2 d-flex flex-column align-items-end">
+                            @if (task.Status != TodoTaskStatus.Completed)
+                            {
+                                <i class="bi bi-clipboard-check fs-5 text-muted mb-2"></i>
+                                <a asp-controller="TodoTask"
+                                   asp-action="CreateEdit"
+                                   asp-route-id="@task.Id"
+                                   asp-route-listId="@task.TodoListId"
+                                   class="btn btn-outline-primary btn-sm">
+                                    Edit
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+ @if (Model.TotalPages > 1)
+{
+            <nav aria-label="Todo tasks pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item @(Model.HasPrevious ? "" : "disabled")">
+                        <a class="page-link"
+                           asp-controller="TodoTask"
+                           asp-action="Index"
+                           asp-route-assigneeId="@Model.TodoTasks.First().Id"
+                           asp-route-pageNumber="@(Model.CurrentPage - 1)"
+                           asp-route-pageSize="@Model.PageSize">
+                            Previous
+                        </a>
+                    </li>
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link"
+                               asp-controller="TodoTask"
+                               asp-action="Index"
+                               asp-route-assigneeId="@Model.TodoTasks.First().Id"
+                               asp-route-pageNumber="@i"
+                               asp-route-pageSize="@Model.PageSize">
+                                @i
+                            </a>
+                        </li>
+                    }
+                    <li class="page-item @(Model.HasNext ? "" : "disabled")">
+                        <a class="page-link"
+                           asp-controller="TodoTask"
+                           asp-action="Index"
+                           asp-route-assigneeId="@Model.TodoTasks.First().Id"
+                           asp-route-pageNumber="@(Model.CurrentPage + 1)"
+                           asp-route-pageSize="@Model.PageSize">
+                            Next
+                        </a>
+                    </li>
+                </ul>
+                <div class="text-center text-muted">
+                    <small>
+                        Showing page @Model.CurrentPage of @Model.TotalPages (Total items: @Model.TotalCount)
+                    </small>
+                </div>
+            </nav>
+    }

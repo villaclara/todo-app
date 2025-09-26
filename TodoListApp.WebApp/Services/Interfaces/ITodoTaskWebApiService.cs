@@ -7,7 +7,9 @@ public interface ITodoTaskWebApiService
 {
     Task<IEnumerable<TodoTask>> GetTodoTasksAsync(int listId);
 
-    Task<PagedResults<TodoTask>> GetPagedTodoTasksAsync(int listId, int page, int pageSize);
+    Task<PagedResults<TodoTask>> GetPagedTodoTasksByListAsync(int listId, int page, int pageSize);
+
+    Task<PagedResults<TodoTask>> GetPagedTodoTasksByAssigneeAsync(int assigneeId, int page, int pageSize);
 
     Task<TodoTask?> GetTodoTaskByIdAsync(int id, int listId);
 

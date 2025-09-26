@@ -46,7 +46,7 @@ public class TodoListController : Controller
             return this.NotFound();
         }
 
-        var tasks = await this.taskService.GetPagedTodoTasksAsync(listId, pageNumber, pageSize);
+        var tasks = await this.taskService.GetPagedTodoTasksByListAsync(listId, pageNumber, pageSize);
 
         var result = WebAppMapper.MapTodoList<TodoList, TodoListViewModel>(todo);
         result.TodoTaskIndex = new TodoTaskIndexViewModel()

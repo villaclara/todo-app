@@ -26,7 +26,7 @@ public interface ITodoTaskDatabaseService
     /// - totalCount: The total number of tasks matching the filter criteria
     /// - todoTasks: A list of <see cref="TodoTask"/> objects for the requested page.
     /// </returns>
-    Task<(int totalCount, List<TodoTask> todoTasks)> GetAllTodoTasksWithParamsAsync(int? todoListId, string? assignee, int? page, int? pageSize);
+    Task<(int totalCount, List<TodoTask> todoTasks)> GetAllTodoTasksWithParamsAsync(int? todoListId, int? assigneeId, int? page, int? pageSize);
 
     /// <summary>
     /// Asynchronously get the <see cref="TodoTask"/> object for specific user. <see langword="null"/>.

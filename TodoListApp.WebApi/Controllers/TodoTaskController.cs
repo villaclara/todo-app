@@ -26,7 +26,7 @@ public class TodoTaskController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<TodoTaskModel>))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetAllTasksForList([FromQuery] int? listId, [FromQuery] string? assignee, [FromQuery] PaginationParameters pagination)
+    public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetAllTasksForList([FromQuery] int? listId, [FromQuery] int? assigneeId, [FromQuery] PaginationParameters pagination)
     {
         if (listId.HasValue && listId <= 0)
         {
@@ -40,7 +40,7 @@ public class TodoTaskController : ControllerBase
 
         // TODO - check if the list exists by listId before getting data next.
 
-        var todoTasks = await this.taskService.GetAllTodoTasksWithParamsAsync(listId, assignee, pagination.PageNumber, pagination.PageSize);
+        var todoTasks = await this.taskService.GetAllTodoTasksWithParamsAsync(listId, assigneeId, pagination.PageNumber, pagination.PageSize);
         var result = todoTasks.todoTasks.Select(x => WebApiMapper.MapTodoTask<TodoTask, TodoTaskModel>(x)).ToList();
 
         var paginationMetadata = new PaginationMetadata(todoTasks.totalCount, pagination.PageSize, pagination.PageNumber);

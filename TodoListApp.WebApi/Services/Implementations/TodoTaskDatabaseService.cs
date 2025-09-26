@@ -52,13 +52,13 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
     }
 
     /// <inheritdoc/>
-    public async Task<(int totalCount, List<TodoTask> todoTasks)> GetAllTodoTasksWithParamsAsync(int? todoListId, string? assignee, int? page, int? pageSize)
+    public async Task<(int totalCount, List<TodoTask> todoTasks)> GetAllTodoTasksWithParamsAsync(int? todoListId, int? assigneeId, int? page, int? pageSize)
     {
         var query = this.ctx.TodoTasks.Include(x => x.TodoList).AsQueryable();
 
-        if (!string.IsNullOrEmpty(assignee))
+        if (assigneeId.HasValue)
         {
-            query = query.Where(t => t.AssigneeName == assignee);
+            query = query.Where(t => t.AssigneeId == assigneeId);
         }
 
         if (todoListId.HasValue)
