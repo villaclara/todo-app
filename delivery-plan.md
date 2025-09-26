@@ -101,7 +101,7 @@ The developer's checklist for week 1:
 The developer's checklist for week 2:
 
 - [x] T04: Implement Epic 1 frontend functionality in the *TodoListApp.WebApp* application.
-- [ ] T06: Implement Epic 2 frontend functionality in the *TodoListApp.WebApp* application.
+- [x] T06: Implement Epic 2 frontend functionality in the *TodoListApp.WebApp* application.
 - [ ] T08: Implement Epic 3 frontend functionality in the *TodoListApp.WebApp* application.
 - [ ] T09: Implement Epic 4 backend functionality in the *TodoListApp.WebApi* application.
 - [ ] T11: Implement Epic 5 backend functionality in the *TodoListApp.WebApi* application.

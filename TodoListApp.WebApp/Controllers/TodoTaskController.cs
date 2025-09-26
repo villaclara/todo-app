@@ -105,4 +105,26 @@ public class TodoTaskController : Controller
             return this.View("Error", new ErrorViewModel { RequestId = ex.Message, ReturnUrl = new Uri("/todolist", UriKind.Relative) });
         }
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Delete(int id, int listId)
+    {
+        var todo = await this.taskService.GetTodoTaskByIdAsync(id, listId);  // TODO - id
+
+        if (todo == null)
+        {
+            this.ViewBag.ErrorMessage = "No tasks found with this id.";
+            return this.View("Error");
+        }
+
+        var result = await this.taskService.DeleteTodoTaskAsync(id, listId); // TODO - id
+
+        if (!result)
+        {
+            this.ViewBag.ErrorMessage = "Error when deleting todotask.";
+            return this.View("Error", new ErrorViewModel { RequestId = "Internal Error when deleting task", ReturnUrl = new Uri($"/todolist/details?listId={listId}", UriKind.Relative) });
+        }
+
+        return this.RedirectToAction(actionName: "Details", controllerName: "TodoList", new { listId });
+    }
 }

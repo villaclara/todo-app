@@ -182,7 +182,5 @@ public class TodoListController : Controller
         }
 
         return this.RedirectToAction(nameof(this.Index));
-
-        // TODO - Delete the tasks with List Id too
     }
 }
