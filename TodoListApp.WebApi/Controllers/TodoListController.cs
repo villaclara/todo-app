@@ -114,8 +114,16 @@ public class TodoListController : ControllerBase
                 return this.StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<TodoListModel>());
             }
 
+            var mapped = new TodoListModel
+            {
+                Id = result.Id,
+                Title = result.Title,
+                Description = result.Description,
+                UserId = result.UserId,
+            };
+
             // TODO - think if we need to return API response in Create, Update, Delete methods.
-            return this.CreatedAtAction(actionName: nameof(this.GetTodoListById), new { userId = result.UserId, id = result.Id }, result);
+            return this.CreatedAtAction(actionName: nameof(this.GetTodoListById), new { userId = mapped.UserId, id = mapped.Id }, mapped);
         }
         catch (DbUpdateException dbEx)
         {

@@ -130,7 +130,21 @@ public class TodoTaskController : ControllerBase
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error happened.");
             }
 
-            return this.CreatedAtAction(actionName: nameof(this.GetTaskById), new { listId = result.TodoListId, id = result.Id }, result);
+            var mapped = new TodoTaskModel
+            {
+                Id = result.Id,
+                Title = result.Title,
+                Assignee = result.Assignee,
+                CreatedAtDate = result.CreatedAtDate,
+                DueToDate = result.DueToDate,
+                Description = result.Description,
+                Status = result.TaskStatus.ToString(),
+                IsOverdue = result.IsOverdue,
+                TodoListId = result.TodoListId,
+                TodoListName = result.TodoListName,
+            };
+
+            return this.CreatedAtAction(actionName: nameof(this.GetTaskById), new { listId = mapped.TodoListId, id = mapped.Id }, mapped);
         }
         catch (DbUpdateException dbEx)
         {
