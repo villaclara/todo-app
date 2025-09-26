@@ -30,7 +30,12 @@ public class UpdateTodoTaskModel
     public TodoTaskStatus Status { get; set; }
 
     /// <summary>
+    /// Gets or sets the Id of Assigned user.
+    /// </summary>
+    public int AssigneeId { get; set; }
+
+    /// <summary>
     /// Gets or sets the Task Assignee.
     /// </summary>
-    public string? Assignee { get; set; } = null!;
+    public string? AssigneeName { get; set; } = null!;
 }

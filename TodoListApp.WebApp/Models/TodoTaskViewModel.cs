@@ -18,7 +18,9 @@ public class TodoTaskViewModel
 
     public TodoTaskStatus Status { get; set; }
 
-    public string Assignee { get; set; } = null!;
+    public int AssigneeId { get; set; }
+
+    public string AssigneeName { get; set; } = null!;
 
     public int TodoListId { get; set; }
 

@@ -40,10 +40,15 @@ public class TodoTaskModel
     public TodoTaskStatus Status { get; set; }
 
     /// <summary>
+    /// Gets or sets the Id of Assigned user.
+    /// </summary>
+    public int AssigneeId { get; set; }
+
+    /// <summary>
     /// Gets or sets the Task Assignee.
     /// User who created a Tod Task is assigned by default.
     /// </summary>
-    public string Assignee { get; set; } = null!;
+    public string AssigneeName { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the TodoList Title the Todo Task belongs to.

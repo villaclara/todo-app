@@ -21,7 +21,9 @@ public class TodoTaskEntity
 
     public TodoTaskStatus Status { get; set; }
 
-    public string Assignee { get; set; } = null!;
+    public int AssigneeId { get; set; }
+
+    public string AssigneeName { get; set; } = null!;
 
     [ForeignKey(nameof(TodoListEntity))]
     public int TodoListId { get; set; }

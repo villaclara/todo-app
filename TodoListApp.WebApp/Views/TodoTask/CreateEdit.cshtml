@@ -49,17 +49,20 @@
             }
 
             <div class="mb-3 col-md-12">
-                <label asp-for="Description" class="form-label fw-bold"></label>
-                <textarea asp-for="Description" rows="2" class="form-control shadow-sm rounded border-0" placeholder="Enter task description"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
+                <label asp-for="Description" class="forNamem-label fw-bold"></label>
+                <textarea asp-for="Description" rowsName="2" class="form-control shadow-sm rounded border-0" placeholder="Enter task description"></textarea>
+                <span asp-validatioNamen-for="Description" class="text-danger"></span>
             </div>
 
-            <div class="mb-3 col-md-12">
-                <label asp-for="Assignee" class="form-label fw-bold"></label>
-                <input asp-for="Assignee" class="form-control shadow-sm rounded border-0" placeholder="Enter assignee name" />
-                <span asp-validation-for="Assignee" class="text-danger"></span>
-            </div>
-
+            @* Assignee is shown only if editing an existing task *@
+            @if (Model.Id != 0)
+            {
+                <div class="mb-3 col-md-12">
+                    <label asp-for="AssigneeName" class="form-label fw-bold"></label>
+                    <input asp-for="AssigneeName" class="form-control shadow-sm rounded border-0" placeholder="Enter assignee name" />
+                    <span asp-validation-for="AssigneeName" class="text-danger"></span>
+                </div>
+            }
             <div class="mb-3 col-md-12">
                 <label asp-for="DueToDate" class="form-label fw-bold"></label>
                 <input asp-for="DueToDate" type="date" class="form-control shadow-sm rounded border-0" />

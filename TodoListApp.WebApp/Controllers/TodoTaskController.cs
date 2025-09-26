@@ -71,7 +71,8 @@ public class TodoTaskController : Controller
                 Title = model.Title,
                 Description = model.Description,
                 DueToDate = model.DueToDate,
-                Assignee = model.Assignee ?? "bruh", // TODO - assignee and use Mapper
+                AssigneeName = model.AssigneeName ?? "bruh", // TODO - assignee and use Mapper
+                AssigneeId = 1, // TODO - should get user Id from Context or whatever
                 TodoListId = model.TodoListId,
                 Status = model.Status,
             };

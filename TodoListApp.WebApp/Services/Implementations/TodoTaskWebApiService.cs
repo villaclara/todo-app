@@ -4,6 +4,7 @@ using TodoListApp.Common.Models.TodoTaskModels;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services.Interfaces;
 using TodoListApp.WebApp.Services.Models;
+using TodoListApp.WebApp.Utility;
 
 namespace TodoListApp.WebApp.Services.Implementations;
 
@@ -25,7 +26,8 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
             Title = todo.Title,
             Description = todo.Description,
             DueToDate = todo.DueToDate,
-            Assignee = todo.Assignee ?? "user", // TODO - Change user
+            AssigneeName = todo.AssigneeName ?? "user", // TODO - Change user
+            AssigneeId = todo.AssigneeId,
             TodoListId = todo.TodoListId,
         };
 
@@ -71,18 +73,7 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
 
         var result = new PagedResults<TodoTask>()
         {
-            Data = request.Data.Select(x => new TodoTask()
-            {
-                Id = x.Id,
-                Title = x.Title,
-                Description = x.Description,
-                TodoListId = x.TodoListId,
-                Assignee = x.Assignee,
-                CreatedAtDate = x.CreatedAtDate,
-                DueToDate = x.DueToDate,
-                Status = x.Status!,
-                TodoListName = x.TodoListName!,
-            }),
+            Data = request.Data.Select(x => WebAppMapper.MapTodoTask<TodoTaskModel, TodoTask>(x)),
             Pagination = request.Pagination ?? new PaginationMetadata(0, 0, 0),
         };
 
@@ -97,18 +88,7 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
             return null;
         }
 
-        return request.Data.Select(x => new TodoTask()
-        {
-            Id = x.Id,
-            Title = x.Title,
-            Description = x.Description,
-            TodoListId = x.TodoListId,
-            Assignee = x.Assignee,
-            CreatedAtDate = x.CreatedAtDate,
-            DueToDate = x.DueToDate,
-            Status = x.Status,
-            TodoListName = x.TodoListName!,
-        }).FirstOrDefault();
+        return request.Data.Select(x => WebAppMapper.MapTodoTask<TodoTaskModel, TodoTask>(x)).FirstOrDefault();
     }
 
     public async Task<IEnumerable<TodoTask>> GetTodoTasksAsync(int listId)
@@ -119,18 +99,7 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
             return new List<TodoTask>();
         }
 
-        return request.Data.Select(x => new TodoTask()
-        {
-            Id = x.Id,
-            Title = x.Title,
-            Description = x.Description,
-            TodoListId = x.TodoListId,
-            Assignee = x.Assignee,
-            CreatedAtDate = x.CreatedAtDate,
-            DueToDate = x.DueToDate,
-            Status = x.Status!,
-            TodoListName = x.TodoListName!,
-        });
+        return request.Data.Select(x => WebAppMapper.MapTodoTask<TodoTaskModel, TodoTask>(x));
     }
 
     public async Task<TodoTask?> UpdateTodoTaskAsync(TodoTask todo)
@@ -143,7 +112,8 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
             TodoListId = todo.TodoListId,
             Description = todo.Description,
             DueToDate = todo.DueToDate,
-            Assignee = todo.Assignee ?? "user", // TODO - Change user
+            AssigneeName = todo.AssigneeName ?? "user", // TODO - Change user
+            AssigneeId = todo.AssigneeId,
         };
 
         try

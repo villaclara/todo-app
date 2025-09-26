@@ -13,7 +13,8 @@ public class CreateTodoTaskModel
     [Required(ErrorMessage = "Due to Date is mandatory.")]
     public DateTime DueToDate { get; set; }
 
-    public string? Assignee { get; set; }
+    public int AssigneeId { get; set; }
+    public string? AssigneeName { get; set; }
 
     [Range(1, int.MaxValue, ErrorMessage = "The value must be greater or equal to 1.")]
     public int TodoListId { get; set; }

@@ -92,7 +92,7 @@
 
                                     <!-- Assignee and due date -->
                                     <div class="text-muted mb-2 small">
-                                        <strong>Assignee:</strong> @(task.Assignee ?? "Unassigned")
+                                        <strong>Assignee:</strong> @(task.AssigneeName ?? "Unassigned")
                                         &nbsp;|&nbsp;
                                         <strong>Due:</strong> @(task.DueToDate == default ? "No due date" : task.DueToDate.ToString("MMM dd, yyyy"))
                                     </div>

@@ -31,7 +31,8 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
         {
             TodoListId = todoTask.TodoListId,
             Id = todoTask.Id,
-            Assignee = todoTask.Assignee,
+            AssigneeName = todoTask.AssigneeName,
+            AssigneeId = todoTask.AssigneeId,
             CreatedAtDate = todoTask.CreatedAtDate,
             DueToDate = todoTask.DueToDate,
             Description = todoTask.Description,
@@ -57,7 +58,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
 
         if (!string.IsNullOrEmpty(assignee))
         {
-            query = query.Where(t => t.Assignee == assignee);
+            query = query.Where(t => t.AssigneeName == assignee);
         }
 
         if (todoListId.HasValue)
@@ -110,9 +111,9 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             entity.Description = todoTask.Description;
         }
 
-        if (!string.IsNullOrEmpty(todoTask.Assignee))
+        if (!string.IsNullOrEmpty(todoTask.AssigneeName))
         {
-            entity.Assignee = todoTask.Assignee;
+            entity.AssigneeName = todoTask.AssigneeName;
         }
 
         // TODO - idk if its okay. This works, but we should allow user only specify the dateonly, not full datetime.
