@@ -12,7 +12,7 @@ public class TodoTask
 
     public DateTime DueToDate { get; set; }
 
-    public string TaskStatus { get; set; } = null!;
+    public string Status { get; set; } = null!;
 
     public string Assignee { get; set; } = null!;
 
@@ -20,5 +20,5 @@ public class TodoTask
 
     public string TodoListName { get; set; } = null!;
 
-    public bool IsOverdue => this.TaskStatus.ToLower() != "completed" && this.DueToDate < DateTime.UtcNow;
+    public bool IsOverdue => this.Status.ToLower() != "completed" && this.DueToDate < DateTime.UtcNow;
 }

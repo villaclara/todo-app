@@ -1,3 +1,5 @@
+using TodoListApp.Common.Models.Enums;
+
 namespace TodoListApp.Common.Models.TodoTaskModels;
 
 /// <summary>
@@ -23,9 +25,9 @@ public class UpdateTodoTaskModel
     public DateTime? DueToDate { get; set; }
 
     /// <summary>
-    /// Gets or sets the Status of Todo Task from <see cref="Entities.Enums.TodoTaskStatus"/>.
+    /// Gets or sets the Status of Todo Task from <see cref="TodoTaskStatus"/>.
     /// </summary>
-    public string? Status { get; set; }
+    public TodoTaskStatus Status { get; set; }
 
     /// <summary>
     /// Gets or sets the Task Assignee.

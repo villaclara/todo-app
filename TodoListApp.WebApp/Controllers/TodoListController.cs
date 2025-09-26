@@ -67,7 +67,7 @@ public class TodoListController : Controller
                 Assignee = x.Assignee,
                 CreatedAtDate = x.CreatedAtDate,
                 DueToDate = x.DueToDate,
-                TaskStatus = x.TaskStatus,
+                TaskStatus = x.Status,
                 TodoListId = x.TodoListId,
             }).ToList() ?? new List<TodoTaskViewModel>(),
             TodoTaskIndex = new TodoTaskIndexViewModel()
@@ -80,7 +80,7 @@ public class TodoListController : Controller
                     Assignee = x.Assignee,
                     CreatedAtDate = x.CreatedAtDate,
                     DueToDate = x.DueToDate,
-                    TaskStatus = x.TaskStatus,
+                    TaskStatus = x.Status,
                     TodoListId = x.TodoListId,
                 }).ToList() ?? new List<TodoTaskViewModel>(),
                 CurrentPage = tasks.Pagination?.CurrentPage ?? 1,

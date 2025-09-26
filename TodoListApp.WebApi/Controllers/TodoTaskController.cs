@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoListApp.Common.Models;
+using TodoListApp.Common.Models.Enums;
 using TodoListApp.Common.Models.TodoListModels;
 using TodoListApp.Common.Models.TodoTaskModels;
 using TodoListApp.WebApi.Services.Interfaces;
 using TodoListApp.WebApi.Services.Models;
+using TodoListApp.WebApi.Utility;
 
 namespace TodoListApp.WebApi.Controllers;
 
@@ -37,19 +39,7 @@ public class TodoTaskController : ControllerBase
         }
 
         var todoTasks = await this.taskService.GetAllTodoTasksWithParamsAsync(listId, assignee, pagination.PageNumber, pagination.PageSize);
-        var result = todoTasks.todoTasks.Select(x => new TodoTaskModel
-        {
-            Id = x.Id,
-            Assignee = x.Assignee,
-            CreatedAtDate = x.CreatedAtDate,
-            Description = x.Description,
-            DueToDate = x.DueToDate,
-            IsOverdue = x.IsOverdue,
-            Status = x.TaskStatus.ToString(),
-            Title = x.Title,
-            TodoListName = x.TodoListName,
-            TodoListId = x.TodoListId,
-        });
+        var result = todoTasks.todoTasks.Select(x => Mapper.MapTodoTask<TodoTask, TodoTaskModel>(x)).ToList();
 
         var paginationMetadata = new PaginationMetadata(todoTasks.totalCount, pagination.PageSize, pagination.PageNumber);
 
@@ -76,19 +66,7 @@ public class TodoTaskController : ControllerBase
             return this.NotFound(new ApiResponse<TodoListModel>());
         }
 
-        var result = new TodoTaskModel()
-        {
-            Id = todotask.Id,
-            Assignee = todotask.Assignee,
-            CreatedAtDate = todotask.CreatedAtDate,
-            Description = todotask.Description,
-            DueToDate = todotask.DueToDate,
-            IsOverdue = todotask.IsOverdue,
-            Status = todotask.TaskStatus.ToString(),
-            Title = todotask.Title,
-            TodoListName = todotask.TodoListName,
-            TodoListId = todotask.TodoListId,
-        };
+        var result = Mapper.MapTodoTask<TodoTask, TodoTaskModel>(todotask);
 
         var response = new ApiResponse<TodoTaskModel>()
         {
@@ -119,7 +97,7 @@ public class TodoTaskController : ControllerBase
                 CreatedAtDate = DateTime.UtcNow,
                 DueToDate = model.DueToDate,
                 Description = model.Description,
-                TaskStatus = Entities.Enums.TodoTaskStatus.NotStarted,
+                Status = TodoTaskStatus.NotStarted,
                 TodoListId = model.TodoListId,
             };
 
@@ -130,19 +108,7 @@ public class TodoTaskController : ControllerBase
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error happened.");
             }
 
-            var mapped = new TodoTaskModel
-            {
-                Id = result.Id,
-                Title = result.Title,
-                Assignee = result.Assignee,
-                CreatedAtDate = result.CreatedAtDate,
-                DueToDate = result.DueToDate,
-                Description = result.Description,
-                Status = result.TaskStatus.ToString(),
-                IsOverdue = result.IsOverdue,
-                TodoListId = result.TodoListId,
-                TodoListName = result.TodoListName,
-            };
+            var mapped = Mapper.MapTodoTask<TodoTask, TodoTaskModel>(result);
 
             return this.CreatedAtAction(actionName: nameof(this.GetTaskById), new { listId = mapped.TodoListId, id = mapped.Id }, mapped);
         }
@@ -165,6 +131,10 @@ public class TodoTaskController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> UpdateTodoTask(int id, [FromQuery] int listId, [FromBody] UpdateTodoTaskModel model)
     {
         // TODO - Not sure if this is correct. As I dont know if I want to expose the Id to TodoListModel.
@@ -173,13 +143,19 @@ public class TodoTaskController : ControllerBase
         //    return this.BadRequest();
         //}
 
+        // Check if the correct value is passed as enum.
+        if (!Enum.IsDefined(model.Status))
+        {
+            return this.BadRequest("Wrong Task Status.");
+        }
+
         var todoTask = new TodoTask()
         {
             Id = id,
             Title = model.Title ?? string.Empty,
             Description = model.Description ?? string.Empty,
             DueToDate = model.DueToDate ?? DateTime.UtcNow,
-            TaskStatus = Entities.Enums.TodoTaskStatus.InProgress,
+            Status = model.Status,
             Assignee = model.Assignee ?? string.Empty,
             TodoListId = listId,
         };

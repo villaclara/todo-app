@@ -1,3 +1,5 @@
+using TodoListApp.Common.Models.Enums;
+
 namespace TodoListApp.Common.Models.TodoTaskModels;
 
 /// <summary>
@@ -35,7 +37,7 @@ public class TodoTaskModel
     /// <summary>
     /// Gets or sets the Status of Todo Task from <see cref="TodoTaskStatus"/>.
     /// </summary>
-    public string? Status { get; set; } = null!;
+    public TodoTaskStatus Status { get; set; }
 
     /// <summary>
     /// Gets or sets the Task Assignee.

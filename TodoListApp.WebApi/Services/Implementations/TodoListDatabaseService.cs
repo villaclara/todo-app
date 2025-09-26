@@ -3,6 +3,7 @@ using TodoListApp.WebApi.Data;
 using TodoListApp.WebApi.Entities;
 using TodoListApp.WebApi.Services.Interfaces;
 using TodoListApp.WebApi.Services.Models;
+using TodoListApp.WebApi.Utility;
 
 namespace TodoListApp.WebApi.Services.Implementations;
 
@@ -26,12 +27,15 @@ public class TodoListDatabaseService : ITodoListDatabaseService
     /// <inheritdoc/>
     public async Task<TodoList> CreateAsync(TodoList todo)
     {
-        var entity = new TodoListEntity()
-        {
-            Title = todo.Title,
-            Description = todo.Description,
-            UserId = todo.UserId,
-        };
+        //var entity = new TodoListEntity()
+        //{
+        //    Title = todo.Title,
+        //    Description = todo.Description,
+        //    UserId = todo.UserId,
+        //};
+
+        var entity = Mapper.MapTodoList<TodoList, TodoListEntity>(todo);
+
         _ = this.ctx.TodoLists.Add(entity);
         _ = await this.ctx.SaveChangesAsync();
 
@@ -53,13 +57,7 @@ public class TodoListDatabaseService : ITodoListDatabaseService
             .OrderBy(x => x.Id)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .Select(x => new TodoList()
-            {
-                Id = x.Id,
-                Description = x.Description,
-                Title = x.Title,
-                UserId = x.UserId,
-            })
+            .Select(x => Mapper.MapTodoList<TodoListEntity, TodoList>(x))
             .ToList();
 
         return (totalCount, items);
@@ -75,13 +73,7 @@ public class TodoListDatabaseService : ITodoListDatabaseService
             return null;
         }
 
-        var result = new TodoList()
-        {
-            Id = entity.Id,
-            Description = entity.Description,
-            Title = entity.Title,
-            UserId = entity.UserId,
-        };
+        var result = Mapper.MapTodoList<TodoListEntity, TodoList>(entity);
 
         return result;
     }
@@ -103,13 +95,7 @@ public class TodoListDatabaseService : ITodoListDatabaseService
         }
 
         _ = await this.ctx.SaveChangesAsync();
-        return new TodoList()
-        {
-            Id = entity.Id,
-            Description = entity.Description,
-            Title = entity.Title,
-            UserId = entity.UserId,
-        };
+        return Mapper.MapTodoList<TodoListEntity, TodoList>(entity);
     }
 
     /// <inheritdoc/>

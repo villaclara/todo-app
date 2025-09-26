@@ -80,7 +80,7 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
                 Assignee = x.Assignee,
                 CreatedAtDate = x.CreatedAtDate,
                 DueToDate = x.DueToDate,
-                TaskStatus = x.Status!,
+                Status = x.Status!,
                 TodoListName = x.TodoListName!,
             }),
             Pagination = request.Pagination ?? new PaginationMetadata(0, 0, 0),
@@ -106,7 +106,7 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
             Assignee = x.Assignee,
             CreatedAtDate = x.CreatedAtDate,
             DueToDate = x.DueToDate,
-            TaskStatus = x.Status!,
+            Status = x.Status,
             TodoListName = x.TodoListName!,
         }).FirstOrDefault();
     }
@@ -128,7 +128,7 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
             Assignee = x.Assignee,
             CreatedAtDate = x.CreatedAtDate,
             DueToDate = x.DueToDate,
-            TaskStatus = x.Status!,
+            Status = x.Status!,
             TodoListName = x.TodoListName!,
         });
     }
@@ -138,7 +138,7 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
         var model = new TodoTaskModel
         {
             Id = todo.Id,
-            Status = todo.TaskStatus,
+            Status = todo.Status,
             Title = todo.Title,
             TodoListId = todo.TodoListId,
             Description = todo.Description,

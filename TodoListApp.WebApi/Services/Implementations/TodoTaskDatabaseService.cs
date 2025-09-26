@@ -3,6 +3,7 @@ using TodoListApp.WebApi.Data;
 using TodoListApp.WebApi.Entities;
 using TodoListApp.WebApi.Services.Interfaces;
 using TodoListApp.WebApi.Services.Models;
+using TodoListApp.WebApi.Utility;
 
 namespace TodoListApp.WebApi.Services.Implementations;
 
@@ -35,7 +36,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             DueToDate = todoTask.DueToDate,
             Description = todoTask.Description,
             Title = todoTask.Title,
-            Status = todoTask.TaskStatus,
+            Status = todoTask.Status,
         };
 
         var a = this.ctx.TodoTasks.Add(entity);
@@ -43,19 +44,9 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
 
         // TODO - doing this to include the TodoList navigation property
         return await this.ctx.TodoTasks
+            .Include(t => t.TodoList)
             .Where(t => t.Id == entity.Id)
-            .Select(t => new TodoTask()
-            {
-                TodoListId = t.TodoListId,
-                Id = t.Id,
-                Assignee = t.Assignee,
-                CreatedAtDate = entity.CreatedAtDate,
-                DueToDate = t.DueToDate,
-                Description = t.Description,
-                Title = t.Title,
-                TaskStatus = t.Status,
-                TodoListName = t.TodoList.Title,
-            })
+            .Select(t => Mapper.MapTodoTask<TodoTaskEntity, TodoTask>(t))
             .FirstAsync();
     }
 
@@ -82,18 +73,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
         }
 
         var todos = await query
-        .Select(x => new TodoTask()
-        {
-            TodoListId = x.TodoListId,
-            Id = x.Id,
-            Assignee = x.Assignee,
-            CreatedAtDate = x.CreatedAtDate,
-            DueToDate = x.DueToDate,
-            Description = x.Description,
-            Title = x.Title,
-            TaskStatus = x.Status,
-            TodoListName = x.TodoList.Title,
-        })
+        .Select(x => Mapper.MapTodoTask<TodoTaskEntity, TodoTask>(x))
         .ToListAsync();
 
         return (totalCount, todos);
@@ -111,18 +91,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             return null;
         }
 
-        return new TodoTask()
-        {
-            TodoListId = entity.TodoListId,
-            Id = entity.Id,
-            Assignee = entity.Assignee,
-            CreatedAtDate = entity.CreatedAtDate,
-            DueToDate = entity.DueToDate,
-            Description = entity.Description,
-            Title = entity.Title,
-            TaskStatus = entity.Status,
-            TodoListName = entity.TodoList.Title,
-        };
+        return Mapper.MapTodoTask<TodoTaskEntity, TodoTask>(entity);
     }
 
     /// <inheritdoc/>
@@ -152,21 +121,15 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             entity.DueToDate = todoTask.DueToDate;
         }
 
+        if (todoTask.Status != entity.Status)
+        {
+            entity.Status = todoTask.Status;
+        }
+
         _ = await this.ctx.SaveChangesAsync();
         await this.ctx.Entry(entity).Reference(e => e.TodoList).LoadAsync();
 
-        return new TodoTask()
-        {
-            TodoListId = entity.TodoListId,
-            Id = entity.Id,
-            Assignee = entity.Assignee,
-            CreatedAtDate = entity.CreatedAtDate,
-            DueToDate = entity.DueToDate,
-            Description = entity.Description,
-            Title = entity.Title,
-            TaskStatus = entity.Status,
-            TodoListName = entity.TodoList.Title,
-        };
+        return Mapper.MapTodoTask<TodoTaskEntity, TodoTask>(entity);
     }
 
     /// <inheritdoc/>

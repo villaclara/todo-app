@@ -1,5 +1,5 @@
+using TodoListApp.Common.Models.Enums;
 using TodoListApp.WebApi.Entities;
-using TodoListApp.WebApi.Entities.Enums;
 
 namespace TodoListApp.WebApi.Services.Models;
 
@@ -15,7 +15,7 @@ public class TodoTask
 
     public DateTime DueToDate { get; set; }
 
-    public TodoTaskStatus TaskStatus { get; set; }
+    public TodoTaskStatus Status { get; set; }
 
     public string Assignee { get; set; } = null!;
 
@@ -25,5 +25,5 @@ public class TodoTask
 
     public TodoListEntity TodoList { get; set; } = null!;
 
-    public bool IsOverdue => this.TaskStatus != TodoTaskStatus.Completed && this.DueToDate < DateTime.UtcNow;
+    public bool IsOverdue => this.Status != TodoTaskStatus.Completed && this.DueToDate < DateTime.UtcNow;
 }

@@ -54,7 +54,7 @@ public class TodoTaskController : Controller
             Assignee = todo.Assignee,
             CreatedAtDate = todo.CreatedAtDate,
             DueToDate = todo.DueToDate,
-            TaskStatus = todo.TaskStatus,
+            TaskStatus = todo.Status,
             TodoListId = todo.TodoListId,
             TodoListName = todo.TodoListName,
         };
