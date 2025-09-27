@@ -15,6 +15,7 @@
             asp-action="Delete"
             asp-route-id="@Model.Id"
             asp-route-listId="@Model.TodoListId">
+                        <i class="bi bi-trash3"></i>
                 Delete
             </a>
             </div>
@@ -80,7 +81,7 @@
             <!-- Buttons -->
             <div class="d-flex gap-2 mt-2">
                 <button type="submit" class="btn btn-primary shadow-sm rounded px-4">
-                    <i class="bi bi-plus-circle me-1"></i> Save Task
+                    <i class="bi bi-floppy me-1"></i> Save Task
                 </button>
                 <a asp-action="Details" asp-controller="TodoList" asp-route-listId="@Model.TodoListId" class="btn btn-outline-secondary shadow-sm rounded px-4">
                     Cancel

@@ -59,7 +59,7 @@
             @foreach (var task in Model.TodoTaskIndex.TodoTasks)
             {
                 <div class="col-12">
-                    <div class="card shadow-sm rounded border-0
+                    <div class="card list-group-item-action shadow-sm rounded border-1 text-black
                                 @(task.IsOverdue && task.Status != TodoTaskStatus.NotStarted ? "border-danger" : "")">
                         <div class="card-body p-2">
                             <div class="d-flex justify-content-between align-items-start">
@@ -92,9 +92,10 @@
 
                                     <!-- Assignee and due date -->
                                     <div class="text-muted mb-2 small">
-                                        <strong>Assignee:</strong> @(task.AssigneeName ?? "Unassigned")
+                                        <i class="bi bi-person me-1"></i>
+                                            <strong>Assignee:</strong> @(task.AssigneeName ?? "Unassigned")
                                         &nbsp;|&nbsp;
-                                        <strong>Due:</strong> @(task.DueToDate == default ? "No due date" : task.DueToDate.ToString("MMM dd, yyyy"))
+                                        <i class="bi bi-calendar-event me-1"></i><strong>Due:</strong> @(task.DueToDate == default ? "No due date" : task.DueToDate.ToString("MMM dd, yyyy"))
                                     </div>
 
                                     <!-- Tags (currently commented out) -->
@@ -125,13 +126,24 @@
                                 <div class="ms-2 d-flex flex-column align-items-end">
                                     @if (task.Status != TodoTaskStatus.Completed)
                                     {
-                                        <i class="bi bi-clipboard-check fs-5 text-muted mb-2"></i>
                                         <a asp-controller="TodoTask"
                                             asp-action="CreateEdit"
                                             asp-route-id="@task.Id"
                                             asp-route-listId="@Model.Id"
                                             class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-pen"></i>
                                             Edit
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-controller="TodoTask"
+                                           asp-action="Delete"
+                                           asp-route-id="@task.Id"
+                                           asp-route-listId="@Model.Id"
+                                           class="btn btn-outline-danger btn-sm">
+                                            <i class="bi bi-trash3"></i>
+                                            Delete
                                         </a>
                                     }
                                 </div>
@@ -145,7 +157,7 @@
 
         @if (Model.TodoTaskIndex != null && Model.TodoTaskIndex.TotalPages > 1)
 {
-            <nav aria-label="Todo tasks pagination">
+            <nav aria-label="Todo tasks pagination" class="mt-3">
                 <ul class="pagination justify-content-center">
                     <li class="page-item @(Model.TodoTaskIndex.HasPrevious ? "" : "disabled")">
                         <a class="page-link"
@@ -196,6 +208,7 @@
     .card:hover {
         transform: translateY(-2px);
         transition: transform 0.2s;
+        color: #6c757d;
     }
 
     .badge {
