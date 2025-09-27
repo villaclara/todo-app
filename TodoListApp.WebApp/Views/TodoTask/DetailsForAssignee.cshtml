@@ -1,0 +1,92 @@
+@model TodoTaskViewModel
+
+<div class="container py-4">
+    <div class="card shadow rounded p-4 col-md-10 mx-auto" style="max-width: 900px;">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Task Details</h2>
+
+            <div class="d-flex gap-2">
+                <a asp-controller="TodoTask" asp-action="Index" class="btn btn-outline-secondary">
+                    Back to List
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- Left Column: Task Info -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <h5 class="fw-bold">Title</h5>
+                    <p class="fs-5">@Model.Title</p>
+                </div>
+
+                <div class="mb-3">
+                    <h5 class="fw-bold">Description</h5>
+                    <p class="fs-6 text-muted">@(!string.IsNullOrWhiteSpace(Model.Description) ? Model.Description : "No description")</p>
+                </div>
+
+                <div class="mb-3">
+                    <h5 class="fw-bold">Created Date</h5>
+                    <p class="fs-6">@((Model.CreatedAtDate == default) ? "No due date" : Model.CreatedAtDate.ToString("MMM dd, yyyy"))</p>
+                </div>
+            </div>
+
+            <!-- Right Column: Status & Assignee -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <h5 class="fw-bold">Status</h5>
+                    <span class="badge
+                        @(Model.Status == TodoTaskStatus.Completed ? "bg-success" :
+                                                    Model.Status == TodoTaskStatus.InProgress ? "bg-primary" :
+                                                    "bg-secondary") fs-6">
+                        @Model.Status
+                    </span>
+                </div>
+
+                <div class="mb-3">
+                    <h5 class="fw-bold">Assignee</h5>
+                    <p class="fs-6">@Model.AssigneeName (@Model.AssigneeId)</p>
+                </div>
+
+                <div class="mb-3">
+                    <h5 class="fw-bold">Due Date</h5>
+                    <p class="fs-6">@((Model.DueToDate == default) ? "No due date" : Model.DueToDate.ToString("MMM dd, yyyy"))</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        background-color: #ffffff;
+        border-radius: 1rem;
+    }
+
+    h5.fw-bold {
+        margin-bottom: 0.25rem;
+        color: inherit; /* remove primary color */
+    }
+
+    p {
+        margin-bottom: 0.75rem;
+        color: #495057;
+    }
+
+    .badge {
+        padding: 0.5em 0.75em;
+        font-size: 0.9rem;
+    }
+
+    @@media (max-width: 767px) {
+        .row.g-4
+
+    {
+        flex-direction: column;
+    }
+
+    }
+</style>

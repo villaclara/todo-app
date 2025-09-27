@@ -29,7 +29,7 @@
         <ul class="list-group">
             @foreach (var task in group)
             {
-                <a asp-controller="TodoTask" asp-action="Details" asp-route-listId="@task.Id"
+                <a asp-controller="TodoTask" asp-action="DetailsForAssignee" asp-route-listId="@task.TodoListId" asp-route-id="@task.Id"
                    class="list-group-item list-group-item-action d-flex justify-content-between align-items-center shadow-sm mb-2 rounded
                             @(task.IsOverdue && task.Status != TodoTaskStatus.Completed ? "task-overdue !important" : "") ">
                     <!-- Left side: main info -->

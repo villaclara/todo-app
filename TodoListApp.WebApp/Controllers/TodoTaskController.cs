@@ -35,6 +35,16 @@ public class TodoTaskController : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> DetailsForAssignee(int id, int listId)
+    {
+        var apiResponse = await this.taskService.GetTodoTaskByIdAsync(id, listId);
+
+        var viewModel = WebAppMapper.MapTodoTask<TodoTask, TodoTaskViewModel>(apiResponse);
+
+        return this.View(viewModel);
+    }
+
+    [HttpGet]
     public async Task<IActionResult> CreateEdit(int id = 0, int listId = 0)
     {
         if (listId == 0)
