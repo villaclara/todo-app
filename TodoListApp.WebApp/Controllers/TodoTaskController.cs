@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Common.Models.Enums;
+using TodoListApp.Common.Models.Sorting;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services.Interfaces;
 using TodoListApp.WebApp.Services.Models;
@@ -15,9 +16,9 @@ public class TodoTaskController : Controller
         this.taskService = taskService;
     }
 
-    public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5)
+    public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5, TaskSortingValue sorting = TaskSortingValue.CreatedDateDesc)
     {
-        var apiResponse = await this.taskService.GetPagedTodoTasksByAssigneeAsync(1, pageNumber, pageSize); // TODO - Assignee Id put
+        var apiResponse = await this.taskService.GetPagedTodoTasksByAssigneeAsync(1, pageNumber, pageSize, sorting); // TODO - Assignee Id put
 
         var viewModel = new TodoTaskIndexViewModel
         {
@@ -28,6 +29,7 @@ public class TodoTaskController : Controller
             TotalCount = apiResponse.Pagination?.TotalCount ?? 0,
             HasPrevious = apiResponse.Pagination?.HasPrevious ?? false,
             HasNext = apiResponse.Pagination?.HasNext ?? false,
+            Sorting = sorting,
         };
         return this.View(viewModel);
     }
@@ -50,6 +52,8 @@ public class TodoTaskController : Controller
                 DueToDate = DateTime.Now,
                 Status = TodoTaskStatus.NotStarted,
                 TodoListId = listId,
+                AssigneeName = "user", // TODO - Change to user
+                AssigneeId = 1,
             });
         }
 

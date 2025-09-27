@@ -1,5 +1,7 @@
 using System.Net;
 using TodoListApp.Common.Models;
+using TodoListApp.Common.Models.Pagination;
+using TodoListApp.Common.Models.Sorting;
 using TodoListApp.Common.Models.TodoTaskModels;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services.Interfaces;
@@ -63,9 +65,9 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
         return true;
     }
 
-    public async Task<PagedResults<TodoTask>> GetPagedTodoTasksByListAsync(int listId, int page = 1, int pageSize = 2)
+    public async Task<PagedResults<TodoTask>> GetPagedTodoTasksByListAsync(int listId, int page = 1, int pageSize = 2, TaskSortingValue sorting = TaskSortingValue.CreatedDateDesc)
     {
-        var request = await this.http.GetFromJsonAsync<ApiResponse<TodoTaskModel>>($"api/todotask?listId={listId}&pagenumber={page}&pagesize={pageSize}");
+        var request = await this.http.GetFromJsonAsync<ApiResponse<TodoTaskModel>>($"api/todotask?listId={listId}&pagenumber={page}&pagesize={pageSize}&sorting={sorting}");
         if (request == null)
         {
             return new PagedResults<TodoTask>();
@@ -80,9 +82,9 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
         return result;
     }
 
-    public async Task<PagedResults<TodoTask>> GetPagedTodoTasksByAssigneeAsync(int assigneeId, int page = 1, int pageSize = 2)
+    public async Task<PagedResults<TodoTask>> GetPagedTodoTasksByAssigneeAsync(int assigneeId, int page = 1, int pageSize = 2, TaskSortingValue sorting = TaskSortingValue.CreatedDateDesc)
     {
-        var request = await this.http.GetFromJsonAsync<ApiResponse<TodoTaskModel>>($"api/todotask?assigneeId={assigneeId}&pagenumber={page}&pagesize={pageSize}");
+        var request = await this.http.GetFromJsonAsync<ApiResponse<TodoTaskModel>>($"api/todotask?assigneeId={assigneeId}&pagenumber={page}&pagesize={pageSize}&sorting={sorting}");
         if (request == null)
         {
             return new PagedResults<TodoTask>();

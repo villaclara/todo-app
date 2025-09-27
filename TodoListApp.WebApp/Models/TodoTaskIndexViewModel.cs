@@ -1,8 +1,12 @@
+using TodoListApp.Common.Models.Sorting;
+
 namespace TodoListApp.WebApp.Models;
 
 public class TodoTaskIndexViewModel
 {
     public List<TodoTaskViewModel> TodoTasks { get; set; } = new List<TodoTaskViewModel>();
+
+    public TaskSortingValue Sorting { get; set; }
 
     public int CurrentPage { get; set; }
 

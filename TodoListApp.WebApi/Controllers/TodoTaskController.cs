@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoListApp.Common.Models;
 using TodoListApp.Common.Models.Enums;
+using TodoListApp.Common.Models.Pagination;
+using TodoListApp.Common.Models.Sorting;
 using TodoListApp.Common.Models.TodoListModels;
 using TodoListApp.Common.Models.TodoTaskModels;
 using TodoListApp.WebApi.Services.Interfaces;
@@ -26,7 +28,11 @@ public class TodoTaskController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<TodoTaskModel>))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetAllTasksForList([FromQuery] int? listId, [FromQuery] int? assigneeId, [FromQuery] PaginationParameters pagination)
+    public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetAllTasksForList(
+        [FromQuery] int? listId,
+        [FromQuery] int? assigneeId,
+        [FromQuery] PaginationParameters pagination,
+        [FromQuery] TaskSortingValue sorting = TaskSortingValue.CreatedDateDesc)
     {
         if (listId.HasValue && listId <= 0)
         {
@@ -40,7 +46,7 @@ public class TodoTaskController : ControllerBase
 
         // TODO - check if the list exists by listId before getting data next.
 
-        var todoTasks = await this.taskService.GetAllTodoTasksWithParamsAsync(listId, assigneeId, pagination.PageNumber, pagination.PageSize);
+        var todoTasks = await this.taskService.GetAllTodoTasksWithParamsAsync(listId, assigneeId, pagination.PageNumber, pagination.PageSize, sorting);
         var result = todoTasks.todoTasks.Select(x => WebApiMapper.MapTodoTask<TodoTask, TodoTaskModel>(x)).ToList();
 
         var paginationMetadata = new PaginationMetadata(todoTasks.totalCount, pagination.PageSize, pagination.PageNumber);

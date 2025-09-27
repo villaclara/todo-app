@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TodoListApp.Common.Models.Sorting;
 using TodoListApp.WebApi.Data;
 using TodoListApp.WebApi.Entities;
 using TodoListApp.WebApi.Services.Interfaces;
@@ -52,7 +53,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
     }
 
     /// <inheritdoc/>
-    public async Task<(int totalCount, List<TodoTask> todoTasks)> GetAllTodoTasksWithParamsAsync(int? todoListId, int? assigneeId, int? page, int? pageSize)
+    public async Task<(int totalCount, List<TodoTask> todoTasks)> GetAllTodoTasksWithParamsAsync(int? todoListId, int? assigneeId, int? page, int? pageSize, TaskSortingValue sorting = TaskSortingValue.CreatedDateDesc)
     {
         var query = this.ctx.TodoTasks.Include(x => x.TodoList).AsQueryable();
 
@@ -60,6 +61,19 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
         {
             query = query.Where(t => t.AssigneeId == assigneeId);
         }
+
+        query = sorting switch
+        {
+            TaskSortingValue.CreatedDateAsc => query.OrderBy(x => x.CreatedAtDate),
+            TaskSortingValue.CreatedDateDesc => query.OrderByDescending(x => x.CreatedAtDate),
+            TaskSortingValue.TodoListNameAsc => query.OrderBy(x => x.TodoList.Title),
+            TaskSortingValue.TodoListNameDesc => query.OrderByDescending(x => x.TodoList.Title),
+            TaskSortingValue.DueDateAsc => query.OrderBy(x => x.DueToDate),
+            TaskSortingValue.DueDateDesc => query.OrderByDescending(x => x.DueToDate),
+            TaskSortingValue.TaskStatusAsc => query.OrderBy(x => x.Status),
+            TaskSortingValue.TaskStatusDesc => query.OrderByDescending(x => x.Status),
+            _ => query.OrderByDescending(x => x.CreatedAtDate),
+        };
 
         if (todoListId.HasValue)
         {
