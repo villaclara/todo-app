@@ -1,4 +1,4 @@
-namespace TodoListApp.Common.Models.Pagination;
+namespace TodoListApp.Common.Parameters.Pagination;
 
 public class PaginationMetadata
 {

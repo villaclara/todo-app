@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TodoListApp.Common.Parameters.Pagination;
 using TodoListApp.WebApi.Data;
 using TodoListApp.WebApi.Entities;
 using TodoListApp.WebApi.Services.Interfaces;
@@ -49,14 +50,14 @@ public class TodoListDatabaseService : ITodoListDatabaseService
     }
 
     /// <inheritdoc/>
-    public async Task<(int totalCount, List<TodoList> todos)> GetAllForUserAsync(int userId, int pageNumber = 1, int pageSize = 10)
+    public async Task<(int totalCount, List<TodoList> todos)> GetAllForUserAsync(int userId, PaginationParameters pagination)
     {
         var todos = await this.ctx.TodoLists.Where(x => x.UserId == userId).ToListAsync();
         var totalCount = todos.Count;
         var items = todos
             .OrderBy(x => x.Id)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
             .Select(x => WebApiMapper.MapTodoList<TodoListEntity, TodoList>(x))
             .ToList();
 

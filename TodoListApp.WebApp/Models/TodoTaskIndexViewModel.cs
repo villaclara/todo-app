@@ -1,4 +1,5 @@
-using TodoListApp.Common.Models.Sorting;
+using TodoListApp.Common.Parameters.Filtering;
+using TodoListApp.Common.Parameters.Sorting;
 
 namespace TodoListApp.WebApp.Models;
 
@@ -6,7 +7,9 @@ public class TodoTaskIndexViewModel
 {
     public List<TodoTaskViewModel> TodoTasks { get; set; } = new List<TodoTaskViewModel>();
 
-    public TaskSortingValue Sorting { get; set; }
+    public TaskSortingOptions Sorting { get; set; }
+
+    public TodoTaskAssigneeFilter Filter { get; set; }
 
     public int CurrentPage { get; set; }
 

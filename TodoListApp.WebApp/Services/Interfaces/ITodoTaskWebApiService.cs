@@ -1,4 +1,6 @@
-using TodoListApp.Common.Models.Sorting;
+using TodoListApp.Common.Parameters.Filtering;
+using TodoListApp.Common.Parameters.Pagination;
+using TodoListApp.Common.Parameters.Sorting;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services.Models;
 
@@ -8,9 +10,9 @@ public interface ITodoTaskWebApiService
 {
     Task<IEnumerable<TodoTask>> GetTodoTasksAsync(int listId);
 
-    Task<PagedResults<TodoTask>> GetPagedTodoTasksByListAsync(int listId, int page, int pageSize, TaskSortingValue sorting = TaskSortingValue.CreatedDateDesc);
+    Task<PagedResults<TodoTask>> GetPagedTodoTasksByListAsync(int listId, int page, int pageSize, TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc);
 
-    Task<PagedResults<TodoTask>> GetPagedTodoTasksByAssigneeAsync(int assigneeId, int page, int pageSize, TaskSortingValue sorting = TaskSortingValue.CreatedDateDesc);
+    Task<PagedResults<TodoTask>> GetPagedTodoTasksByAssigneeAsync(int assigneeId, PaginationParameters pagination, TodoTaskAssigneeFilter filter, TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc);
 
     Task<TodoTask?> GetTodoTaskByIdAsync(int id, int listId);
 

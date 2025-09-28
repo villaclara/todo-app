@@ -1,7 +1,7 @@
 using System.Net;
-using TodoListApp.Common.Models;
-using TodoListApp.Common.Models.Pagination;
+using TodoListApp.Common;
 using TodoListApp.Common.Models.TodoListModels;
+using TodoListApp.Common.Parameters.Pagination;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services.Interfaces;
 using TodoListApp.WebApp.Services.Models;

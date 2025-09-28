@@ -1,9 +1,9 @@
-namespace TodoListApp.Common.Models.Pagination;
+namespace TodoListApp.Common.Parameters.Pagination;
 
 public class PaginationParameters
 {
     private const int MaxPageSize = 50;
-    private int pageSize = 10;
+    private int pageSize = 5;
 
     public int PageNumber { get; set; } = 1;
 

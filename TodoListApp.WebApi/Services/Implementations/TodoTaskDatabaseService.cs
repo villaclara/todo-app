@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using TodoListApp.Common.Models.Sorting;
+using TodoListApp.Common.Parameters.Filtering;
+using TodoListApp.Common.Parameters.Pagination;
+using TodoListApp.Common.Parameters.Sorting;
 using TodoListApp.WebApi.Data;
 using TodoListApp.WebApi.Entities;
 using TodoListApp.WebApi.Services.Interfaces;
@@ -53,7 +55,12 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
     }
 
     /// <inheritdoc/>
-    public async Task<(int totalCount, List<TodoTask> todoTasks)> GetAllTodoTasksWithParamsAsync(int? todoListId, int? assigneeId, int? page, int? pageSize, TaskSortingValue sorting = TaskSortingValue.CreatedDateDesc)
+    public async Task<(int totalCount, List<TodoTask> todoTasks)> GetAllTodoTasksWithParamsAsync(
+        int? todoListId,
+        int? assigneeId,
+        PaginationParameters pagination,
+        TodoTaskAssigneeFilter filter,
+        TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc)
     {
         var query = this.ctx.TodoTasks.Include(x => x.TodoList).AsQueryable();
 
@@ -62,16 +69,59 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             query = query.Where(t => t.AssigneeId == assigneeId);
         }
 
+        // Apply TodoTaskAssigneeFilter filters
+        if (filter != null)
+        {
+            // Date creation filters
+            if (filter.CreatedAfter.HasValue)
+            {
+                query = query.Where(t => t.CreatedAtDate >= filter.CreatedAfter.Value);
+            }
+
+            if (filter.CreatedBefore.HasValue)
+            {
+                query = query.Where(t => t.CreatedAtDate <= filter.CreatedBefore.Value);
+            }
+
+            // Due date filters
+            if (filter.DueAfter.HasValue)
+            {
+                query = query.Where(t => t.DueToDate >= filter.DueAfter.Value);
+            }
+
+            if (filter.DueBefore.HasValue)
+            {
+                query = query.Where(t => t.DueToDate <= filter.DueBefore.Value);
+            }
+
+            // Status filter
+            if (filter.Status.HasValue)
+            {
+                query = query.Where(t => t.Status == filter.Status.Value);
+            }
+
+            // TodoList filters
+            if (filter.TodoListId.HasValue)
+            {
+                query = query.Where(t => t.TodoListId == filter.TodoListId.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter.TodoListNameContains))
+            {
+                query = query.Where(t => t.TodoList.Title.Contains(filter.TodoListNameContains));
+            }
+        }
+
         query = sorting switch
         {
-            TaskSortingValue.CreatedDateAsc => query.OrderBy(x => x.CreatedAtDate),
-            TaskSortingValue.CreatedDateDesc => query.OrderByDescending(x => x.CreatedAtDate),
-            TaskSortingValue.TodoListNameAsc => query.OrderBy(x => x.TodoList.Title),
-            TaskSortingValue.TodoListNameDesc => query.OrderByDescending(x => x.TodoList.Title),
-            TaskSortingValue.DueDateAsc => query.OrderBy(x => x.DueToDate),
-            TaskSortingValue.DueDateDesc => query.OrderByDescending(x => x.DueToDate),
-            TaskSortingValue.TaskStatusAsc => query.OrderBy(x => x.Status),
-            TaskSortingValue.TaskStatusDesc => query.OrderByDescending(x => x.Status),
+            TaskSortingOptions.CreatedDateAsc => query.OrderBy(x => x.CreatedAtDate),
+            TaskSortingOptions.CreatedDateDesc => query.OrderByDescending(x => x.CreatedAtDate),
+            TaskSortingOptions.TodoListNameAsc => query.OrderBy(x => x.TodoList.Title),
+            TaskSortingOptions.TodoListNameDesc => query.OrderByDescending(x => x.TodoList.Title),
+            TaskSortingOptions.DueDateAsc => query.OrderBy(x => x.DueToDate),
+            TaskSortingOptions.DueDateDesc => query.OrderByDescending(x => x.DueToDate),
+            TaskSortingOptions.TaskStatusAsc => query.OrderBy(x => x.Status),
+            TaskSortingOptions.TaskStatusDesc => query.OrderByDescending(x => x.Status),
             _ => query.OrderByDescending(x => x.CreatedAtDate),
         };
 
@@ -82,10 +132,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
 
         var totalCount = query.Count();
 
-        if (page.HasValue && pageSize.HasValue)
-        {
-            query = query.Skip((page.Value - 1) * pageSize.Value).Take(pageSize.Value);
-        }
+        query = query.Skip((pagination.PageNumber - 1) * pagination.PageSize).Take(pagination.PageSize);
 
         var todos = await query
         .Select(x => WebApiMapper.MapTodoTask<TodoTaskEntity, TodoTask>(x))
@@ -148,9 +195,9 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
     }
 
     /// <inheritdoc/>
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id, int listId)
     {
-        var todoTask = await this.ctx.TodoTasks.FirstOrDefaultAsync(x => x.Id == id);
+        var todoTask = await this.ctx.TodoTasks.FirstOrDefaultAsync(x => x.Id == id && x.TodoListId == listId);
         if (todoTask == null)
         {
             return false;

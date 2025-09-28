@@ -1,5 +1,5 @@
-namespace TodoListApp.Common.Models.Sorting;
-public enum TaskSortingValue
+namespace TodoListApp.Common.Parameters.Sorting;
+public enum TaskSortingOptions
 {
     CreatedDateDesc = 0, // default - newest on top
     CreatedDateAsc = 1,

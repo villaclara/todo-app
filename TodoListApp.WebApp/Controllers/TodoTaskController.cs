@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Common.Models.Enums;
-using TodoListApp.Common.Models.Sorting;
+using TodoListApp.Common.Parameters.Filtering;
+using TodoListApp.Common.Parameters.Pagination;
+using TodoListApp.Common.Parameters.Sorting;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services.Interfaces;
 using TodoListApp.WebApp.Services.Models;
@@ -16,9 +18,9 @@ public class TodoTaskController : Controller
         this.taskService = taskService;
     }
 
-    public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5, TaskSortingValue sorting = TaskSortingValue.CreatedDateDesc)
+    public async Task<IActionResult> Index(PaginationParameters pagination, TodoTaskAssigneeFilter filter, TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc)
     {
-        var apiResponse = await this.taskService.GetPagedTodoTasksByAssigneeAsync(1, pageNumber, pageSize, sorting); // TODO - Assignee Id put
+        var apiResponse = await this.taskService.GetPagedTodoTasksByAssigneeAsync(1, pagination, filter, sorting); // TODO - Assignee Id put
 
         var viewModel = new TodoTaskIndexViewModel
         {
@@ -30,6 +32,7 @@ public class TodoTaskController : Controller
             HasPrevious = apiResponse.Pagination?.HasPrevious ?? false,
             HasNext = apiResponse.Pagination?.HasNext ?? false,
             Sorting = sorting,
+            Filter = filter,
         };
         return this.View(viewModel);
     }

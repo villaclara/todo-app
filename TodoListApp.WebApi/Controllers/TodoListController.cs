@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TodoListApp.Common.Models;
-using TodoListApp.Common.Models.Pagination;
+using TodoListApp.Common;
 using TodoListApp.Common.Models.TodoListModels;
+using TodoListApp.Common.Parameters.Pagination;
 using TodoListApp.WebApi.Services.Interfaces;
 using TodoListApp.WebApi.Services.Models;
 
@@ -36,7 +36,7 @@ public class TodoListController : ControllerBase
             pagination = new PaginationParameters();
         }
 
-        var (totalCount, todos) = await this.todoListDatabaseService.GetAllForUserAsync(userId, pagination.PageNumber, pagination.PageSize);
+        var (totalCount, todos) = await this.todoListDatabaseService.GetAllForUserAsync(userId, pagination);
 
         var result = todos.Select(x => new TodoListModel
         {

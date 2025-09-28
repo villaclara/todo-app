@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TodoListApp.Common.Models;
+using TodoListApp.Common;
 using TodoListApp.Common.Models.Enums;
-using TodoListApp.Common.Models.Pagination;
-using TodoListApp.Common.Models.Sorting;
 using TodoListApp.Common.Models.TodoListModels;
 using TodoListApp.Common.Models.TodoTaskModels;
+using TodoListApp.Common.Parameters.Filtering;
+using TodoListApp.Common.Parameters.Pagination;
+using TodoListApp.Common.Parameters.Sorting;
 using TodoListApp.WebApi.Services.Interfaces;
 using TodoListApp.WebApi.Services.Models;
 using TodoListApp.WebApi.Utility;
@@ -32,7 +33,8 @@ public class TodoTaskController : ControllerBase
         [FromQuery] int? listId,
         [FromQuery] int? assigneeId,
         [FromQuery] PaginationParameters pagination,
-        [FromQuery] TaskSortingValue sorting = TaskSortingValue.CreatedDateDesc)
+        [FromQuery] TodoTaskAssigneeFilter filter,
+        [FromQuery] TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc)
     {
         if (listId.HasValue && listId <= 0)
         {
@@ -46,7 +48,7 @@ public class TodoTaskController : ControllerBase
 
         // TODO - check if the list exists by listId before getting data next.
 
-        var todoTasks = await this.taskService.GetAllTodoTasksWithParamsAsync(listId, assigneeId, pagination.PageNumber, pagination.PageSize, sorting);
+        var todoTasks = await this.taskService.GetAllTodoTasksWithParamsAsync(listId, assigneeId, pagination, filter, sorting);
         var result = todoTasks.todoTasks.Select(x => WebApiMapper.MapTodoTask<TodoTask, TodoTaskModel>(x)).ToList();
 
         var paginationMetadata = new PaginationMetadata(todoTasks.totalCount, pagination.PageSize, pagination.PageNumber);
@@ -196,11 +198,18 @@ public class TodoTaskController : ControllerBase
 
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteTodoTask(int id, [FromQuery] int listId)
     {
+        if (listId == 0)
+        {
+            this.logger.LogWarning("Wrong list Id passed.");
+            return this.BadRequest();
+        }
+
         // TODO - It also looks not very good as the false is also called when the todolist does not belong to the user.
-        var result = await this.taskService.DeleteAsync(id);
+        var result = await this.taskService.DeleteAsync(id, listId);
         if (!result)
         {
             this.logger.LogWarning("{@Method} - TodoTask with {@id} not deleted due to not found.", nameof(this.DeleteTodoTask), id);

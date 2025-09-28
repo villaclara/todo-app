@@ -1,3 +1,4 @@
+using TodoListApp.Common.Parameters.Pagination;
 using TodoListApp.WebApi.Services.Models;
 
 namespace TodoListApp.WebApi.Services.Interfaces;
@@ -19,7 +20,7 @@ public interface ITodoListDatabaseService
     /// </summary>
     /// <param name="userId">Id of user to retrieve the lists.</param>
     /// <returns>Task that represents async operation. Task contains the list of <see cref="TodoList"/> object. Might be empty.</returns>
-    Task<(int totalCount, List<TodoList> todos)> GetAllForUserAsync(int userId, int pageNumber, int pageSize);
+    Task<(int totalCount, List<TodoList> todos)> GetAllForUserAsync(int userId, PaginationParameters pagination);
 
     /// <summary>
     /// Asynchronously get the <see cref="TodoList"/> object for specific user. <see langword="null"/>.

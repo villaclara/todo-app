@@ -1,4 +1,4 @@
-using TodoListApp.Common.Models.Pagination;
+using TodoListApp.Common.Parameters.Pagination;
 
 namespace TodoListApp.WebApp.Models;
 

@@ -1,4 +1,6 @@
-using TodoListApp.Common.Models.Sorting;
+using TodoListApp.Common.Parameters.Filtering;
+using TodoListApp.Common.Parameters.Pagination;
+using TodoListApp.Common.Parameters.Sorting;
 using TodoListApp.WebApi.Services.Models;
 
 namespace TodoListApp.WebApi.Services.Interfaces;
@@ -19,15 +21,16 @@ public interface ITodoTaskDatabaseService
     /// Asynchronously retrieves a paginated list of todo tasks based on specified filters.
     /// </summary>
     /// <param name="todoListId">The ID of the todo list to filter tasks. If null, returns tasks from all lists.</param>
-    /// <param name="assignee">The name of the assignee to filter tasks. If null, returns tasks for all assignees.</param>
-    /// <param name="page">The page number for pagination (1-based). If null, defaults to first page.</param>
-    /// <param name="pageSize">The number of items per page. If null, uses default page size.</param>
+    /// <param name="assigneeId">The ID of the assignee to filter tasks. If null, returns tasks for all assignees.</param>
+    /// <param name="pagination">Pagination parameters for the result set.</param>
+    /// <param name="filter">Additional filtering options for tasks including creation date, due date, status, and todo list filters.</param>
+    /// <param name="sorting">Sorting option for the result set. Defaults to CreatedDateDesc.</param>
     /// <returns>
-    /// Task that represents async operation. Taks contains
+    /// Task that represents async operation. Taks contains:
     /// - totalCount: The total number of tasks matching the filter criteria
-    /// - todoTasks: A list of <see cref="TodoTask"/> objects for the requested page.
+    /// - todoTasks: A list of <see cref="TodoTask"/> objects for the requested page
     /// </returns>
-    Task<(int totalCount, List<TodoTask> todoTasks)> GetAllTodoTasksWithParamsAsync(int? todoListId, int? assigneeId, int? page, int? pageSize, TaskSortingValue sorting);
+    Task<(int totalCount, List<TodoTask> todoTasks)> GetAllTodoTasksWithParamsAsync(int? todoListId, int? assigneeId, PaginationParameters pagination, TodoTaskAssigneeFilter filter, TaskSortingOptions sorting);
 
     /// <summary>
     /// Asynchronously get the <see cref="TodoTask"/> object for specific user. <see langword="null"/>.
@@ -49,5 +52,5 @@ public interface ITodoTaskDatabaseService
     /// </summary>
     /// <param name="id">Id of wanted todotask to delete.</param>
     /// <returns>Task that represents async operation. Task returns <see langword="true"/> if deleted, <see langword="false"/> otherwise.</returns>
-    Task<bool> DeleteAsync(int id);
+    Task<bool> DeleteAsync(int id, int listId);
 }

@@ -1,6 +1,6 @@
-using TodoListApp.Common.Models.Pagination;
+using TodoListApp.Common.Parameters.Pagination;
 
-namespace TodoListApp.Common.Models;
+namespace TodoListApp.Common;
 
 /// <summary>
 /// Represents a standard API response wrapper.
