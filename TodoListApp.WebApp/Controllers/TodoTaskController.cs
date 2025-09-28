@@ -149,4 +149,28 @@ public class TodoTaskController : Controller
 
         return this.RedirectToAction(actionName: "Details", controllerName: "TodoList", new { listId });
     }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateStatus(int id, int listId, TodoTaskStatus status)
+    {
+        var todo = await this.taskService.GetTodoTaskByIdAsync(id, listId);  // TODO - id
+
+        if (todo == null)
+        {
+            this.ViewBag.ErrorMessage = "No tasks found with this id.";
+            return this.View("Error");
+        }
+
+        todo.Status = status;
+
+        var result = await this.taskService.UpdateTodoTaskAsync(todo);
+
+        if (result == null)
+        {
+            this.ViewBag.ErrorMessage = "Error when deleting todotask.";
+            return this.View("Error", new ErrorViewModel { RequestId = "Internal Error when changing task status", ReturnUrl = new Uri($"/todolist/detailsforassignee/{id}listId={listId}", UriKind.Relative) });
+        }
+
+        return this.RedirectToAction("DetailsForAssignee", new { id, listId });
+    }
 }

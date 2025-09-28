@@ -15,6 +15,62 @@
 
         <div class="row g-4">
 
+            @using TodoListApp.Common.Models.Enums
+
+            <div class="mb-3 d-flex">
+                <h5 class="fw-bold mx-3">Status</h5>
+
+                @if (Model.Status == TodoTaskStatus.Completed)
+                {
+                    <!-- Completed status, no dropdown -->
+                    <span class="badge bg-success fs-6">@Model.Status</span>
+                }
+                else
+                {
+                    <!-- NotStarted or InProgress: show dropdown -->
+                    <div class="dropdown">
+                        <button class="badge border-0 
+                    @(Model.Status == TodoTaskStatus.InProgress ? "bg-primary" : "bg-secondary") fs-6 dropdown-toggle"
+                                type="button" id="statusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            @Model.Status
+                        </button>
+
+                        <ul class="dropdown-menu" aria-labelledby="statusDropdown">
+                            @if (Model.Status == TodoTaskStatus.NotStarted)
+                            {
+                                <li>
+                                    <form method="post" asp-action="UpdateStatus" asp-controller="TodoTask">
+                                        <input type="hidden" name="id" value="@Model.Id" />
+                                        <input type="hidden" name="listId" value="@Model.TodoListId" />
+                                        <input type="hidden" name="status" value="@TodoTaskStatus.InProgress" />
+                                        <button type="submit" class="dropdown-item">In Progress</button>
+                                    </form>
+                                </li>
+                            }
+                            else if (Model.Status == TodoTaskStatus.InProgress)
+                            {
+                                <li>
+                                    <form method="post" asp-action="UpdateStatus" asp-controller="TodoTask">
+                                        <input type="hidden" name="id" value="@Model.Id" />
+                                        <input type="hidden" name="listId" value="@Model.TodoListId" />
+                                        <input type="hidden" name="status" value="@TodoTaskStatus.NotStarted" />
+                                        <button type="submit" class="dropdown-item">Not Started</button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form method="post" asp-action="UpdateStatus" asp-controller="TodoTask">
+                                        <input type="hidden" name="id" value="@Model.Id" />
+                                        <input type="hidden" name="listId" value="@Model.TodoListId" />
+                                        <input type="hidden" name="status" value="@TodoTaskStatus.Completed" />
+                                        <button type="submit" class="dropdown-item">Completed</button>
+                                    </form>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+
             <!-- Left Column: Task Info -->
             <div class="col-md-6">
                 <div class="mb-3">
@@ -27,27 +83,20 @@
                     <p class="fs-6 text-muted">@(!string.IsNullOrWhiteSpace(Model.Description) ? Model.Description : "No description")</p>
                 </div>
 
-                <div class="mb-3">
-                    <h5 class="fw-bold">Created Date</h5>
-                    <p class="fs-6">@((Model.CreatedAtDate == default) ? "No due date" : Model.CreatedAtDate.ToString("MMM dd, yyyy"))</p>
-                </div>
+                
             </div>
 
             <!-- Right Column: Status & Assignee -->
             <div class="col-md-6">
-                <div class="mb-3">
-                    <h5 class="fw-bold">Status</h5>
-                    <span class="badge
-                        @(Model.Status == TodoTaskStatus.Completed ? "bg-success" :
-                                                    Model.Status == TodoTaskStatus.InProgress ? "bg-primary" :
-                                                    "bg-secondary") fs-6">
-                        @Model.Status
-                    </span>
-                </div>
 
                 <div class="mb-3">
                     <h5 class="fw-bold">Assignee</h5>
                     <p class="fs-6">@Model.AssigneeName (@Model.AssigneeId)</p>
+                </div>
+
+                <div class="mb-3">
+                    <h5 class="fw-bold">Created Date</h5>
+                    <p class="fs-6">@((Model.CreatedAtDate == default) ? "No due date" : Model.CreatedAtDate.ToString("MMM dd, yyyy"))</p>
                 </div>
 
                 <div class="mb-3">
@@ -83,10 +132,8 @@
 
     @@media (max-width: 767px) {
         .row.g-4
-
-    {
-        flex-direction: column;
-    }
-
+        {
+            flex-direction: column;
+        }
     }
 </style>
