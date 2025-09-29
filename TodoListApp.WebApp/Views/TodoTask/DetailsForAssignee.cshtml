@@ -7,7 +7,7 @@
             <h2 class="mb-0">Task Details</h2>
 
             <div class="d-flex gap-2">
-                <a asp-controller="TodoTask" asp-action="Index" class="btn btn-outline-secondary">
+                <a href="@Url.Action("Index", "TodoTask")@Context.Request.QueryString" class="btn btn-outline-secondary">
                     Back to List
                 </a>
             </div>

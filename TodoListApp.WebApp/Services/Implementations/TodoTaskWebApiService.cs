@@ -187,6 +187,7 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
             DueToDate = todo.DueToDate,
             AssigneeName = todo.AssigneeName ?? "user", // TODO - Change user
             AssigneeId = todo.AssigneeId,
+            TagList = todo.TagList.Select(x => new Common.Models.TodoTaskTagModes.TodoTaskTagModel { Id = x.Id, Title = x.Title }).ToList(),
         };
 
         try

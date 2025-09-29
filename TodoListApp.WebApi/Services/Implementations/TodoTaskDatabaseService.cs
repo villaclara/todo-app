@@ -202,7 +202,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
 
         _ = await this.ctx.SaveChangesAsync();
         await this.ctx.Entry(entity).Reference(e => e.TodoList).LoadAsync();
-        await this.ctx.Entry(entity).Reference(e => e.TagList).LoadAsync();
+        await this.ctx.Entry(entity).Collection(e => e.TagList).LoadAsync();
 
         return WebApiMapper.MapTodoTask<TodoTaskEntity, TodoTask>(entity);
     }
