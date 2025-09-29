@@ -28,7 +28,7 @@
             <input type="hidden" name="CreatedBefore" value="@Model.Filter?.CreatedBefore" />
             <input type="hidden" name="DueAfter" value="@Model.Filter?.DueAfter" />
             <input type="hidden" name="DueBefore" value="@Model.Filter?.DueBefore" />
-            <input type="hidden" name="Status" value="@Model.Filter?.Status" />
+            <input type="hidden" name="Status" value="@Model.Filter?.StatusOption" />
             <input type="hidden" name="TodoListNameContains" value="@Model.Filter?.TodoListNameContains" />
 
             <select name="sorting" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
@@ -77,17 +77,16 @@
                    value="@(Model.Filter?.DueBefore?.ToString("yyyy-MM-dd"))" />
         </div>
 
+        @using TodoListApp.Common.Parameters.Filtering;
         <!-- Status -->
         <div class="col-auto">
-            <label for="Status" class="form-label small">Status</label>
-            <select name="Status" id="Status" class="form-select form-select-sm">
-                <option value="">All</option>
-                @foreach (var status in Enum.GetValues<TodoTaskStatus>())
-                {
-                    <option value="@status" selected="@(Model.Filter?.Status == status)">
-                        @status
-                    </option>
-                }
+            <label for="StatusOption" class="form-label small">Status</label>
+            <select name="StatusOption" id="StatusOption" class="form-select form-select-sm">
+                <option value="NotCompleted" selected="@(Model.Filter?.StatusOption == TodoTaskStatusFilterOption.NotCompleted)">To Complete</option>
+                <option value="NotStarted" selected="@(Model.Filter?.StatusOption == TodoTaskStatusFilterOption.NotStarted)">Not Started</option>
+                <option value="InProgress" selected="@(Model.Filter?.StatusOption == TodoTaskStatusFilterOption.InProgress)">In Progress</option>
+                <option value="Completed" selected="@(Model.Filter?.StatusOption == TodoTaskStatusFilterOption.Completed)">Completed</option>
+                <option value="All" selected="@(Model.Filter?.StatusOption == TodoTaskStatusFilterOption.All)">All</option>
             </select>
         </div>
 
@@ -113,7 +112,7 @@
 }
 
 <!-- Task Groups -->
-@foreach (var group in Model.TodoTasks.GroupBy(t => t.TodoListName))
+@foreach (var group in Model.TodoTasks!.GroupBy(t => t.TodoListName))
 {
     <div class="m-md-3 mt-4">
         <h6 class="text-primary border-bottom pb-1 mb-2">
@@ -172,7 +171,7 @@
                    asp-route-CreatedBefore="@Model.Filter?.CreatedBefore"
                    asp-route-DueAfter="@Model.Filter?.DueAfter"
                    asp-route-DueBefore="@Model.Filter?.DueBefore"
-                   asp-route-Status="@Model.Filter?.Status"
+                   asp-route-StatusOption="@Model.Filter?.StatusOption"
                    asp-route-TodoListNameContains="@Model.Filter?.TodoListNameContains">
                     « Prev
                 </a>
@@ -190,7 +189,7 @@
                        asp-route-CreatedBefore="@Model.Filter?.CreatedBefore"
                        asp-route-DueAfter="@Model.Filter?.DueAfter"
                        asp-route-DueBefore="@Model.Filter?.DueBefore"
-                       asp-route-Status="@Model.Filter?.Status"
+                       asp-route-StatusOption="@Model.Filter?.StatusOption"
                        asp-route-TodoListNameContains="@Model.Filter?.TodoListNameContains">
                         @i
                     </a>
@@ -207,7 +206,7 @@
                    asp-route-CreatedBefore="@Model.Filter?.CreatedBefore"
                    asp-route-DueAfter="@Model.Filter?.DueAfter"
                    asp-route-DueBefore="@Model.Filter?.DueBefore"
-                   asp-route-Status="@Model.Filter?.Status"
+                   asp-route-StatusOption="@Model.Filter?.StatusOption"
                    asp-route-TodoListNameContains="@Model.Filter?.TodoListNameContains">
                     Next »
                 </a>
@@ -218,6 +217,7 @@
         </div>
     </nav>
 }
+
 
 <style>
     .list-group-item-action:hover {

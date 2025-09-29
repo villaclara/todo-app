@@ -1,5 +1,3 @@
-using TodoListApp.Common.Models.Enums;
-
 namespace TodoListApp.Common.Parameters.Filtering;
 
 /// <summary>
@@ -30,7 +28,7 @@ public class TodoTaskAssigneeFilter
     /// <summary>
     /// Gets or sets the status to filter tasks by.
     /// </summary>
-    public TodoTaskStatus? Status { get; set; }
+    public TodoTaskStatusFilterOption? StatusOption { get; set; } = TodoTaskStatusFilterOption.NotCompleted;
 
     /// <summary>
     /// Gets or sets the ID of the todo list to filter tasks by.

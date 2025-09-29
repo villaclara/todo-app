@@ -120,9 +120,9 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
                 .ToString("o", CultureInfo.InvariantCulture);
         }
 
-        if (filter.Status.HasValue)
+        if (filter.StatusOption.HasValue)
         {
-            queryParams["Status"] = filter.Status.Value.ToString();
+            queryParams["StatusOption"] = filter.StatusOption.Value.ToString();
         }
 
         if (filter.TodoListId.HasValue)
@@ -136,11 +136,6 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
         }
 
         var url = QueryHelpers.AddQueryString("api/todotask", queryParams);
-
-
-        //var request = await this.http.GetFromJsonAsync<ApiResponse<TodoTaskModel>>(
-        //    $"api/todotask?assigneeId={assigneeId}&PageNumber={pagination.PageNumber}&PageSize={pagination.PageSize}&CreatedAfter={filter.CreatedAfter}&CreatedBefore={filter.CreatedBefore}&DueAfter={filter.DueAfter}&DueBefore={filter.DueBefore}&Status={filter.Status}&TodoListId={filter.TodoListId}&TodoListNameContains={filter.TodoListNameContains}&sorting={sorting}"
-        //    $"api/todotask?assigneeId={assigneeId}&pagenumber={pagination.PageNumber}&pagesize={pagination.PageSize}&sorting={sorting}");
 
         var request = await this.http.GetFromJsonAsync<ApiResponse<TodoTaskModel>>(url);
 

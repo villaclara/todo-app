@@ -9,7 +9,7 @@ public class TodoTaskIndexViewModel
 
     public TaskSortingOptions Sorting { get; set; }
 
-    public TodoTaskAssigneeFilter Filter { get; set; }
+    public TodoTaskAssigneeFilter? Filter { get; set; }
 
     public int CurrentPage { get; set; }
 

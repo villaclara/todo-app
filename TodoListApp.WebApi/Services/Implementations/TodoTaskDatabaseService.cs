@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TodoListApp.Common.Models.Enums;
 using TodoListApp.Common.Parameters.Filtering;
 using TodoListApp.Common.Parameters.Pagination;
 using TodoListApp.Common.Parameters.Sorting;
@@ -96,12 +97,6 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
                 query = query.Where(t => t.DueToDate <= filter.DueBefore.Value);
             }
 
-            // Status filter
-            if (filter.Status.HasValue)
-            {
-                query = query.Where(t => t.Status == filter.Status.Value);
-            }
-
             // TodoList filters
             if (filter.TodoListId.HasValue)
             {
@@ -111,6 +106,20 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             if (!string.IsNullOrWhiteSpace(filter.TodoListNameContains))
             {
                 query = query.Where(t => t.TodoList.Title.Contains(filter.TodoListNameContains));
+            }
+
+            // Status filter
+            if (filter.StatusOption.HasValue)
+            {
+                query = filter.StatusOption.Value switch
+                {
+                    TodoTaskStatusFilterOption.NotStarted => query.Where(t => t.Status == TodoTaskStatus.NotStarted),
+                    TodoTaskStatusFilterOption.InProgress => query.Where(t => t.Status == TodoTaskStatus.InProgress),
+                    TodoTaskStatusFilterOption.Completed => query.Where(t => t.Status == TodoTaskStatus.Completed),
+                    TodoTaskStatusFilterOption.NotCompleted => query.Where(t => t.Status == TodoTaskStatus.NotStarted || t.Status == TodoTaskStatus.InProgress),
+                    TodoTaskStatusFilterOption.All => query,
+                    _ => query.Where(t => t.Status == TodoTaskStatus.NotStarted || t.Status == TodoTaskStatus.InProgress)
+                };
             }
         }
 
