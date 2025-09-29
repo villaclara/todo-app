@@ -1,5 +1,6 @@
 using TodoListApp.Common.Models.TodoListModels;
 using TodoListApp.Common.Models.TodoTaskModels;
+using TodoListApp.Common.Models.TodoTaskTagModes;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services.Models;
 
@@ -75,6 +76,7 @@ public static class WebAppMapper
                 Title = model.Title,
                 Status = model.Status,
                 TodoListName = model.TodoListName ?? string.Empty,
+                TagList = model.TagList.Select(x => new TodoTaskTag { Id = x.Id, Title = x.Title }).ToList(),
             } as TOut,
 
             // domain -> api response
@@ -90,6 +92,7 @@ public static class WebAppMapper
                 Title = domain.Title,
                 Status = domain.Status,
                 TodoListName = domain.TodoListName ?? string.Empty,
+                TagList = domain.TagList.Select(x => new TodoTaskTagModel { Id = x.Id, Title = x.Title }).ToList(),
             } as TOut,
 
             // domain -> viewmodel
@@ -105,6 +108,7 @@ public static class WebAppMapper
                 Status = domain.Status,
                 TodoListId = domain.TodoListId,
                 TodoListName = domain.TodoListName,
+                TagList = domain.TagList.Select(x => new TodoTaskTagViewModel { Id = x.Id, Title = x.Title }).ToList(),
             } as TOut,
 
             // viewmodel - domain
@@ -120,6 +124,7 @@ public static class WebAppMapper
                 TodoListId = vm.TodoListId,
                 CreatedAtDate = vm.CreatedAtDate,
                 TodoListName = vm.TodoListName ?? string.Empty,
+                TagList = vm.TagList.Select(x => new TodoTaskTag { Id = x.Id, Title = x.Title }).ToList(),
             } as TOut,
 
             _ => throw new InvalidOperationException("Invalid types passed.")

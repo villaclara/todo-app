@@ -1,4 +1,5 @@
 using TodoListApp.Common.Models.Enums;
+using TodoListApp.Common.Models.TodoTaskTagModes;
 
 namespace TodoListApp.Common.Models.TodoTaskModels;
 
@@ -64,4 +65,6 @@ public class TodoTaskModel
     /// Gets or sets a value indicating whether the Todo Task is Overdue.
     /// </summary>
     public bool IsOverdue { get; set; }
+
+    public List<TodoTaskTagModel> TagList { get; set; } = new List<TodoTaskTagModel>();
 }

@@ -41,6 +41,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             Description = todoTask.Description,
             Title = todoTask.Title,
             Status = todoTask.Status,
+            TagList = todoTask.TagList.Select(t => new TodoTaskTagEntity { Id = t.Id, Title = t.Title }).ToList(),
         };
 
         var a = this.ctx.TodoTasks.Add(entity);
@@ -49,6 +50,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
         // TODO - doing this to include the TodoList navigation property
         return await this.ctx.TodoTasks
             .Include(t => t.TodoList)
+            .Include(t => t.TagList)
             .Where(t => t.Id == entity.Id)
             .Select(t => WebApiMapper.MapTodoTask<TodoTaskEntity, TodoTask>(t))
             .FirstAsync();
@@ -62,7 +64,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
         TodoTaskAssigneeFilter filter,
         TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc)
     {
-        var query = this.ctx.TodoTasks.Include(x => x.TodoList).AsQueryable();
+        var query = this.ctx.TodoTasks.Include(x => x.TodoList).Include(x => x.TagList).AsQueryable();
 
         if (assigneeId.HasValue)
         {
@@ -146,6 +148,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
     {
         var entity = await this.ctx.TodoTasks
             .Include(x => x.TodoList)
+            .Include(x => x.TagList)
             .FirstOrDefaultAsync(t => t.Id == id);
 
         if (entity == null)
@@ -190,6 +193,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
 
         _ = await this.ctx.SaveChangesAsync();
         await this.ctx.Entry(entity).Reference(e => e.TodoList).LoadAsync();
+        await this.ctx.Entry(entity).Reference(e => e.TagList).LoadAsync();
 
         return WebApiMapper.MapTodoTask<TodoTaskEntity, TodoTask>(entity);
     }

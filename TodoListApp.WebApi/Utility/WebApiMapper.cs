@@ -1,5 +1,6 @@
 using TodoListApp.Common.Models.TodoListModels;
 using TodoListApp.Common.Models.TodoTaskModels;
+using TodoListApp.Common.Models.TodoTaskTagModes;
 using TodoListApp.WebApi.Entities;
 using TodoListApp.WebApi.Services.Models;
 
@@ -75,6 +76,7 @@ public static class WebApiMapper
                 Title = entity.Title,
                 Status = entity.Status,
                 TodoListName = entity.TodoList.Title,
+                TagList = entity.TagList.Select(x => new TodoTaskTag { Id = x.Id, Title = x.Title }).ToList(),
             } as TOut,
 
             // domain -> entity
@@ -89,6 +91,7 @@ public static class WebApiMapper
                 Description = domain.Description,
                 Title = domain.Title,
                 Status = domain.Status,
+                TagList = domain.TagList.Select(x => new TodoTaskTagEntity { Id = x.Id, Title = x.Title }).ToList(),
             } as TOut,
 
             // domain -> api response
@@ -105,6 +108,7 @@ public static class WebApiMapper
                 Title = domain.Title,
                 TodoListName = domain.TodoListName,
                 TodoListId = domain.TodoListId,
+                TagList = domain.TagList.Select(x => new TodoTaskTagModel { Id = x.Id, Title = x.Title }).ToList(),
             } as TOut,
 
             // api response -> domain
@@ -120,6 +124,7 @@ public static class WebApiMapper
                 TodoListId = model.TodoListId,
                 CreatedAtDate = model.CreatedAtDate,
                 TodoListName = model.TodoListName ?? string.Empty,
+                TagList = model.TagList.Select(x => new TodoTaskTag { Id = x.Id, Title = x.Title }).ToList(),
             } as TOut,
 
             _ => throw new InvalidOperationException("Invalid types passed.")

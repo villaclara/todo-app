@@ -60,7 +60,7 @@
             {
                 <div class="col-12">
                     <div class="card list-group-item-action shadow-sm rounded border-1 text-black
-                                @(task.IsOverdue && task.Status != TodoTaskStatus.NotStarted ? "border-danger" : "")">
+                                @(task.IsOverdue && task.Status != TodoTaskStatus.NotStarted ? "task-overdue" : "")">
                         <div class="card-body p-2">
                             <div class="d-flex justify-content-between align-items-start">
                                 <!-- Left side: title + badges + info -->
@@ -101,17 +101,23 @@
                                     </div>
 
                                     <!-- Tags (currently commented out) -->
-                                    @* 
-                            @if (task.Tags != null && task.Tags.Any())
+                                    
+                            @if (task.TagList != null && task.TagList.Any())
                             {
-                                <div class="small mb-1">
-                                    @foreach (var tag in task.Tags)
-                                    {
-                                        <span class="badge bg-primary me-1">@tag</span>
-                                    }
-                                </div>
+                                        <div class="small mb-1 text-muted">
+                                            <i class="bi bi-tag"></i>
+                                            <strong>Tags:</strong>
+                                            @foreach (var tag in task.TagList)
+                                            {
+                                                <!-- Purple / Violet -->
+                                                <span class="badge rounded-pill text-light opacity-100"
+                                                      style="background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);">
+                                                    @tag.Title
+                                                </span>
+                                            }
+                                        </div>
                             } 
-                            *@
+                           
                                     <!-- Mark as Completed button (only if not completed) -->
                                     @if (task.IsOverdue && task.Status != TodoTaskStatus.Completed)
                                         {
@@ -215,5 +221,9 @@
 
     .badge {
         font-size: 0.8rem;
+    }
+
+    .task-overdue {
+        border-left: 5px solid #dc3545 !important;
     }
 </style>

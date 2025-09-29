@@ -27,4 +27,6 @@ public class TodoTaskViewModel
     public string? TodoListName { get; set; }
 
     public bool IsOverdue => this.Status != TodoTaskStatus.Completed && this.DueToDate < DateTime.UtcNow;
+
+    public List<TodoTaskTagViewModel> TagList { get; set; } = new List<TodoTaskTagViewModel>();
 }

@@ -27,5 +27,7 @@ public class TodoTask
 
     public TodoListEntity TodoList { get; set; } = null!;
 
+    public ICollection<TodoTaskTag> TagList { get; set; } = new List<TodoTaskTag>();
+
     public bool IsOverdue => this.Status != TodoTaskStatus.Completed && this.DueToDate < DateTime.UtcNow;
 }

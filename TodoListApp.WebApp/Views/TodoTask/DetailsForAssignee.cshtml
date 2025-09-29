@@ -71,43 +71,81 @@
                 }
             </div>
 
-            <!-- Left Column: Task Info -->
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <h5 class="fw-bold">Title</h5>
-                    <p class="fs-5">@Model.Title</p>
-                </div>
+<!-- Left Column: Task Info -->
+<div class="col-md-6">
 
-                <div class="mb-3">
-                    <h5 class="fw-bold">Description</h5>
-                    <p class="fs-6 text-muted">@(!string.IsNullOrWhiteSpace(Model.Description) ? Model.Description : "No description")</p>
-                </div>
+    <!-- Title -->
+    <div class="mb-3">
+        <div class="text-muted fs-6 mb-1 fw-bold">
+            <i class="bi bi-card-text me-1"></i>Title:
+        </div>
+        <div class="fs-5 text-dark">@Model.Title</div>
+    </div>
 
-                
-            </div>
-
-            <!-- Right Column: Status & Assignee -->
-            <div class="col-md-6">
-
-                <div class="mb-3">
-                    <h5 class="fw-bold">Assignee</h5>
-                    <p class="fs-6">@Model.AssigneeName (@Model.AssigneeId)</p>
-                </div>
-
-                <div class="mb-3">
-                    <h5 class="fw-bold">Created Date</h5>
-                    <p class="fs-6">@((Model.CreatedAtDate == default) ? "No due date" : Model.CreatedAtDate.ToString("MMM dd, yyyy"))</p>
-                </div>
-
-                <div class="mb-3">
-                    <h5 class="fw-bold">Due Date</h5>
-                    <p class="fs-6">@((Model.DueToDate == default) ? "No due date" : Model.DueToDate.ToString("MMM dd, yyyy"))</p>
-                </div>
-            </div>
-
+    <!-- Description -->
+    <div class="mb-3">
+        <div class="text-muted fs-6 mb-1 fw-bold">
+            <i class="bi bi-pencil-square me-1"></i>Description:
+        </div>
+        <div class="fs-6 text-dark">
+            @(!string.IsNullOrWhiteSpace(Model.Description) ? Model.Description : "No description")
         </div>
     </div>
+
+    <!-- Tags -->
+    @if (Model.TagList != null && Model.TagList.Any())
+    {
+        <div class="mb-3">
+            <div class="text-muted fs-6 mb-1 fw-bold">
+                <i class="bi bi-tags me-1"></i>Tags:
+            </div>
+            <div class="d-flex flex-wrap align-items-center">
+                @foreach (var tag in Model.TagList)
+                {
+                    <span class="badge rounded-pill text-light opacity-100 me-1 mb-1"
+                          style="background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);">
+                        @tag.Title
+                    </span>
+                }
+            </div>
+        </div>
+    }
 </div>
+
+<!-- Right Column: Status & Assignee -->
+<div class="col-md-6">
+
+    <!-- Assignee -->
+    <div class="mb-3">
+        <div class="text-muted fs-6 mb-1 fw-bold">
+            <i class="bi bi-person me-1"></i>Assignee:
+        </div>
+        <div class="fs-6 text-dark">@Model.AssigneeName (@Model.AssigneeId)</div>
+    </div>
+
+    <!-- Created Date -->
+    <div class="mb-3">
+        <div class="text-muted fs-6 mb-1 fw-bold">
+            <i class="bi bi-calendar-event me-1"></i>Created Date:
+        </div>
+        <div class="fs-6 text-dark">
+            @((Model.CreatedAtDate == default) ? "No date" : Model.CreatedAtDate.ToString("MMM dd, yyyy"))
+        </div>
+    </div>
+
+    <!-- Due Date -->
+    <div class="mb-3">
+        <div class="text-muted fs-6 mb-1 fw-bold">
+            <i class="bi bi-calendar2-check me-1"></i>Due Date:
+        </div>
+        <div class="fs-6 text-dark">
+            @((Model.DueToDate == default) ? "No due date" : Model.DueToDate.ToString("MMM dd, yyyy"))
+        </div>
+    </div>
+
+</div>
+
+
 
 <style>
     .card {
