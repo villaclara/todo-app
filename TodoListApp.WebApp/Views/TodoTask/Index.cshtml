@@ -28,7 +28,7 @@
             <input type="hidden" name="CreatedBefore" value="@Model.Filter?.CreatedBefore" />
             <input type="hidden" name="DueAfter" value="@Model.Filter?.DueAfter" />
             <input type="hidden" name="DueBefore" value="@Model.Filter?.DueBefore" />
-            <input type="hidden" name="Status" value="@Model.Filter?.StatusOption" />
+            <input type="hidden" name="StatusOption" value="@Model.Filter?.StatusOption" />
             <input type="hidden" name="TodoListNameContains" value="@Model.Filter?.TodoListNameContains" />
 
             <select name="sorting" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
@@ -49,6 +49,7 @@
 <!-- Collapsible Filter Form -->
 <div class="collapse mt-2" id="filterForm">
     <form asp-controller="TodoTask" asp-action="Index" method="get" class="row g-2 align-items-end mb-3">
+        <input type="hidden" name="Sorting" value="@Model.Sorting"/>
         <!-- Created Date -->
         <div class="col-auto">
             <label for="CreatedAfter" class="form-label small">Created After</label>
