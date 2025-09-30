@@ -66,5 +66,8 @@ public class TodoTaskModel
     /// </summary>
     public bool IsOverdue { get; set; }
 
+    /// <summary>
+    /// Gets or sets the List of Tags for the Task.
+    /// </summary>
     public List<TodoTaskTagModel> TagList { get; set; } = new List<TodoTaskTagModel>();
 }

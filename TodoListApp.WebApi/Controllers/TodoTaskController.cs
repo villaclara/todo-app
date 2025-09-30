@@ -110,6 +110,7 @@ public class TodoTaskController : ControllerBase
                 Description = model.Description,
                 Status = TodoTaskStatus.NotStarted,
                 TodoListId = model.TodoListId,
+                TagList = model.TagList.Select(x => new TodoTaskTag { Id = x.Id, Title = x.Title }).ToList(),
             };
 
             var result = await this.taskService.CreateAsync(todoTask);
@@ -170,6 +171,7 @@ public class TodoTaskController : ControllerBase
             AssigneeName = model.AssigneeName ?? string.Empty,
             AssigneeId = model.AssigneeId,
             TodoListId = listId,
+            TagList = model.TagList.Select(x => new TodoTaskTag { Id = x.Id, Title = x.Title }).ToList(),
         };
 
         try

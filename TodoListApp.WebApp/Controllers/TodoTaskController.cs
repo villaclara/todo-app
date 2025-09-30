@@ -12,10 +12,12 @@ namespace TodoListApp.WebApp.Controllers;
 public class TodoTaskController : Controller
 {
     private readonly ITodoTaskWebApiService taskService;
+    private readonly ITodoTaskTagWebApiService tagService;
 
-    public TodoTaskController(ITodoTaskWebApiService taskService)
+    public TodoTaskController(ITodoTaskWebApiService taskService, ITodoTaskTagWebApiService tagService)
     {
         this.taskService = taskService;
+        this.tagService = tagService;
     }
 
     public async Task<IActionResult> Index(PaginationParameters pagination, TodoTaskAssigneeFilter filter, TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc)
@@ -55,6 +57,9 @@ public class TodoTaskController : Controller
             return this.View("Error", new ErrorViewModel { RequestId = "Wrong Todo List Id specified.", ReturnUrl = new Uri($"/todolist/details?listId={id}", UriKind.Relative) });
         }
 
+        this.ViewBag.AvailableTags = await this.tagService.GetAllTasksAsync();
+        this.ViewBag.SelectedTagIds = new List<int>();
+
         if (id == 0)
         {
             return this.View(new TodoTaskViewModel()
@@ -79,18 +84,22 @@ public class TodoTaskController : Controller
 
         var model = WebAppMapper.MapTodoTask<TodoTask, TodoTaskViewModel>(todo);
 
+        this.ViewBag.SelectedTagIds = new List<int>(todo!.TagList.Select(x => x.Id));
+
         return this.View(model);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateEdit(TodoTaskViewModel model)
+    public async Task<IActionResult> CreateEdit(TodoTaskViewModel model, List<int> selectedTagIds)
     {
         if (!this.ModelState.IsValid)
         {
             this.ModelState.AddModelError(" ", "Not Valid");
             return this.View("Error", new ErrorViewModel { RequestId = $"Validation Errors occurred.", ReturnUrl = new Uri($"/todolist/details?listId={model.TodoListId}", UriKind.Relative) });
         }
+
+        var allTags = await this.tagService.GetAllTasksAsync();
 
         try
         {
@@ -104,6 +113,7 @@ public class TodoTaskController : Controller
                 AssigneeId = 1, // TODO - should get user Id from Context or whatever
                 TodoListId = model.TodoListId,
                 Status = model.Status,
+                TagList = allTags.Where(x => selectedTagIds.Contains(x.Id)).ToList(),
             };
 
             var act = model.Id switch

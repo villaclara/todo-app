@@ -4,30 +4,27 @@
     <div class="card shadow-sm rounded p-3 mb-3 col-md-8">
 
         <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="mb-3">Task Form</h2>
 
-        <h2 class="mb-3">Task Form</h2>
-
-        @if (Model.Id != 0)
-        {
-            <div>
-            <a class="btn btn-danger"
-                asp-controller="TodoTask"
-                asp-action="Delete"
-                asp-route-id="@Model.Id"
-                asp-route-listId="@Model.TodoListId">
-                <i class="bi bi-trash3"></i>
-                Delete
-            </a>
-            </div>
-        }
+            @if (Model.Id != 0)
+            {
+                <div>
+                    <a class="btn btn-danger"
+                       asp-controller="TodoTask"
+                       asp-action="Delete"
+                       asp-route-id="@Model.Id"
+                       asp-route-listId="@Model.TodoListId">
+                        <i class="bi bi-trash3"></i>
+                        Delete
+                    </a>
+                </div>
+            }
         </div>
-
 
         <form asp-controller="TodoTask" asp-action="CreateEdit" method="post" class="needs-validation" novalidate>
             <!-- Hidden Id field -->
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="TodoListId" />
-
 
             <div class="mb-3 col-md-12">
                 <label asp-for="Title" class="form-label fw-bold"></label>
@@ -55,9 +52,9 @@
             }
 
             <div class="mb-3 col-md-12">
-                <label asp-for="Description" class="forNamem-label fw-bold"></label>
-                <textarea asp-for="Description" rowsName="2" class="form-control shadow-sm rounded border-0" placeholder="Enter task description"></textarea>
-                <span asp-validatioNamen-for="Description" class="text-danger"></span>
+                <label asp-for="Description" class="form-label fw-bold"></label>
+                <textarea asp-for="Description" rows="2" class="form-control shadow-sm rounded border-0" placeholder="Enter task description"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
             @* Assignee is shown only if editing an existing task *@
@@ -69,19 +66,58 @@
                     <span asp-validation-for="AssigneeName" class="text-danger"></span>
                 </div>
             }
+
             <div class="mb-3 col-md-12">
                 <label asp-for="DueToDate" class="form-label fw-bold"></label>
                 <input asp-for="DueToDate" type="date" class="form-control shadow-sm rounded border-0" />
                 <span asp-validation-for="DueToDate" class="text-danger"></span>
             </div>
 
-            @* Tags can be added later *@
-            @* 
+            <!-- ✅ Tags Section -->
             <div class="mb-3 col-md-12">
-                <label asp-for="Tags" class="form-label fw-bold"></label>
-                <input asp-for="Tags" class="form-control shadow-sm rounded border-0" placeholder="Enter tags separated by commas" />
-            </div> 
-            *@
+                <label class="form-label fw-bold">Tags</label>
+
+                <!-- Active tags as badges -->
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                    @if (Model.TagList != null && Model.TagList.Any())
+                    {
+                        foreach (var tag in Model.TagList)
+                        {
+                            <span class="badge bg-primary rounded-pill px-3 py-2">
+                                    @tag.Title
+                            </span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="text-muted">No tags selected</span>
+                    }
+                </div>
+
+                <!-- Collapsible tag selector -->
+                <button class="btn btn-sm btn-outline-secondary mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#tagsCollapse" aria-expanded="false" aria-controls="tagsCollapse">
+                    Select Tags
+                </button>
+
+                <div class="collapse" id="tagsCollapse">
+                    <div class="card card-body shadow-sm border-0">
+                        @foreach (var tag in (IEnumerable<TodoTaskTag>)ViewBag.AvailableTags)
+                        {
+                            <div class="form-check mb-1">
+                                <input type="checkbox"
+                                       name="SelectedTagIds"
+                                       value="@tag.Id"
+                                       class="form-check-input"
+                                       @(ViewBag.SelectedTagIds != null &&
+                                                                          ((List<int>)ViewBag.SelectedTagIds).Contains(tag.Id)
+                                                                          ? "checked"
+                                                                          : "") />
+                            <label class="form-check-label">@tag.Title</label>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
 
             <!-- Buttons -->
             <div class="d-flex gap-2 mt-2">
@@ -95,6 +131,7 @@
         </form>
     </div>
 </div>
+
 
 @section Scripts {
     @{

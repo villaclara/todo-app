@@ -1,4 +1,5 @@
 using TodoListApp.Common.Models.Enums;
+using TodoListApp.Common.Models.TodoTaskTagModes;
 
 namespace TodoListApp.Common.Models.TodoTaskModels;
 
@@ -38,4 +39,9 @@ public class UpdateTodoTaskModel
     /// Gets or sets the Task Assignee.
     /// </summary>
     public string? AssigneeName { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the List of Tags for the Task.
+    /// </summary>
+    public List<TodoTaskTagModel> TagList { get; set; } = new List<TodoTaskTagModel>();
 }

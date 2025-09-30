@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using TodoListApp.Common.Models.TodoTaskTagModes;
 
 namespace TodoListApp.Common.Models.TodoTaskModels;
 
@@ -40,4 +41,9 @@ public class CreateTodoTaskModel
     /// </summary>
     [Range(1, int.MaxValue, ErrorMessage = "The value must be greater or equal to 1.")]
     public int TodoListId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the List of Tags for the Task.
+    /// </summary>
+    public List<TodoTaskTagModel> TagList { get; set; } = new List<TodoTaskTagModel>();
 }

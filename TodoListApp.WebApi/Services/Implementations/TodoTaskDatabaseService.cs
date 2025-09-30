@@ -42,8 +42,22 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             Description = todoTask.Description,
             Title = todoTask.Title,
             Status = todoTask.Status,
-            TagList = todoTask.TagList.Select(t => new TodoTaskTagEntity { Id = t.Id, Title = t.Title }).ToList(),
+            TagList = new List<TodoTaskTagEntity>(),
         };
+
+        if (todoTask.TagList != null)
+        {
+            entity.TagList.Clear();
+            foreach (var tag in todoTask.TagList)
+            {
+                // Attach existing tag, not create new one because it will be added into db too
+                var existingTag = await this.ctx.TodoTaskTags.FindAsync(tag.Id);
+                if (existingTag != null)
+                {
+                    entity.TagList.Add(existingTag);
+                }
+            }
+        }
 
         var a = this.ctx.TodoTasks.Add(entity);
         _ = await this.ctx.SaveChangesAsync();
@@ -173,6 +187,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
     {
         var entity = await this.ctx.TodoTasks.FindAsync(todoTask.Id)
             ?? throw new KeyNotFoundException($"TodoList with Id {todoTask.Id} not found.");
+        await this.ctx.Entry(entity).Collection(x => x.TagList).LoadAsync();
 
         if (!string.IsNullOrEmpty(todoTask.Title))
         {
@@ -198,6 +213,20 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
         if (todoTask.Status != entity.Status)
         {
             entity.Status = todoTask.Status;
+        }
+
+        if (todoTask.TagList != null)
+        {
+            entity.TagList.Clear();
+            foreach (var tag in todoTask.TagList)
+            {
+                // Attach existing tag, not create new one because it will be added into db too
+                var existingTag = await this.ctx.TodoTaskTags.FindAsync(tag.Id);
+                if (existingTag != null)
+                {
+                    entity.TagList.Add(existingTag);
+                }
+            }
         }
 
         _ = await this.ctx.SaveChangesAsync();

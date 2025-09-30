@@ -34,6 +34,7 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
             AssigneeName = todo.AssigneeName ?? "user", // TODO - Change user
             AssigneeId = todo.AssigneeId,
             TodoListId = todo.TodoListId,
+            TagList = todo.TagList.Select(x => new Common.Models.TodoTaskTagModes.TodoTaskTagModel { Id = x.Id, Title = x.Title }).ToList(),
         };
 
         try
