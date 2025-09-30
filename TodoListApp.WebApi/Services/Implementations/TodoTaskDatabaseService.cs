@@ -77,6 +77,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
         int? assigneeId,
         PaginationParameters pagination,
         TodoTaskAssigneeFilter filter,
+        TodoTaskStatusFilterOption statusFilterOption = TodoTaskStatusFilterOption.NotCompleted,
         TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc)
     {
         var query = this.ctx.TodoTasks.Include(x => x.TodoList).Include(x => x.TagList).AsQueryable();
@@ -121,21 +122,17 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             {
                 query = query.Where(t => t.TodoList.Title.Contains(filter.TodoListNameContains));
             }
-
-            // Status filter
-            if (filter.StatusOption.HasValue)
-            {
-                query = filter.StatusOption.Value switch
-                {
-                    TodoTaskStatusFilterOption.NotStarted => query.Where(t => t.Status == TodoTaskStatus.NotStarted),
-                    TodoTaskStatusFilterOption.InProgress => query.Where(t => t.Status == TodoTaskStatus.InProgress),
-                    TodoTaskStatusFilterOption.Completed => query.Where(t => t.Status == TodoTaskStatus.Completed),
-                    TodoTaskStatusFilterOption.NotCompleted => query.Where(t => t.Status == TodoTaskStatus.NotStarted || t.Status == TodoTaskStatus.InProgress),
-                    TodoTaskStatusFilterOption.All => query,
-                    _ => query.Where(t => t.Status == TodoTaskStatus.NotStarted || t.Status == TodoTaskStatus.InProgress)
-                };
-            }
         }
+
+        query = statusFilterOption switch
+        {
+            TodoTaskStatusFilterOption.NotStarted => query.Where(t => t.Status == TodoTaskStatus.NotStarted),
+            TodoTaskStatusFilterOption.InProgress => query.Where(t => t.Status == TodoTaskStatus.InProgress),
+            TodoTaskStatusFilterOption.Completed => query.Where(t => t.Status == TodoTaskStatus.Completed),
+            TodoTaskStatusFilterOption.NotCompleted => query.Where(t => t.Status == TodoTaskStatus.NotStarted || t.Status == TodoTaskStatus.InProgress),
+            TodoTaskStatusFilterOption.All => query,
+            _ => query.Where(t => t.Status == TodoTaskStatus.NotStarted || t.Status == TodoTaskStatus.InProgress)
+        };
 
         query = sorting switch
         {
@@ -147,7 +144,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             TaskSortingOptions.DueDateDesc => query.OrderByDescending(x => x.DueToDate),
             TaskSortingOptions.TaskStatusAsc => query.OrderBy(x => x.Status),
             TaskSortingOptions.TaskStatusDesc => query.OrderByDescending(x => x.Status),
-            _ => query.OrderByDescending(x => x.CreatedAtDate),
+            _ => query.OrderBy(x => x.DueToDate),
         };
 
         if (todoListId.HasValue)

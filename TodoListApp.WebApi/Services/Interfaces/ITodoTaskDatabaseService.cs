@@ -24,13 +24,14 @@ public interface ITodoTaskDatabaseService
     /// <param name="assigneeId">The ID of the assignee to filter tasks. If null, returns tasks for all assignees.</param>
     /// <param name="pagination">Pagination parameters for the result set.</param>
     /// <param name="filter">Additional filtering options for tasks including creation date, due date, status, and todo list filters.</param>
+    /// <param name="statusFilterOption">Filter Tasks by status. Defaults to NotCompleted.</param>
     /// <param name="sorting">Sorting option for the result set. Defaults to CreatedDateDesc.</param>
     /// <returns>
     /// Task that represents async operation. Taks contains:
     /// - totalCount: The total number of tasks matching the filter criteria
     /// - todoTasks: A list of <see cref="TodoTask"/> objects for the requested page
     /// </returns>
-    Task<(int totalCount, List<TodoTask> todoTasks)> GetAllTodoTasksWithParamsAsync(int? todoListId, int? assigneeId, PaginationParameters pagination, TodoTaskAssigneeFilter filter, TaskSortingOptions sorting);
+    Task<(int totalCount, List<TodoTask> todoTasks)> GetAllTodoTasksWithParamsAsync(int? todoListId, int? assigneeId, PaginationParameters pagination, TodoTaskAssigneeFilter filter, TodoTaskStatusFilterOption statusFilterOption, TaskSortingOptions sorting);
 
     /// <summary>
     /// Asynchronously get the <see cref="TodoTask"/> object for specific user. <see langword="null"/>.

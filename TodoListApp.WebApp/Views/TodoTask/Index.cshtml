@@ -1,17 +1,17 @@
 @using TodoListApp.Common.Models.Enums
+@using TodoListApp.Common.Parameters.Filtering
 @using TodoListApp.Common.Parameters.Sorting
 @model TodoTaskIndexViewModel
 
 <div class="container mt-3 d-flex justify-content-between align-items-center flex-wrap">
     <!-- Left: Title -->
-    <h5 class="mb-0">My Assigned Tasks</h5>
+    <h5 class="mb-0 text-info fw-bold">My Assigned Tasks</h5>
 
     <!-- Right: Filter Toggle + Sorting -->
-    <div class="d-flex align-items-center gap-2 flex-wrap">
+    <div class="d-flex align-items-end gap-2 flex-wrap">
 
         <!-- Filter Toggle -->
-        <!-- Filter Toggle -->
-        <button class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 p-1 filter-toggle collapsed"
+        <button class="btn btn-outline-light btn-sm d-flex align-items-center gap-1 p-1 filter-toggle collapsed"
                 type="button"
                 data-bs-toggle="collapse"
                 data-bs-target="#filterForm"
@@ -21,6 +21,24 @@
             <i class="bi bi-chevron-down chevron-icon"></i>
         </button>
 
+        <form asp-controller="TodoTask" asp-action="Index" method="get" class="m-0">
+            <input type="hidden" name="CreatedAfter" value="@Model.Filter?.CreatedAfter" />
+            <input type="hidden" name="CreatedBefore" value="@Model.Filter?.CreatedBefore" />
+            <input type="hidden" name="DueAfter" value="@Model.Filter?.DueAfter" />
+            <input type="hidden" name="DueBefore" value="@Model.Filter?.DueBefore" />
+            <input type="hidden" name="Sorting" value="@Model.Sorting" />
+
+            <div class="col-auto">
+                <label for="StatusFilterOption" class="form-label small text-secondary">Task Status:</label>
+                <select name="StatusFilterOption" id="StatusFilterOption" class="form-select form-select-sm bg-dark text-light border-secondary" onchange="this.form.submit()">
+                    <option value="NotCompleted" selected="@(Model.StatusFilterOption == TodoTaskStatusFilterOption.NotCompleted)">To Complete</option>
+                    <option value="NotStarted" selected="@(Model.StatusFilterOption == TodoTaskStatusFilterOption.NotStarted)">Not Started</option>
+                    <option value="InProgress" selected="@(Model.StatusFilterOption == TodoTaskStatusFilterOption.InProgress)">In Progress</option>
+                    <option value="Completed" selected="@(Model.StatusFilterOption == TodoTaskStatusFilterOption.Completed)">Completed</option>
+                    <option value="All" selected="@(Model.StatusFilterOption == TodoTaskStatusFilterOption.All)">All</option>
+                </select>
+            </div>
+        </form>
 
         <!-- Sorting Dropdown -->
         <form asp-controller="TodoTask" asp-action="Index" method="get" class="m-0">
@@ -28,19 +46,19 @@
             <input type="hidden" name="CreatedBefore" value="@Model.Filter?.CreatedBefore" />
             <input type="hidden" name="DueAfter" value="@Model.Filter?.DueAfter" />
             <input type="hidden" name="DueBefore" value="@Model.Filter?.DueBefore" />
-            <input type="hidden" name="StatusOption" value="@Model.Filter?.StatusOption" />
+            <input type="hidden" name="StatusFilterOption" value="@Model.StatusFilterOption" />
             <input type="hidden" name="TodoListNameContains" value="@Model.Filter?.TodoListNameContains" />
 
-            <select name="sorting" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
-                <option disabled selected>Sort by...</option>
-                <option value="CreatedDateDesc" selected="@(Model.Sorting == TaskSortingOptions.CreatedDateDesc)">Created Date ↓</option>
-                <option value="CreatedDateAsc" selected="@(Model.Sorting == TaskSortingOptions.CreatedDateAsc)">Created Date ↑</option>
+            <label for="Sorting" class="form-label small text-secondary">Sort by:</label>
+            <select name="sorting" class="form-select form-select-sm w-auto bg-dark text-light border-secondary" onchange="this.form.submit()">
+                <option value="DueDateAsc" selected="@(Model.Sorting == TaskSortingOptions.DueDateAsc)">Due Date ↑</option>
+                <option value="DueDateDesc" selected="@(Model.Sorting == TaskSortingOptions.DueDateDesc)">Due Date ↓</option>
                 <option value="TodoListNameAsc" selected="@(Model.Sorting == TaskSortingOptions.TodoListNameAsc)">List Name ↑</option>
                 <option value="TodoListNameDesc" selected="@(Model.Sorting == TaskSortingOptions.TodoListNameDesc)">List Name ↓</option>
                 <option value="TaskStatusAsc" selected="@(Model.Sorting == TaskSortingOptions.TaskStatusAsc)">Status ↑</option>
                 <option value="TaskStatusDesc" selected="@(Model.Sorting == TaskSortingOptions.TaskStatusDesc)">Status ↓</option>
-                <option value="DueDateAsc" selected="@(Model.Sorting == TaskSortingOptions.DueDateAsc)">Due Date ↑</option>
-                <option value="DueDateDesc" selected="@(Model.Sorting == TaskSortingOptions.DueDateDesc)">Due Date ↓</option>
+                <option value="CreatedDateDesc" selected="@(Model.Sorting == TaskSortingOptions.CreatedDateDesc)">Created Date ↓</option>
+                <option value="CreatedDateAsc" selected="@(Model.Sorting == TaskSortingOptions.CreatedDateAsc)">Created Date ↑</option>
             </select>
         </form>
     </div>
@@ -49,74 +67,61 @@
 <!-- Collapsible Filter Form -->
 <div class="collapse mt-2" id="filterForm">
     <form asp-controller="TodoTask" asp-action="Index" method="get" class="row g-2 align-items-end mb-3">
-        <input type="hidden" name="Sorting" value="@Model.Sorting"/>
+        <input type="hidden" name="Sorting" value="@Model.Sorting" />
         <!-- Created Date -->
         <div class="col-auto">
-            <label for="CreatedAfter" class="form-label small">Created After</label>
+            <label for="CreatedAfter" class="form-label small text-secondary">Created After</label>
             <input type="date" name="CreatedAfter" id="CreatedAfter"
-                   class="form-control form-control-sm"
+                   class="form-control form-control-sm bg-dark text-light border-secondary"
                    value="@(Model.Filter?.CreatedAfter?.ToString("yyyy-MM-dd"))" />
         </div>
         <div class="col-auto">
-            <label for="CreatedBefore" class="form-label small">Created Before</label>
+            <label for="CreatedBefore" class="form-label small text-secondary">Created Before</label>
             <input type="date" name="CreatedBefore" id="CreatedBefore"
-                   class="form-control form-control-sm"
+                   class="form-control form-control-sm bg-dark text-light border-secondary"
                    value="@(Model.Filter?.CreatedBefore?.ToString("yyyy-MM-dd"))" />
         </div>
 
         <!-- Due Date -->
         <div class="col-auto">
-            <label for="DueAfter" class="form-label small">Due After</label>
+            <label for="DueAfter" class="form-label small text-secondary">Due After</label>
             <input type="date" name="DueAfter" id="DueAfter"
-                   class="form-control form-control-sm"
+                   class="form-control form-control-sm bg-dark text-light border-secondary"
                    value="@(Model.Filter?.DueAfter?.ToString("yyyy-MM-dd"))" />
         </div>
         <div class="col-auto">
-            <label for="DueBefore" class="form-label small">Due Before</label>
+            <label for="DueBefore" class="form-label small text-secondary">Due Before</label>
             <input type="date" name="DueBefore" id="DueBefore"
-                   class="form-control form-control-sm"
+                   class="form-control form-control-sm bg-dark text-light border-secondary"
                    value="@(Model.Filter?.DueBefore?.ToString("yyyy-MM-dd"))" />
-        </div>
-
-        @using TodoListApp.Common.Parameters.Filtering;
-        <!-- Status -->
-        <div class="col-auto">
-            <label for="StatusOption" class="form-label small">Status</label>
-            <select name="StatusOption" id="StatusOption" class="form-select form-select-sm">
-                <option value="NotCompleted" selected="@(Model.Filter?.StatusOption == TodoTaskStatusFilterOption.NotCompleted)">To Complete</option>
-                <option value="NotStarted" selected="@(Model.Filter?.StatusOption == TodoTaskStatusFilterOption.NotStarted)">Not Started</option>
-                <option value="InProgress" selected="@(Model.Filter?.StatusOption == TodoTaskStatusFilterOption.InProgress)">In Progress</option>
-                <option value="Completed" selected="@(Model.Filter?.StatusOption == TodoTaskStatusFilterOption.Completed)">Completed</option>
-                <option value="All" selected="@(Model.Filter?.StatusOption == TodoTaskStatusFilterOption.All)">All</option>
-            </select>
         </div>
 
         <!-- Todo List Name -->
         <div class="col-auto">
-            <label for="TodoListNameContains" class="form-label small">List Name</label>
+            <label for="TodoListNameContains" class="form-label small text-secondary">List Name</label>
             <input type="text" name="TodoListNameContains" id="TodoListNameContains"
-                   class="form-control form-control-sm"
+                   class="form-control form-control-sm bg-dark text-light border-secondary"
                    value="@Model.Filter?.TodoListNameContains" />
         </div>
 
         <!-- Buttons -->
         <div class="col-auto">
-            <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+            <button type="submit" class="btn btn-sm btn-info">Apply</button>
             <a asp-controller="TodoTask" asp-action="Index" class="btn btn-sm btn-secondary">Reset</a>
         </div>
     </form>
 </div>
 
-@if(!Model.TodoTasks.Any() || Model.TodoTasks is null)
+@if (!Model.TodoTasks.Any() || Model.TodoTasks is null)
 {
-    <p class="text-muted pt-4">You have no tasks at all or with specified filter.</p>
+    <p class="text-secondary pt-4">No tasks found for the selected filters.</p>
 }
 
 <!-- Task Groups -->
 @foreach (var group in Model.TodoTasks!.GroupBy(t => t.TodoListName))
 {
     <div class="m-md-3 mt-4">
-        <h6 class="text-primary border-bottom pb-1 mb-2">
+        <h6 class="text-info border-bottom pb-1 mb-2">
             <i class="bi bi-list-task me-1"></i> @group.Key
         </h6>
 
@@ -124,35 +129,34 @@
             @foreach (var task in group)
             {
                 <li class="list-unstyled">
-
-                <a href="@Url.Action("DetailsForAssignee", "TodoTask", new { listId = task.TodoListId, id = task.Id })@Context.Request.QueryString"
-                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center shadow-sm mb-2 rounded
-                                    @(task.IsOverdue && task.Status != TodoTaskStatus.Completed ? "task-overdue !important" : "") ">
-                    <div class="flex-grow-1 me-md-3">
-                        <div class="d-flex align-items-center mb-1">
-                            <strong class="me-2">@task.Title</strong>
-                            <span class="badge
-                                        @(task.Status == TodoTaskStatus.Completed ? "bg-success" :
-                                                                    task.Status == TodoTaskStatus.InProgress ? "bg-primary" : "bg-secondary")">
-                        @task.Status
-                    </span>
-                    @if (task.IsOverdue && task.Status != TodoTaskStatus.Completed)
-                            {
-                                <span class="badge bg-danger ms-1">Overdue</span>
-                            }
+                    <a href="@Url.Action("DetailsForAssignee", "TodoTask", new { listId = task.TodoListId, id = task.Id })@Context.Request.QueryString"
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center mb-2 rounded
+                                        @(task.IsOverdue && task.Status != TodoTaskStatus.Completed ? "task-overdue" : "") bg-dark text-light border-task">
+                        <div class="flex-grow-1 me-md-3">
+                            <div class="d-flex align-items-center mb-1">
+                                <strong class="me-2">@task.Title</strong>
+                                <span class="badge
+                                                    @(task.Status == TodoTaskStatus.Completed ? "badge-completed" :
+                                                                                    task.Status == TodoTaskStatus.InProgress ? "badge-inprogress" : "badge-notstarted")">
+                            @task.Status
+                        </span>
+                        @if (task.IsOverdue && task.Status != TodoTaskStatus.Completed)
+                                {
+                                    <span class="badge badge-overdue ms-1">Overdue</span>
+                                }
+                            </div>
+                            <small class="d-block text-muted">
+                                <i class="bi bi-calendar-event me-1"></i> <strong>Created:</strong>
+                                @(task.CreatedAtDate == default ? "No date" : task.CreatedAtDate.ToString("MMM dd"))
+                                &nbsp;|&nbsp;
+                                <i class="bi bi-calendar-event me-1"></i> <strong>Due:</strong>
+                                @(task.DueToDate == default ? "No date" : task.DueToDate.ToString("MMM dd"))
+                            </small>
                         </div>
-                        <small class="text-muted d-block">
-                            <i class="bi bi-calendar-event me-1"></i> <strong>Created:</strong>
-                            @(task.CreatedAtDate == default ? "No date" : task.CreatedAtDate.ToString("MMM dd"))
-                            &nbsp;|&nbsp;
-                            <i class="bi bi-calendar-event me-1"></i> <strong>Due:</strong>
-                            @(task.DueToDate == default ? "No date" : task.DueToDate.ToString("MMM dd"))
-                        </small>
-                    </div>
-                    <div class="mt-2 mt-md-0 text-nowrap">
-                        <span class="chevron">&#8250;</span>
-                    </div>
-                </a>
+                        <div class="mt-2 mt-md-0 text-nowrap">
+                            <span class="chevron">&#8250;</span>
+                        </div>
+                    </a>
                 </li>
             }
         </ul>
@@ -165,7 +169,7 @@
     <nav aria-label="Todo tasks pagination" class="mt-3">
         <ul class="pagination pagination-sm justify-content-center flex-wrap">
             <li class="page-item @(Model.HasPrevious ? "" : "disabled")">
-                <a class="page-link"
+                <a class="page-link bg-dark text-info border-task"
                    asp-controller="TodoTask"
                    asp-action="Index"
                    asp-route-pageNumber="@(Model.CurrentPage - 1)"
@@ -175,7 +179,7 @@
                    asp-route-CreatedBefore="@Model.Filter?.CreatedBefore"
                    asp-route-DueAfter="@Model.Filter?.DueAfter"
                    asp-route-DueBefore="@Model.Filter?.DueBefore"
-                   asp-route-StatusOption="@Model.Filter?.StatusOption"
+                   asp-route-statusFilterOption="@Model.StatusFilterOption"
                    asp-route-TodoListNameContains="@Model.Filter?.TodoListNameContains">
                     « Prev
                 </a>
@@ -183,7 +187,7 @@
             @for (int i = 1; i <= Model.TotalPages; i++)
             {
                 <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                    <a class="page-link"
+                    <a class="page-link bg-dark text-light border-task @(i == Model.CurrentPage ? "active-page" : "")"
                        asp-controller="TodoTask"
                        asp-action="Index"
                        asp-route-pageNumber="@i"
@@ -193,14 +197,14 @@
                        asp-route-CreatedBefore="@Model.Filter?.CreatedBefore"
                        asp-route-DueAfter="@Model.Filter?.DueAfter"
                        asp-route-DueBefore="@Model.Filter?.DueBefore"
-                       asp-route-StatusOption="@Model.Filter?.StatusOption"
+                       asp-route-statusFilterOption="@Model.StatusFilterOption"
                        asp-route-TodoListNameContains="@Model.Filter?.TodoListNameContains">
                         @i
                     </a>
                 </li>
             }
             <li class="page-item @(Model.HasNext ? "" : "disabled")">
-                <a class="page-link"
+                <a class="page-link bg-dark text-info border-task"
                    asp-controller="TodoTask"
                    asp-action="Index"
                    asp-route-pageNumber="@(Model.CurrentPage + 1)"
@@ -210,46 +214,103 @@
                    asp-route-CreatedBefore="@Model.Filter?.CreatedBefore"
                    asp-route-DueAfter="@Model.Filter?.DueAfter"
                    asp-route-DueBefore="@Model.Filter?.DueBefore"
-                   asp-route-StatusOption="@Model.Filter?.StatusOption"
+                   asp-route-statusFilterOption="@Model.StatusFilterOption"
                    asp-route-TodoListNameContains="@Model.Filter?.TodoListNameContains">
                     Next »
                 </a>
             </li>
         </ul>
-        <div class="text-center text-muted small">
-            Page @Model.CurrentPage of @Model.TotalPages (Total: @Model.TotalCount)
-        </div>
     </nav>
 }
 
-
 <style>
-    .list-group-item-action:hover {
-        transform: translateY(-2px);
-        transition: transform 0.2s;
+    body {
+        background-color: #151515;
+        color: #c0c0c0;
     }
 
-    .list-group-item {
-        border: 1px solid #dee2e6 !important;
+    .border-task {
+        border: 1px solid #2a2a2a !important;
+    }
+
+    .list-group-item-action:hover {
+        background-color: #1e1e1e !important;
+        transform: translateY(-2px);
+        transition: 0.2s ease;
     }
 
     .task-overdue {
         border-left: 4px solid #dc3545 !important;
     }
 
-    .chevron {
-        font-size: 1.5rem;
-        color: #6c757d;
-        transition: transform 0.2s;
+    /* Badges */
+    .badge {
+        font-size: 0.75rem;
+        border-radius: 6px;
+        padding: 0.25em 0.6em;
     }
 
-    /* Rotate the chevron when the collapse is open */
-    .filter-toggle .chevron-icon {
-        transition: transform 0.3s ease;
+    .badge-completed {
+        background-color: #28a745;
     }
 
-    .filter-toggle:not(.collapsed) .chevron-icon {
-        transform: rotate(180deg);
+    .badge-inprogress {
+        background-color: #4aa3ff;
     }
 
+    .badge-notstarted {
+        background-color: #6c757d;
+    }
+
+    .badge-overdue {
+        background-color: #dc3545;
+    }
+
+    /* Filters */
+    .form-control,
+    .form-select {
+        background-color: #1a1a1a !important;
+        color: #c0c0c0 !important;
+        border: 1px solid #2a2a2a !important;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #4aa3ff !important;
+            box-shadow: none !important;
+        }
+
+    /* Filter toggle button */
+    .filter-toggle {
+        background-color: #1e1e1e;
+        color: #c0c0c0;
+        border: 1px solid #2a2a2a;
+        border-radius: 4px;
+    }
+
+        .filter-toggle:hover {
+            background-color: #2a2a2a;
+            color: #ffffff;
+        }
+
+        /* Chevron animation */
+        .filter-toggle .chevron-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .filter-toggle:not(.collapsed) .chevron-icon {
+            transform: rotate(180deg);
+        }
+
+    /* Sorting dropdown */
+    .form-select {
+        background-color: #1e1e1e;
+        color: #c0c0c0;
+        border: 1px solid #2a2a2a;
+    }
+
+        .form-select:focus {
+            border-color: #4aa3ff;
+            box-shadow: 0 0 0 0.2rem rgba(74, 163, 255, 0.25);
+        }
 </style>

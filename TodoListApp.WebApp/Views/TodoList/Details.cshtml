@@ -4,10 +4,10 @@
 
     <!-- TodoList Title -->
     <div class="d-flex justify-content-between align-items-center mb-2">
-        <h2>@Model.Title</h2>
+        <h2 class="fw-bold">@Model.Title</h2>
 
         <div class="d-flex gap-2">
-            <a type="button" class="btn btn-primary" asp-controller="TodoList" asp-action="CreateEdit" asp-route-id="@Model.Id">
+            <a class="btn btn-primary btn-sm" asp-controller="TodoList" asp-action="CreateEdit" asp-route-id="@Model.Id">
                 Edit
             </a>
         </div>
@@ -17,27 +17,20 @@
     <p class="text-muted mb-4">@Model.Description</p>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <!-- Left: Add Task button -->
-        <div>
-            <a type="button" class="btn btn-primary"
-               asp-controller="TodoTask"
-               asp-action="CreateEdit"
-               asp-route-listId="@Model.Id">
-                Add Task
-            </a>
-        </div>
+        <!-- Add Task button -->
+        <a class="btn btn-primary btn-sm" asp-controller="TodoTask" asp-action="CreateEdit" asp-route-listId="@Model.Id">
+            Add Task
+        </a>
 
-        <!-- Right: Filter and Sort dropdowns -->
-        <div class="d-flex align-items-center">
-            <!-- Filter dropdown -->
-            <select class="form-select form-select-sm me-2">
+        <!-- Filter and Sort dropdowns -->
+        <div class="d-flex gap-2">
+            <select class="form-select form-select-sm">
                 <option value="">All Statuses</option>
                 <option value="NotStarted">Not Started</option>
                 <option value="InProgress">In Progress</option>
                 <option value="Completed">Completed</option>
             </select>
 
-            <!-- Sort dropdown -->
             <select class="form-select form-select-sm">
                 <option value="DueDateAsc">Due Date ↑</option>
                 <option value="DueDateDesc">Due Date ↓</option>
@@ -47,7 +40,6 @@
         </div>
     </div>
 
-
     <!-- Tasks -->
     @if (Model.TodoTaskIndex == null || !Model.TodoTaskIndex.TodoTasks.Any())
     {
@@ -55,118 +47,73 @@
     }
     else
     {
-         <div class="row g-2 m-md-3 mt-4">
+        <div class="row g-3 mt-3">
             @foreach (var task in Model.TodoTaskIndex.TodoTasks)
             {
                 <div class="col-12">
-                    <div class="card list-group-item-action shadow-sm rounded border-1 text-black
-                                @(task.IsOverdue && task.Status != TodoTaskStatus.NotStarted ? "task-overdue" : "")">
-                        <div class="card-body p-2">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <!-- Left side: title + badges + info -->
-                                <div class="flex-grow-1">
-                                    <div class="d-flex align-items-center mb-1">
-                                        <h6 class="card-title mb-0 me-2">@task.Title</h6>
+                    <div class="card shadow-sm task-card @(task.IsOverdue && task.Status != TodoTaskStatus.NotStarted ? "task-overdue" : "")">
+                        <div class="card-body p-3 d-flex justify-content-between">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-1">
+                                    <h6 class="mb-0">@task.Title</h6>
+                                    <span class="badge ms-2 @(task.Status == TodoTaskStatus.Completed ? "badge-completed" :
+                                                                                                                                                  task.Status == TodoTaskStatus.InProgress ? "badge-inprogress" : "badge-notstarted")">
+                                @task.Status
+                            </span>
 
-                                        <div>
-                                            <!-- Status badge -->
-                                            <span class="badge
-                                                @(task.Status == TodoTaskStatus.Completed ? "bg-success" :
-                                                                                    task.Status == TodoTaskStatus.InProgress ? "bg-primary" : "bg-secondary") me-1">
-                                                @task.Status
-                                            </span>
-                                        </div>
+                            @if (task.IsOverdue && task.Status != TodoTaskStatus.Completed)
+                                    {
+                                        <span class="badge badge-overdue ms-1">Overdue</span>
+                                    }
+                                </div>
 
-                                        <div>
+                                <p class="text-muted mb-1 small">@task.Description</p>
 
-                                        <!-- Overdue badge -->
-                                        @if (task.IsOverdue && task.Status != TodoTaskStatus.Completed)
+                                <div class="text-muted small mb-2">
+                                    <i class="bi bi-person me-1"></i><strong>Assignee:</strong> @(task.AssigneeName ?? "Unassigned")
+                                    &nbsp;|&nbsp;
+                                    <i class="bi bi-calendar-event me-1"></i><strong>Created:</strong> @(task.CreatedAtDate == default ? "No date" : task.CreatedAtDate.ToString("MMM dd, yyyy"))
+                                    &nbsp;|&nbsp;
+                                    <i class="bi bi-calendar-event me-1"></i><strong>Due:</strong> @(task.DueToDate == default ? "No due date" : task.DueToDate.ToString("MMM dd, yyyy"))
+                                </div>
+
+                                @if (task.TagList != null && task.TagList.Any())
+                                {
+                                    <div class="small mb-1">
+                                        <i class="bi bi-tag"></i>
+                                        @foreach (var tag in task.TagList)
                                         {
-                                            <span class="badge bg-danger">Overdue</span>
+                                            <span class="badge rounded-pill badge-tag">@tag.Title</span>
                                         }
-                                        </div>
                                     </div>
+                                }
+                            </div>
 
-                                    <!-- Description -->
-                                    <p class="card-text text-muted mb-1 small">@task.Description</p>
-
-                                    <!-- Assignee and due date -->
-                                    <div class="text-muted mb-2 small">
-                                        <i class="bi bi-person me-1"></i>
-                                            <strong>Assignee:</strong> @(task.AssigneeName ?? "Unassigned")
-                                        &nbsp;|&nbsp;
-                                        <i class="bi bi-calendar-event me-1"></i><strong>Created:</strong> @(task.CreatedAtDate == default ? "No date" : task.CreatedAtDate.ToString("MMM dd, yyyy"))
-                                        &nbsp;|&nbsp;
-                                        <i class="bi bi-calendar-event me-1"></i><strong>Due:</strong> @(task.DueToDate == default ? "No due date" : task.DueToDate.ToString("MMM dd, yyyy"))
-                                    </div>
-
-                                    <!-- Tags (currently commented out) -->
-                                    
-                            @if (task.TagList != null && task.TagList.Any())
-                            {
-                                        <div class="small mb-1 text-muted">
-                                            <i class="bi bi-tag"></i>
-                                            <strong>Tags:</strong>
-                                            @foreach (var tag in task.TagList)
-                                            {
-                                                <!-- Purple / Violet -->
-                                                <span class="badge rounded-pill text-light opacity-100"
-                                                      style="background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);">
-                                                    @tag.Title
-                                                </span>
-                                            }
-                                        </div>
-                            } 
-                           
-                                    <!-- Mark as Completed button (only if not completed) -->
-                                    @if (task.IsOverdue && task.Status != TodoTaskStatus.Completed)
-                                        {
-                                        <form asp-controller="TodoTask" asp-action="Complete" method="post" class="d-inline">
-                                            <input type="hidden" name="id" value="@task.Id" />
-                                            <button type="submit" class="btn btn-success btn-sm">
-                                                Mark as Completed
-                                            </button>
-                                        </form>
-                                    }
-                                </div>
-
-                                <!-- Right: Edit button -->
-                                <div class="ms-2 d-flex flex-column align-items-end">
-                                    @if (task.Status != TodoTaskStatus.Completed)
-                                    {
-                                        <a asp-controller="TodoTask"
-                                            asp-action="CreateEdit"
-                                            asp-route-id="@task.Id"
-                                            asp-route-listId="@Model.Id"
-                                            class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-pen"></i>
-                                            Edit
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <a asp-controller="TodoTask"
-                                           asp-action="Delete"
-                                           asp-route-id="@task.Id"
-                                           asp-route-listId="@Model.Id"
-                                           class="btn btn-outline-danger btn-sm">
-                                            <i class="bi bi-trash3"></i>
-                                            Delete
-                                        </a>
-                                    }
-                                </div>
+                            <div class="ms-2 d-flex flex-column align-items-end">
+                                @if (task.Status != TodoTaskStatus.Completed)
+                                {
+                                    <a asp-controller="TodoTask" asp-action="CreateEdit" asp-route-id="@task.Id" asp-route-listId="@Model.Id" class="btn btn-outline-primary btn-sm mb-1">
+                                        <i class="bi bi-pen"></i> Edit
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="TodoTask" asp-action="Delete" asp-route-id="@task.Id" asp-route-listId="@Model.Id" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash3"></i> Delete
+                                    </a>
+                                }
                             </div>
                         </div>
                     </div>
                 </div>
             }
-        </div> 
+        </div>
 
-
+        <!-- Pagination -->
         @if (Model.TodoTaskIndex != null && Model.TodoTaskIndex.TotalPages > 1)
-{
+        {
             <nav aria-label="Todo tasks pagination" class="mt-3">
-                <ul class="pagination justify-content-center">
+                <ul class="pagination pagination-sm justify-content-center">
                     <li class="page-item @(Model.TodoTaskIndex.HasPrevious ? "" : "disabled")">
                         <a class="page-link"
                            asp-controller="TodoList"
@@ -207,23 +154,87 @@
                     </small>
                 </div>
             </nav>
-}
+        }
     }
 </div>
 
 <style>
-    /* Optional: card hover effect */
-    .card:hover {
-        transform: translateY(-2px);
-        transition: transform 0.2s;
-        color: #6c757d;
+    body {
+        background-color: #151515;
+        color: #c0c0c0;
     }
 
+    h2 {
+        color: #e0e0e0;
+    }
+
+    .task-card {
+        background: #1e1e1e;
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+        }
+
     .badge {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
+        padding: 0.25em 0.5em;
+        border-radius: 8px;
+    }
+
+    .badge-completed {
+        background-color: #50c878;
+        color: #fff;
+    }
+
+    .badge-inprogress {
+        background-color: #4a90e2; /* blue instead of orange */
+        color: #fff;
+    }
+
+    .badge-notstarted {
+        background-color: #777;
+        color: #fff;
+    }
+
+    .badge-overdue {
+        background-color: #e94f4f;
+        color: #fff;
+    }
+
+    .badge-tag {
+        background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);
+        color: #fff;
+        margin-right: 0.25rem;
     }
 
     .task-overdue {
-        border-left: 5px solid #dc3545 !important;
+        border-left: 4px solid #e94f4f;
+    }
+
+    .form-select {
+        border-radius: 6px;
+        background: #1e1e1e;
+        border: 1px solid #333;
+        color: #c0c0c0;
+        padding-right: 2rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='gray' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1rem;
+    }
+
+        .form-select option {
+            background: #1e1e1e;
+            color: #c0c0c0;
+        }
+
+    .btn {
+        border-radius: 8px;
     }
 </style>

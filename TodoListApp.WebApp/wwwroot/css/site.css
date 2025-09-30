@@ -16,3 +16,46 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+    /* Dark Theme Base */
+    body.dark-theme {
+        background-color: #151515;
+        color: #c0c0c0;
+    }
+
+/* Links */
+a {
+    color: #4aa3ff;
+}
+
+    a:hover {
+        color: #82c0ff;
+    }
+
+/* Bootstrap overrides */
+.card,
+.list-group-item,
+.page-link,
+.form-control,
+.form-select {
+    background-color: #1a1a1a !important;
+    color: #c0c0c0 !important;
+    border: 1px solid #2a2a2a !important;
+}
+
+.page-link {
+    color: #c0c0c0;
+    border: 1px solid #2a2a2a;
+}
+
+    .page-item.active .page-link,
+    .page-link.active-page {
+        background-color: #4aa3ff !important;
+        border-color: #4aa3ff !important;
+        color: #fff !important;
+    }
+
+    .page-link:hover {
+        background-color: #1e1e1e;
+        color: #fff;
+    }

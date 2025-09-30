@@ -12,7 +12,7 @@ public interface ITodoTaskWebApiService
 
     Task<PagedResults<TodoTask>> GetPagedTodoTasksByListAsync(int listId, int page, int pageSize, TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc);
 
-    Task<PagedResults<TodoTask>> GetPagedTodoTasksByAssigneeAsync(int assigneeId, PaginationParameters pagination, TodoTaskAssigneeFilter filter, TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc);
+    Task<PagedResults<TodoTask>> GetPagedTodoTasksByAssigneeAsync(int assigneeId, PaginationParameters pagination, TodoTaskAssigneeFilter filter, TodoTaskStatusFilterOption statusFilterOption, TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc);
 
     Task<TodoTask?> GetTodoTaskByIdAsync(int id, int listId);
 

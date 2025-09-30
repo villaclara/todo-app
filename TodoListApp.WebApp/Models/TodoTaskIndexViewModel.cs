@@ -9,6 +9,8 @@ public class TodoTaskIndexViewModel
 
     public TaskSortingOptions Sorting { get; set; }
 
+    public TodoTaskStatusFilterOption StatusFilterOption { get; set; }
+
     public TodoTaskAssigneeFilter? Filter { get; set; }
 
     public int CurrentPage { get; set; }

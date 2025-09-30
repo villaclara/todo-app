@@ -26,11 +26,6 @@ public class TodoTaskAssigneeFilter
     public DateTime? DueBefore { get; set; }
 
     /// <summary>
-    /// Gets or sets the status to filter tasks by.
-    /// </summary>
-    public TodoTaskStatusFilterOption? StatusOption { get; set; } = TodoTaskStatusFilterOption.NotCompleted;
-
-    /// <summary>
     /// Gets or sets the ID of the todo list to filter tasks by.
     /// </summary>
     public int? TodoListId { get; set; }

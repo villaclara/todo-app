@@ -20,9 +20,13 @@ public class TodoTaskController : Controller
         this.tagService = tagService;
     }
 
-    public async Task<IActionResult> Index(PaginationParameters pagination, TodoTaskAssigneeFilter filter, TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc)
+    public async Task<IActionResult> Index(
+        PaginationParameters pagination,
+        TodoTaskAssigneeFilter filter,
+        TodoTaskStatusFilterOption statusFilterOption = TodoTaskStatusFilterOption.NotCompleted,
+        TaskSortingOptions sorting = TaskSortingOptions.DueDateAsc)
     {
-        var apiResponse = await this.taskService.GetPagedTodoTasksByAssigneeAsync(1, pagination, filter, sorting); // TODO - Assignee Id put
+        var apiResponse = await this.taskService.GetPagedTodoTasksByAssigneeAsync(1, pagination, filter, statusFilterOption, sorting); // TODO - Assignee Id put
 
         var viewModel = new TodoTaskIndexViewModel
         {
@@ -34,6 +38,7 @@ public class TodoTaskController : Controller
             HasPrevious = apiResponse.Pagination?.HasPrevious ?? false,
             HasNext = apiResponse.Pagination?.HasNext ?? false,
             Sorting = sorting,
+            StatusFilterOption = statusFilterOption,
             Filter = filter,
         };
         return this.View(viewModel);
@@ -161,6 +166,7 @@ public class TodoTaskController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateStatus(int id, int listId, TodoTaskStatus status)
     {
         var todo = await this.taskService.GetTodoTaskByIdAsync(id, listId);  // TODO - id

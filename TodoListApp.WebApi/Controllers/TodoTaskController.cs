@@ -34,7 +34,8 @@ public class TodoTaskController : ControllerBase
         [FromQuery] int? assigneeId,
         [FromQuery] PaginationParameters pagination,
         [FromQuery] TodoTaskAssigneeFilter filter,
-        [FromQuery] TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc)
+        [FromQuery] TodoTaskStatusFilterOption statusFilterOption = TodoTaskStatusFilterOption.NotCompleted,
+        [FromQuery] TaskSortingOptions sorting = TaskSortingOptions.DueDateAsc)
     {
         if (listId.HasValue && listId <= 0)
         {
@@ -48,7 +49,7 @@ public class TodoTaskController : ControllerBase
 
         // TODO - check if the list exists by listId before getting data next.
 
-        var todoTasks = await this.taskService.GetAllTodoTasksWithParamsAsync(listId, assigneeId, pagination, filter, sorting);
+        var todoTasks = await this.taskService.GetAllTodoTasksWithParamsAsync(listId, assigneeId, pagination, filter, statusFilterOption, sorting);
         var result = todoTasks.todoTasks.Select(x => WebApiMapper.MapTodoTask<TodoTask, TodoTaskModel>(x)).ToList();
 
         var paginationMetadata = new PaginationMetadata(todoTasks.totalCount, pagination.PageSize, pagination.PageNumber);

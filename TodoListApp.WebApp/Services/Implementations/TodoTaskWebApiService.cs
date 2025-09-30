@@ -86,13 +86,19 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
         return result;
     }
 
-    public async Task<PagedResults<TodoTask>> GetPagedTodoTasksByAssigneeAsync(int assigneeId, PaginationParameters pagination, TodoTaskAssigneeFilter filter, TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc)
+    public async Task<PagedResults<TodoTask>> GetPagedTodoTasksByAssigneeAsync(
+        int assigneeId,
+        PaginationParameters pagination,
+        TodoTaskAssigneeFilter filter,
+        TodoTaskStatusFilterOption statusFilterOption,
+        TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc)
     {
         var queryParams = new Dictionary<string, string?>
         {
             { "assigneeId", assigneeId.ToString() },
             { "PageNumber", pagination.PageNumber.ToString() },
             { "PageSize", pagination.PageSize.ToString() },
+            { "statusFilterOption", statusFilterOption.ToString() },
             { "sorting", sorting.ToString() },
         };
 
@@ -119,11 +125,6 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
         {
             queryParams["DueBefore"] = filter.DueBefore.Value
                 .ToString("o", CultureInfo.InvariantCulture);
-        }
-
-        if (filter.StatusOption.HasValue)
-        {
-            queryParams["StatusOption"] = filter.StatusOption.Value.ToString();
         }
 
         if (filter.TodoListId.HasValue)
