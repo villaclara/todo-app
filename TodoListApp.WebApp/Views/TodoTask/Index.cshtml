@@ -30,7 +30,7 @@
 
             <div class="col-auto">
                 <label for="StatusFilterOption" class="form-label small text-secondary">Task Status:</label>
-                <select name="StatusFilterOption" id="StatusFilterOption" class="form-select form-select-sm bg-dark text-light border-secondary" onchange="this.form.submit()">
+                <select name="StatusFilterOption" id="StatusFilterOption" class="form-select form-select-sm text-light border-secondary" onchange="this.form.submit()">
                     <option value="NotCompleted" selected="@(Model.StatusFilterOption == TodoTaskStatusFilterOption.NotCompleted)">To Complete</option>
                     <option value="NotStarted" selected="@(Model.StatusFilterOption == TodoTaskStatusFilterOption.NotStarted)">Not Started</option>
                     <option value="InProgress" selected="@(Model.StatusFilterOption == TodoTaskStatusFilterOption.InProgress)">In Progress</option>
@@ -131,7 +131,7 @@
                 <li class="list-unstyled">
                     <a href="@Url.Action("DetailsForAssignee", "TodoTask", new { listId = task.TodoListId, id = task.Id })@Context.Request.QueryString"
                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center mb-2 rounded
-                                        @(task.IsOverdue && task.Status != TodoTaskStatus.Completed ? "task-overdue" : "") bg-dark text-light border-task">
+                                        @(task.IsOverdue && task.Status != TodoTaskStatus.Completed ? "task-overdue" : "") text-light border-task">
                         <div class="flex-grow-1 me-md-3">
                             <div class="d-flex align-items-center mb-1">
                                 <strong class="me-2">@task.Title</strong>
@@ -231,10 +231,12 @@
 
     .border-task {
         border: 1px solid #2a2a2a !important;
+        /* background: #1f2937 !important; */
     }
 
     .list-group-item-action:hover {
-        background-color: #1e1e1e !important;
+        /* background-color: #1e1e1e !important; */
+        background: #1f2937 !important;
         transform: translateY(-2px);
         transition: 0.2s ease;
     }

@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using TodoListApp.Common.Parameters.Filtering;
+using TodoListApp.Common.Parameters.Sorting;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services.Interfaces;
 using TodoListApp.WebApp.Services.Models;
@@ -37,7 +39,12 @@ public class TodoListController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Details(int listId, int pageNumber = 1, int pageSize = 5)
+    public async Task<IActionResult> Details(
+        int listId,
+        int pageNumber = 1,
+        int pageSize = 5,
+        TodoTaskStatusFilterOption statusFilterOption = TodoTaskStatusFilterOption.All,
+        TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc)
     {
         var todo = await this.listService.GetTodoListByIdAsync(listId, 1);
 
@@ -46,7 +53,7 @@ public class TodoListController : Controller
             return this.NotFound();
         }
 
-        var tasks = await this.taskService.GetPagedTodoTasksByListAsync(listId, pageNumber, pageSize);
+        var tasks = await this.taskService.GetPagedTodoTasksByListAsync(listId, pageNumber, pageSize, statusFilterOption, sorting);
 
         var result = WebAppMapper.MapTodoList<TodoList, TodoListViewModel>(todo);
         result.TodoTaskIndex = new TodoTaskIndexViewModel()
@@ -58,6 +65,8 @@ public class TodoListController : Controller
             PageSize = tasks.Pagination?.PageSize ?? 10,
             TotalCount = tasks.Pagination?.TotalCount ?? 1,
             TotalPages = tasks.Pagination?.TotalPages ?? 1,
+            Sorting = sorting,
+            StatusFilterOption = statusFilterOption,
         };
 
         return this.View(result);

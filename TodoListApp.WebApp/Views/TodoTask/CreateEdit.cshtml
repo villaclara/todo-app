@@ -1,7 +1,7 @@
 @model TodoTaskViewModel
 
 <div class="container py-4">
-    <div class="card shadow-sm rounded p-3 mb-3 col-md-8">
+    <div class="card shadow-light rounded p-3 mb-3 col-md-8">
 
         <div class="d-flex justify-content-between align-items-center mb-2">
             <h2 class="mb-3">Task Form</h2>
@@ -142,7 +142,17 @@
 <style>
     .form-control:focus,
     .form-select:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        border-color: #0d6efd !important;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
     }
+
+    .form-control,
+    .form-select{
+        background-color: #2d3748 !important;
+    }
+
+    /* .shadow-light {
+        background-color: #1e1e1e !important;
+    } */
+
 </style>

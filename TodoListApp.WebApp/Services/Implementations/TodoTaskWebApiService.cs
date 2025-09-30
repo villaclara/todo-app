@@ -69,9 +69,14 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
         return true;
     }
 
-    public async Task<PagedResults<TodoTask>> GetPagedTodoTasksByListAsync(int listId, int page = 1, int pageSize = 2, TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc)
+    public async Task<PagedResults<TodoTask>> GetPagedTodoTasksByListAsync(
+        int listId,
+        int page = 1,
+        int pageSize = 2,
+        TodoTaskStatusFilterOption statusFilterOption = TodoTaskStatusFilterOption.NotCompleted,
+        TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc)
     {
-        var request = await this.http.GetFromJsonAsync<ApiResponse<TodoTaskModel>>($"api/todotask?listId={listId}&pagenumber={page}&pagesize={pageSize}&sorting={sorting}");
+        var request = await this.http.GetFromJsonAsync<ApiResponse<TodoTaskModel>>($"api/todotask?listId={listId}&pagenumber={page}&pagesize={pageSize}&statusFilterOption={statusFilterOption}&sorting={sorting}");
         if (request == null)
         {
             return new PagedResults<TodoTask>();
