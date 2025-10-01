@@ -1,4 +1,5 @@
 using TodoListApp.Common.Models.Enums;
+using TodoListApp.Common.Models.TodoTaskCommentModels;
 using TodoListApp.Common.Models.TodoTaskTagModes;
 
 namespace TodoListApp.Common.Models.TodoTaskModels;
@@ -70,4 +71,6 @@ public class TodoTaskModel
     /// Gets or sets the List of Tags for the Task.
     /// </summary>
     public List<TodoTaskTagModel> TagList { get; set; } = new List<TodoTaskTagModel>();
+
+    public List<TodoTaskCommentModel>? CommentsList { get; set; }
 }

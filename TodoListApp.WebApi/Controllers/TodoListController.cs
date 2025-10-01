@@ -5,6 +5,7 @@ using TodoListApp.Common.Models.TodoListModels;
 using TodoListApp.Common.Parameters.Pagination;
 using TodoListApp.WebApi.Services.Interfaces;
 using TodoListApp.WebApi.Services.Models;
+using TodoListApp.WebApi.Utility;
 
 namespace TodoListApp.WebApi.Controllers;
 
@@ -31,20 +32,11 @@ public class TodoListController : ControllerBase
             return this.BadRequest("UserId should be greater or equal to 1.");
         }
 
-        if (pagination == null)
-        {
-            pagination = new PaginationParameters();
-        }
+        pagination ??= new PaginationParameters();
 
         var (totalCount, todos) = await this.todoListDatabaseService.GetAllForUserAsync(userId, pagination);
 
-        var result = todos.Select(x => new TodoListModel
-        {
-            Id = x.Id,
-            Description = x.Description,
-            Title = x.Title,
-            UserId = x.UserId,
-        });
+        var result = todos.Select(x => WebApiMapper.MapTodoList<TodoList, TodoListModel>(x)).ToList();
 
         var paginationMetadata = new PaginationMetadata(totalCount, pagination.PageSize, pagination.PageNumber);
 
@@ -70,13 +62,7 @@ public class TodoListController : ControllerBase
             return this.NotFound(new ApiResponse<TodoListModel>());
         }
 
-        var result = new TodoListModel()
-        {
-            Id = todo.Id,
-            Description = todo.Description,
-            Title = todo.Title,
-            UserId = todo.UserId,
-        };
+        var result = WebApiMapper.MapTodoList<TodoList, TodoListModel>(todo);
 
         var response = new ApiResponse<TodoListModel>()
         {
@@ -115,13 +101,7 @@ public class TodoListController : ControllerBase
                 return this.StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<TodoListModel>());
             }
 
-            var mapped = new TodoListModel
-            {
-                Id = result.Id,
-                Title = result.Title,
-                Description = result.Description,
-                UserId = result.UserId,
-            };
+            var mapped = WebApiMapper.MapTodoList<TodoList, TodoListModel>(result);
 
             // TODO - think if we need to return API response in Create, Update, Delete methods.
             return this.CreatedAtAction(actionName: nameof(this.GetTodoListById), new { userId = mapped.UserId, id = mapped.Id }, mapped);

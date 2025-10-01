@@ -67,4 +67,9 @@ public class TodoTaskEntity
     /// Gets or sets the collection of tags associated with this todo task.
     /// </summary>
     public ICollection<TodoTaskTagEntity> TagList { get; set; } = new List<TodoTaskTagEntity>();
+
+    /// <summary>
+    /// Gets or sets the collection of comments associated with this todo task.
+    /// </summary>
+    public ICollection<TodoTaskCommentEntity> CommentList { get; set; } = new List<TodoTaskCommentEntity>();
 }

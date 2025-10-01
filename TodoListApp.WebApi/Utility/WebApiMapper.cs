@@ -1,4 +1,5 @@
 using TodoListApp.Common.Models.TodoListModels;
+using TodoListApp.Common.Models.TodoTaskCommentModels;
 using TodoListApp.Common.Models.TodoTaskModels;
 using TodoListApp.Common.Models.TodoTaskTagModes;
 using TodoListApp.WebApi.Entities;
@@ -125,6 +126,62 @@ public static class WebApiMapper
                 CreatedAtDate = model.CreatedAtDate,
                 TodoListName = model.TodoListName ?? string.Empty,
                 TagList = model.TagList.Select(x => new TodoTaskTag { Id = x.Id, Title = x.Title }).ToList(),
+            } as TOut,
+
+            _ => throw new InvalidOperationException("Invalid types passed.")
+        };
+
+        return result ?? throw new InvalidCastException("Invalid Cast. Result is null");
+    }
+
+    public static TOut MapTodoTaskComment<TIn, TOut>(TIn obj)
+        where TIn : class
+        where TOut : class
+    {
+        var result = obj switch
+        {
+            // entity -> domain
+            TodoTaskCommentEntity entity when typeof(TOut) == typeof(TodoTaskComment) => new TodoTaskComment
+            {
+                Id = entity.Id,
+                DatePosted = entity.DatePosted,
+                Text = entity.Text,
+                UserId = entity.UserId,
+                UserName = entity.UserName,
+                TodoTaskId = entity.TodoTaskId,
+            } as TOut,
+
+            // domain -> entity
+            TodoTaskComment domain when typeof(TOut) == typeof(TodoTaskCommentEntity) => new TodoTaskCommentEntity
+            {
+                Id = domain.Id,
+                DatePosted = domain.DatePosted,
+                Text = domain.Text,
+                UserId = domain.UserId,
+                UserName = domain.UserName,
+                TodoTaskId = domain.TodoTaskId,
+            } as TOut,
+
+            // domain -> api response
+            TodoTaskComment domain when typeof(TOut) == typeof(TodoTaskCommentModel) => new TodoTaskCommentModel
+            {
+                Id = domain.Id,
+                DatePosted = domain.DatePosted,
+                Text = domain.Text,
+                UserId = domain.UserId,
+                UserName = domain.UserName,
+                TodoTaskId = domain.TodoTaskId,
+            } as TOut,
+
+            // api response -> domain
+            TodoTaskCommentModel model when typeof(TOut) == typeof(TodoTaskComment) => new TodoTaskComment
+            {
+                Id = model.Id,
+                DatePosted = model.DatePosted,
+                Text = model.Text,
+                UserId = model.UserId,
+                UserName = model.UserName,
+                TodoTaskId = model.TodoTaskId,
             } as TOut,
 
             _ => throw new InvalidOperationException("Invalid types passed.")

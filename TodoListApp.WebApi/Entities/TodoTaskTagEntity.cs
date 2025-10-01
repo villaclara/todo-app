@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace TodoListApp.WebApi.Entities;
 
 /// <summary>
@@ -8,11 +10,13 @@ public class TodoTaskTagEntity
     /// <summary>
     /// Gets or sets the unique identifier of the tag.
     /// </summary>
+    [Key]
     public int Id { get; set; }
 
     /// <summary>
     /// Gets or sets the title or name of the tag.
     /// </summary>
+    [MaxLength(100)]
     public string Title { get; set; } = null!;
 
     /// <summary>

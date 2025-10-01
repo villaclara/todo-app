@@ -28,13 +28,6 @@ public class TodoListDatabaseService : ITodoListDatabaseService
     /// <inheritdoc/>
     public async Task<TodoList> CreateAsync(TodoList todo)
     {
-        //var entity = new TodoListEntity()
-        //{
-        //    Title = todo.Title,
-        //    Description = todo.Description,
-        //    UserId = todo.UserId,
-        //};
-
         var entity = WebApiMapper.MapTodoList<TodoList, TodoListEntity>(todo);
 
         _ = this.ctx.TodoLists.Add(entity);
