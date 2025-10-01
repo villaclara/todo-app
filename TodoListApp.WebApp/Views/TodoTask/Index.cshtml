@@ -145,11 +145,11 @@
                                     <span class="badge badge-overdue ms-1">Overdue</span>
                                 }
                             </div>
-                            <small class="d-block text-muted">
-                                <i class="bi bi-calendar-event me-1"></i> <strong>Created:</strong>
+                            <small class="d-block">
+                                <i class="bi bi-calendar-event me-1 text-muted"></i> <strong class="text-muted">Created:</strong>
                                 @(task.CreatedAtDate == default ? "No date" : task.CreatedAtDate.ToString("MMM dd"))
                                 &nbsp;|&nbsp;
-                                <i class="bi bi-calendar-event me-1"></i> <strong>Due:</strong>
+                                <i class="bi bi-calendar-event me-1 text-muted"></i> <strong class="text-muted">Due:</strong>
                                 @(task.DueToDate == default ? "No date" : task.DueToDate.ToString("MMM dd"))
                             </small>
                         </div>

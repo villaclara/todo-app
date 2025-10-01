@@ -92,18 +92,18 @@
 
                                 <p class="text-muted mb-1 small">@task.Description</p>
 
-                                <div class="text-muted small mb-2">
-                                    <i class="bi bi-person me-1"></i><strong>Assignee:</strong> @(task.AssigneeName ?? "Unassigned")
+                                <div class="small mb-2">
+                                    <i class="bi bi-person me-1 text-muted"></i><strong class="text-muted">Assignee:</strong> @(task.AssigneeName ?? "Unassigned")
                                     &nbsp;|&nbsp;
-                                    <i class="bi bi-calendar-event me-1"></i><strong>Created:</strong> @(task.CreatedAtDate == default ? "No date" : task.CreatedAtDate.ToString("MMM dd, yyyy"))
+                                    <i class="bi bi-calendar-event me-1 text-muted"></i><strong class="text-muted">Created:</strong> @(task.CreatedAtDate == default ? "No date" : task.CreatedAtDate.ToString("MMM dd, yyyy"))
                                     &nbsp;|&nbsp;
-                                    <i class="bi bi-calendar-event me-1"></i><strong>Due:</strong> @(task.DueToDate == default ? "No due date" : task.DueToDate.ToString("MMM dd, yyyy"))
+                                    <i class="bi bi-calendar-event me-1 text-muted"></i><strong class="text-muted">Due:</strong> @(task.DueToDate == default ? "No due date" : task.DueToDate.ToString("MMM dd, yyyy"))
                                 </div>
 
                                 @if (task.TagList != null && task.TagList.Any())
                                 {
                                     <div class="small mb-1">
-                                        <i class="bi bi-tag"></i>
+                                        <i class="bi bi-tag"></i><strong class="text-muted">Tags:</strong>
                                         @foreach (var tag in task.TagList)
                                         {
                                             <span class="badge rounded-pill badge-tag">@tag.Title</span>
