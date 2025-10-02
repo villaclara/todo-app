@@ -1,5 +1,3 @@
-using TodoListApp.Common.Models.TodoTaskModels;
-
 namespace TodoListApp.Common.Models.TodoTaskCommentModels;
 
 public class TodoTaskCommentModel
@@ -9,8 +7,6 @@ public class TodoTaskCommentModel
     public string Text { get; set; } = string.Empty;
 
     public int TodoTaskId { get; set; }
-
-    public TodoTaskModel TodoTask { get; set; } = null!;
 
     public int UserId { get; set; }
 

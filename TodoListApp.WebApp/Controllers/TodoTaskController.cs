@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Common.Models.Enums;
+using TodoListApp.Common.Models.TodoTaskCommentModels;
 using TodoListApp.Common.Parameters.Filtering;
 using TodoListApp.Common.Parameters.Pagination;
 using TodoListApp.Common.Parameters.Sorting;
@@ -58,7 +59,7 @@ public class TodoTaskController : Controller
 
         var viewModel = WebAppMapper.MapTodoTask<TodoTask, TodoTaskViewModel>(apiResponse);
 
-        var comments = await this.commentService.GetCommentsForTask(id);
+        var comments = await this.commentService.GetCommentsForTaskAsync(id);
 
         if (comments == null)
         {
@@ -82,7 +83,7 @@ public class TodoTaskController : Controller
 
         var viewModel = WebAppMapper.MapTodoTask<TodoTask, TodoTaskViewModel>(apiResponse);
 
-        var comments = await this.commentService.GetCommentsForTask(id);
+        var comments = await this.commentService.GetCommentsForTaskAsync(id);
 
         if (comments == null)
         {
@@ -228,5 +229,51 @@ public class TodoTaskController : Controller
         }
 
         return this.RedirectToAction("DetailsForAssignee", new { id, listId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddComment(int taskId, int listId, CreateTodoTaskCommentModel model)
+    {
+        var comment = new TodoTaskComment
+        {
+            Text = model.Text,
+            DatePosted = DateTime.Now,
+            UserId = 1, // TODO - user Id
+            TodoTaskId = taskId,
+            UserName = "user", // TODO - username
+        };
+
+        var request = await this.commentService.AddCommentAsync(comment);
+
+        if (request == null)
+        {
+            this.ViewBag.ErrorMessage = "Error when adding comment.";
+            return this.View("Error", new ErrorViewModel { RequestId = "Internal Error when changing task status", ReturnUrl = new Uri($"/todolist/detailsforassignee/{taskId}listId={listId}", UriKind.Relative) });
+        }
+
+        return this.RedirectToAction("DetailsForAssignee", new { id = taskId, listId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> DeleteComment(int id, int taskId, int listId)
+    {
+        //var todo = await this.commentService.DeleteByIdAsync(id);  
+
+        //if (todo == null)
+        //{
+        //    this.ViewBag.ErrorMessage = "No lists found with this id.";
+        //    return this.View("Error");
+        //}
+
+        var result = await this.commentService.DeleteByIdAsync(id);
+
+        if (!result)
+        {
+            this.ViewBag.ErrorMessage = "Error when deleting comment.";
+            return this.View("Error", new ErrorViewModel { RequestId = "Internal Error when deleting comment", ReturnUrl = new Uri($"/todotask/details/{taskId}", UriKind.Relative) });
+        }
+
+        return this.RedirectToAction(nameof(this.Details), new { id = taskId, listId });
     }
 }

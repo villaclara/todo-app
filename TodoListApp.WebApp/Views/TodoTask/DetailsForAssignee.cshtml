@@ -165,36 +165,57 @@
             </div>
         </div>
     </div>
-</div>
-@if (Model.CommentsList != null && Model.CommentsList.Any())
-{
-    <div class="mt-3 border-top pt-2">
-        <h6 class="small text-secondary mb-2">
-            <i class="bi bi-chat-left-text me-1"></i> Comments (@Model.CommentsList.Count())
-        </h6>
 
-        <div class="list-group list-group-flush">
-            @foreach (var comment in Model.CommentsList.OrderByDescending(c => c.DatePosted))
+    <div class="mt-3 border-top pt-2 col-md-10" style="max-width: 900px">
+        <form method="post" asp-controller="TodoTask" asp-action="AddComment">
+            <!-- Hidden field for task id if needed -->
+            <input type="hidden" name="taskId" value="@Model.Id" />
+            <input type="hidden" name="listId" value="@Model.TodoListId" />
+
+            <!-- Input field -->
+            <div class="input-group input-group-sm">
+                <input type="text" name="Text" id="commentInput" class="form-control" placeholder="Write a comment..." required />
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i> Add Comment
+                </button>
+            </div>
+        </form>
+
+
+        <div class="mt-3">
+
+            @if (Model.CommentsList != null && Model.CommentsList.Any())
             {
-                <div class="list-group-item px-0 py-2 border-0">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <strong>@comment.UserName</strong>
-                            <span class="text-muted small">· @comment.DatePosted.ToString("MMM dd, yyyy HH:mm")</span>
+
+
+                <h6 class="small text-secondary mb-2">
+                    <i class="bi bi-chat-left-text me-1"></i> Comments (@Model.CommentsList.Count())
+                </h6>
+
+                <div class="list-group list-group-flush">
+                    @foreach (var comment in Model.CommentsList.OrderByDescending(c => c.DatePosted))
+                    {
+                        <div class="list-group-item p-2 border-0 rounded mt-2">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>@comment.UserName</strong>
+                                    <span class="text-muted small">· @comment.DatePosted.ToString("MMM dd, yyyy HH:mm")</span>
+                                </div>
+                            </div>
+                            <p class="mb-0 small text-muted">@comment.Text</p>
                         </div>
-                    </div>
-                    <p class="mb-0 small text-muted">@comment.Text</p>
+                    }
                 </div>
             }
+            else
+            {
+                <p class="small text-muted mb-0"><i class="bi bi-chat-left-text me-1"></i> No comments yet.</p>
+            }
         </div>
+
     </div>
-}
-else
-{
-    <div class="mt-3 border-top pt-2">
-        <p class="small text-muted mb-0"><i class="bi bi-chat-left-text me-1"></i> No comments yet.</p>
-    </div>
-}
+</div>
+
 
 <style>
     .card {

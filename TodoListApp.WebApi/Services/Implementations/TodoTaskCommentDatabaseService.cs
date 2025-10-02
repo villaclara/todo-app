@@ -49,6 +49,20 @@ public class TodoTaskCommentDatabaseService : ITodoTaskCommentDatabaseService
         return true;
     }
 
+    public async Task<TodoTaskComment> UpdateAsync(TodoTaskComment comment)
+    {
+        var entity = await this.ctx.TodoTaskComments.FindAsync(comment.Id)
+            ?? throw new KeyNotFoundException($"comment with Id {comment.Id} not found.");
+
+        if (!string.IsNullOrEmpty(comment.Text))
+        {
+            entity.Text = comment.Text;
+        }
+
+        _ = await this.ctx.SaveChangesAsync();
+        return WebApiMapper.MapTodoTaskComment<TodoTaskCommentEntity, TodoTaskComment>(entity);
+    }
+
     public async Task<bool> DeleteAllCommentsForTaskId(int taskId)
     {
         var entities = this.ctx.TodoTaskComments.Where(x => x.TodoTaskId == taskId);

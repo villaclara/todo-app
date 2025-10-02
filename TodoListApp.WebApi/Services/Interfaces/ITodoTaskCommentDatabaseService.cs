@@ -8,6 +8,8 @@ public interface ITodoTaskCommentDatabaseService
 
     Task<List<TodoTaskComment>> GetCommentsForTaskByIdAsync(int taskId);
 
+    Task<TodoTaskComment> UpdateAsync(TodoTaskComment comment);
+
     Task<bool> DeleteByIdAsync(int commentId);
 
     Task<bool> DeleteAllCommentsForTaskId(int taskId);

@@ -17,7 +17,7 @@ public class TodoTaskCommentWebApiService : ITodoTaskCommentWebApiService
         this.logger = logger;
     }
 
-    public async Task<TodoTaskComment?> AddComment(TodoTaskComment comment)
+    public async Task<TodoTaskComment?> AddCommentAsync(TodoTaskComment comment)
     {
         var model = new CreateTodoTaskCommentModel
         {
@@ -47,7 +47,7 @@ public class TodoTaskCommentWebApiService : ITodoTaskCommentWebApiService
         }
     }
 
-    public async Task<IEnumerable<TodoTaskComment>> GetCommentsForTask(int taskId)
+    public async Task<IEnumerable<TodoTaskComment>> GetCommentsForTaskAsync(int taskId)
     {
         var request = await this.http.GetFromJsonAsync<IEnumerable<TodoTaskCommentModel>>($"api/todotaskcomment?taskId={taskId}");
         if (request == null)
@@ -60,14 +60,37 @@ public class TodoTaskCommentWebApiService : ITodoTaskCommentWebApiService
         return result;
     }
 
-    public Task<bool> DeleteAllCommentsForTaskId(int taskId)
+    public async Task<TodoTaskComment> UpdateCommentAsync(TodoTaskComment comment)
+    {
+        var model = WebAppMapper.MapTodoTaskComment<TodoTaskComment, TodoTaskCommentModel>(comment);
+
+        try
+        {
+            var response = await this.http.PutAsJsonAsync($"api/todotaskcomment/{comment.Id}", model);
+            _ = response.EnsureSuccessStatusCode();
+
+            return comment;
+        }
+        catch (HttpRequestException ex)
+        {
+            this.logger.LogWarning("Error sending request to update a Comment {@todolist}, ex - {@ex}.", model, ex.Message);
+            throw new ApplicationException($"Internal error when processing the request - {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogWarning("Unknow exception, ex - {@ex}", ex.Message);
+            throw new ApplicationException($"Internal error when processing the request - {ex.Message}");
+        }
+    }
+
+    public Task<bool> DeleteAllCommentsForTaskIdAsync(int taskId)
     {
         throw new NotImplementedException();
     }
 
     public async Task<bool> DeleteByIdAsync(int commentId)
     {
-        var response = await this.http.DeleteAsync($"api/todotask/{commentId}");
+        var response = await this.http.DeleteAsync($"api/todotaskcomment/{commentId}");
 
         if (response.StatusCode != HttpStatusCode.NoContent)
         {

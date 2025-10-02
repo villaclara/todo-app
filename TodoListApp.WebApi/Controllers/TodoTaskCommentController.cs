@@ -84,4 +84,59 @@ public class TodoTaskCommentController : ControllerBase
             throw;
         }
     }
+
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> UpdateComment(int id, [FromBody] TodoTaskCommentModel model)
+    {
+        // TODO - Not sure if this is correct. As I dont know if I want to expose the Id to TodoListModel.
+        if (id != model.Id)
+        {
+            return this.BadRequest();
+        }
+
+        var comment = WebApiMapper.MapTodoTaskComment<TodoTaskCommentModel, TodoTaskComment>(model);
+
+        try
+        {
+            var result = await this.commentService.UpdateAsync(comment);
+            return this.NoContent();
+        }
+        catch (KeyNotFoundException knfEx)
+        {
+            this.logger.LogError("{@Method} - {@ex}.", nameof(this.UpdateComment), knfEx.Message);
+            return this.NotFound();
+        }
+        catch (DbUpdateException dbUpdateEx)
+        {
+            this.logger.LogError("{@Method} - Exception - {@ex}.", nameof(this.UpdateComment), dbUpdateEx.Message);
+
+            // e.g. SQL unique constraint violation
+            return this.Conflict("Database update failed.");
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError("{@Method} - Exception thrown - {@ex}.", nameof(this.UpdateComment), ex.Message);
+            throw;
+        }
+    }
+
+    [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteComment(int id)
+    {
+        // TODO - It also looks not very good as the false is also called when the todolist does not belong to the user.
+        var result = await this.commentService.DeleteByIdAsync(id);
+        if (!result)
+        {
+            this.logger.LogWarning("{@Method} - Comment with {@id} not deleted due to not found.", nameof(this.DeleteComment), id);
+            return this.NotFound();
+        }
+
+        return this.NoContent();
+    }
 }

@@ -4,11 +4,13 @@ namespace TodoListApp.WebApp.Services.Interfaces;
 
 public interface ITodoTaskCommentWebApiService
 {
-    Task<IEnumerable<TodoTaskComment>> GetCommentsForTask(int taskId);
+    Task<IEnumerable<TodoTaskComment>> GetCommentsForTaskAsync(int taskId);
 
-    Task<TodoTaskComment?> AddComment(TodoTaskComment comment);
+    Task<TodoTaskComment?> AddCommentAsync(TodoTaskComment comment);
+
+    Task<TodoTaskComment> UpdateCommentAsync(TodoTaskComment comment);
 
     Task<bool> DeleteByIdAsync(int commentId);
 
-    Task<bool> DeleteAllCommentsForTaskId(int taskId);
+    Task<bool> DeleteAllCommentsForTaskIdAsync(int taskId);
 }
