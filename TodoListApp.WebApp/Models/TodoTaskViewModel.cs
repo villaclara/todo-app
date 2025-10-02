@@ -3,7 +3,7 @@ using TodoListApp.Common.Models.Enums;
 
 namespace TodoListApp.WebApp.Models;
 
-public class TodoTaskViewModel
+public class TodoTaskViewModel : BaseViewModel
 {
     public int Id { get; set; }
 

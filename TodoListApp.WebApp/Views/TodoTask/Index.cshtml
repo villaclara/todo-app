@@ -132,7 +132,7 @@
             @foreach (var task in group)
             {
                 <li class="list-unstyled">
-                    <a href="@Url.Action("DetailsForAssignee", "TodoTask", new { listId = task.TodoListId, id = task.Id })@Context.Request.QueryString"
+                    <a href="@Url.Action("Details", "TodoTask", new { listId = task.TodoListId, id = task.Id })@Context.Request.QueryString"
                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center mb-2 rounded
                                         @(task.IsOverdue && task.Status != TodoTaskStatus.Completed ? "task-overdue" : "") text-light border-task">
                         <div class="flex-grow-1 me-md-3">

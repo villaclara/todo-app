@@ -15,12 +15,14 @@ public class TodoTaskController : Controller
     private readonly ITodoTaskWebApiService taskService;
     private readonly ITodoTaskTagWebApiService tagService;
     private readonly ITodoTaskCommentWebApiService commentService;
+    private readonly ITodoListWebApiService listService;
 
-    public TodoTaskController(ITodoTaskWebApiService taskService, ITodoTaskTagWebApiService tagService, ITodoTaskCommentWebApiService commentService)
+    public TodoTaskController(ITodoTaskWebApiService taskService, ITodoTaskTagWebApiService tagService, ITodoTaskCommentWebApiService commentService, ITodoListWebApiService listService)
     {
         this.taskService = taskService;
         this.tagService = tagService;
         this.commentService = commentService;
+        this.listService = listService;
     }
 
     public async Task<IActionResult> Index(
@@ -66,8 +68,19 @@ public class TodoTaskController : Controller
             return this.NotFound();
         }
 
-        viewModel.CommentsList = comments.Select(x => WebAppMapper.MapTodoTaskComment<TodoTaskComment, TodoTaskCommentVIewModel>(x));
+        var list = await this.listService.GetTodoListByIdAsync(viewModel.TodoListId, 1); // TODO - user is
+        if (list == null)
+        {
+            return this.NotFound();
+        }
 
+        // TODO - Add check if user owner when editing
+        var isCurrentUserTaskOwner = list.UserId == 1; // TODO - user id
+        this.ViewData["isCurrentUserTaskOwner"] = isCurrentUserTaskOwner;
+
+        // TODO - Add Return URL to viewmodels.
+        viewModel.CommentsList = comments.Select(x => WebAppMapper.MapTodoTaskComment<TodoTaskComment, TodoTaskCommentVIewModel>(x));
+        viewModel.ReturnUrl = new Uri($"/todolist/details?listId={viewModel.TodoListId}", UriKind.Relative);
         return this.View(viewModel);
     }
 
@@ -258,14 +271,6 @@ public class TodoTaskController : Controller
     [HttpGet]
     public async Task<IActionResult> DeleteComment(int id, int taskId, int listId)
     {
-        //var todo = await this.commentService.DeleteByIdAsync(id);  
-
-        //if (todo == null)
-        //{
-        //    this.ViewBag.ErrorMessage = "No lists found with this id.";
-        //    return this.View("Error");
-        //}
-
         var result = await this.commentService.DeleteByIdAsync(id);
 
         if (!result)

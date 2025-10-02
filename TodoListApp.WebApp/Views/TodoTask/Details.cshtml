@@ -1,6 +1,7 @@
 @model TodoTaskViewModel
 @{
-    ViewData["ActiveSection"] = "List";
+    var isCurrentUserOwner = (bool)ViewData["isCurrentUserTaskOwner"]!;
+    ViewData["ActiveSection"] = isCurrentUserOwner ? "List" : "Task";
 }
 
 
@@ -11,7 +12,7 @@
 
             <!-- Left side -->
             <div class="d-flex flex-column gap-2 align-items-start">
-                <a href="@Url.Action("Details", "TodoList")@Context.Request.QueryString" class="btn btn-outline-secondary btn-sm w-auto">
+                <a href="@Model.ReturnUrl" class="btn btn-outline-secondary btn-sm w-auto">
                     <i class="bi bi-arrow-left-short"></i>
                     Back to List
                 </a>
@@ -20,6 +21,9 @@
 
             <!-- Right side (stacked buttons) -->
             <div class="d-flex flex-column gap-2">
+                @if (isCurrentUserOwner)
+                {
+                    
                 @if (Model.Status != TodoTaskStatus.Completed)
                 {
                     <a asp-controller="TodoTask" asp-action="CreateEdit" asp-route-id="@Model.Id" asp-route-listId="@Model.TodoListId" class="btn btn-outline-primary btn-sm">
@@ -30,6 +34,7 @@
                 <a asp-controller="TodoTask" asp-action="Delete" asp-route-id="@Model.Id" asp-route-listId="@Model.TodoListId" class="btn btn-outline-danger btn-sm">
                     <i class="bi bi-trash3"></i> Delete
                 </a>
+                }
 
 
             </div>
@@ -192,7 +197,7 @@
 
             <!-- Input field -->
             <div class="input-group input-group-sm">
-                <input type="text" name="Text" id="commentInput" class="form-control" placeholder="Write a comment..." required />
+                <textarea type="text" name="Text" id="commentInput" class="form-control" rows="2" placeholder="Write a comment..." required ></textarea>
                 <button type="submit" class="btn btn-outline-info">
                     <i class="bi bi-plus-circle me-1"></i> Add Comment
                 </button>
