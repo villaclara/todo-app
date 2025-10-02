@@ -1,6 +1,9 @@
 @using TodoListApp.Common.Parameters.Filtering
 @using TodoListApp.Common.Parameters.Sorting
 @model TodoListViewModel
+@{
+    ViewData["ActiveSection"] = "List";
+}
 
 <div class="container py-4">
 
@@ -133,16 +136,16 @@
                                     </div>
 
                                     <!-- Tags -->
-                                    @if (task.TagList != null && task.TagList.Any())
-                                    {
                                         <div class="small mb-2">
                                             <i class="bi bi-tag"></i><strong class="text-muted">Tags:</strong>
+                                    @if (task.TagList != null && task.TagList.Any())
+                                    {
                                             @foreach (var tag in task.TagList)
                                             {
                                                 <span class="badge rounded-pill badge-tag">@tag.Title</span>
                                             }
-                                        </div>
                                     }
+                                        </div>
                                 </div>
 
                                 <!-- Created / Due -->
@@ -304,23 +307,6 @@
     .task-overdue {
         border-left: 4px solid #e94f4f;
     }
-
-    .form-select {
-        border-radius: 6px;
-        background: #1e1e1e;
-        border: 1px solid #333;
-        color: #c0c0c0;
-        padding-right: 2rem;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='gray' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 0.75rem center;
-        background-size: 1rem;
-    }
-
-        .form-select option {
-            background: #1e1e1e;
-            color: #c0c0c0;
-        }
 
     .btn {
         border-radius: 8px;

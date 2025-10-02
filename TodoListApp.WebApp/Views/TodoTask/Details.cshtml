@@ -1,30 +1,40 @@
 @model TodoTaskViewModel
+@{
+    ViewData["ActiveSection"] = "List";
+}
+
 
 <div class="container py-4">
     <div class="card shadow-light rounded p-4 col-md-10" style="max-width: 900px;">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="mb-0">Task Details</h2>
+        <div class="d-flex justify-content-between align-items-start mb-4">
 
-            <div class="d-flex gap-2">
+            <!-- Left side -->
+            <div class="d-flex flex-column gap-2 align-items-start">
+                <a href="@Url.Action("Details", "TodoList")@Context.Request.QueryString" class="btn btn-outline-secondary btn-sm w-auto">
+                    <i class="bi bi-arrow-left-short"></i>
+                    Back to List
+                </a>
+                <h2 class="mb-0">Task Details</h2>
+            </div>
+
+            <!-- Right side (stacked buttons) -->
+            <div class="d-flex flex-column gap-2">
                 @if (Model.Status != TodoTaskStatus.Completed)
                 {
-                    <a asp-controller="TodoTask" asp-action="CreateEdit" asp-route-id="@Model.Id" asp-route-listId="@Model.TodoListId" class="btn btn-outline-primary btn-sm mb-1">
+                    <a asp-controller="TodoTask" asp-action="CreateEdit" asp-route-id="@Model.Id" asp-route-listId="@Model.TodoListId" class="btn btn-outline-primary btn-sm">
                         <i class="bi bi-pen"></i> Edit
                     </a>
                 }
-            </div>
-            <div class="d-flex gap-2">
+
                 <a asp-controller="TodoTask" asp-action="Delete" asp-route-id="@Model.Id" asp-route-listId="@Model.TodoListId" class="btn btn-outline-danger btn-sm">
                     <i class="bi bi-trash3"></i> Delete
                 </a>
-            </div>
-            <div class="d-flex gap-2">
-                <a href="@Url.Action("Details", "TodoList")@Context.Request.QueryString" class="btn btn-outline-secondary">
-                    Back to List
-                </a>
+
+                
             </div>
         </div>
+
 
         <div class="row g-4">
             @using TodoListApp.Common.Models.Enums

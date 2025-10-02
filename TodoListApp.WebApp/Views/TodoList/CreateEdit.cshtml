@@ -1,4 +1,8 @@
 @model TodoListViewModel
+@{
+    ViewData["ActiveSection"] = "List";
+}
+
 
 <div class="container py-4">
     <div class="card shadow-light rounded p-3 mb-3 col-md-8">
@@ -39,7 +43,7 @@
                 <button type="submit" class="btn btn-primary shadow-sm rounded px-4">
                     <i class="bi bi-floppy me-1"></i> Save
                 </button>
-                <a asp-action="Details" asp-route-listId="@Model.Id" class="btn btn-outline-secondary shadow-sm rounded px-4">
+                <a asp-action="Index" asp-controller="TodoList" asp-route-listId="@Model.Id" class="btn btn-outline-secondary shadow-sm rounded px-4">
                     Cancel
                 </a>
             </div>

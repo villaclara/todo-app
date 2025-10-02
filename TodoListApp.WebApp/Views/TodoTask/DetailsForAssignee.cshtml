@@ -1,4 +1,7 @@
 @model TodoTaskViewModel
+@{
+    ViewData["ActiveSection"] = "Task";
+}
 
 <div class="container py-4">
     <div class="card shadow-light rounded p-4 col-md-10" style="max-width: 900px;">
@@ -8,6 +11,7 @@
 
             <div class="d-flex gap-2">
                 <a href="@Url.Action("Index", "TodoTask")@Context.Request.QueryString" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left-short"></i>
                     Back to List
                 </a>
             </div>
