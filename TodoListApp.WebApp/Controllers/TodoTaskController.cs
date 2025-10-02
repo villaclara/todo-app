@@ -13,11 +13,13 @@ public class TodoTaskController : Controller
 {
     private readonly ITodoTaskWebApiService taskService;
     private readonly ITodoTaskTagWebApiService tagService;
+    private readonly ITodoTaskCommentWebApiService commentService;
 
-    public TodoTaskController(ITodoTaskWebApiService taskService, ITodoTaskTagWebApiService tagService)
+    public TodoTaskController(ITodoTaskWebApiService taskService, ITodoTaskTagWebApiService tagService, ITodoTaskCommentWebApiService commentService)
     {
         this.taskService = taskService;
         this.tagService = tagService;
+        this.commentService = commentService;
     }
 
     public async Task<IActionResult> Index(
@@ -45,11 +47,49 @@ public class TodoTaskController : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> Details(int id, int listId)
+    {
+        var apiResponse = await this.taskService.GetTodoTaskByIdAsync(id, listId);
+
+        if (apiResponse == null)
+        {
+            return this.NotFound();
+        }
+
+        var viewModel = WebAppMapper.MapTodoTask<TodoTask, TodoTaskViewModel>(apiResponse);
+
+        var comments = await this.commentService.GetCommentsForTask(id);
+
+        if (comments == null)
+        {
+            return this.NotFound();
+        }
+
+        viewModel.CommentsList = comments.Select(x => WebAppMapper.MapTodoTaskComment<TodoTaskComment, TodoTaskCommentVIewModel>(x));
+
+        return this.View(viewModel);
+    }
+
+    [HttpGet]
     public async Task<IActionResult> DetailsForAssignee(int id, int listId)
     {
         var apiResponse = await this.taskService.GetTodoTaskByIdAsync(id, listId);
 
+        if (apiResponse == null)
+        {
+            return this.NotFound();
+        }
+
         var viewModel = WebAppMapper.MapTodoTask<TodoTask, TodoTaskViewModel>(apiResponse);
+
+        var comments = await this.commentService.GetCommentsForTask(id);
+
+        if (comments == null)
+        {
+            return this.NotFound();
+        }
+
+        viewModel.CommentsList = comments.Select(x => WebAppMapper.MapTodoTaskComment<TodoTaskComment, TodoTaskCommentVIewModel>(x));
 
         return this.View(viewModel);
     }

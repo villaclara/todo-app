@@ -87,3 +87,10 @@ a {
 .badge-tag {
     background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%) !important;
 }
+
+.list-group-item-action:hover {
+    /* background-color: #1e1e1e !important; */
+    background: #1f2937 !important;
+    transform: translateY(-2px);
+    transition: 0.2s ease;
+}

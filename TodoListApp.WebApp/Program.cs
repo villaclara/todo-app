@@ -8,6 +8,8 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<ITodoListWebApiService, TodoListWebApiService>();
 builder.Services.AddScoped<ITodoTaskWebApiService, TodoTaskWebApiService>();
+builder.Services.AddScoped<ITodoTaskTagWebApiService, TodoTaskTagWebApiService>();
+builder.Services.AddScoped<ITodoTaskCommentWebApiService, TodoTaskCommentWebApiService>();
 
 builder.Services.AddHttpClient<ITodoListWebApiService, TodoListWebApiService>("ApiClient", client =>
 {
@@ -20,6 +22,11 @@ builder.Services.AddHttpClient<ITodoTaskWebApiService, TodoTaskWebApiService>("A
 });
 
 builder.Services.AddHttpClient<ITodoTaskTagWebApiService, TodoTaskTagWebApiService>("ApiClient2", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseAddress"]);
+});
+
+builder.Services.AddHttpClient<ITodoTaskCommentWebApiService, TodoTaskCommentWebApiService>("ApiClient3", client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseAddress"]);
 });

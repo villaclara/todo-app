@@ -29,4 +29,6 @@ public class TodoTaskViewModel
     public bool IsOverdue => this.Status != TodoTaskStatus.Completed && this.DueToDate < DateTime.UtcNow;
 
     public List<TodoTaskTagViewModel> TagList { get; set; } = new List<TodoTaskTagViewModel>();
+
+    public IEnumerable<TodoTaskCommentVIewModel>? CommentsList { get; set; }
 }

@@ -7,7 +7,20 @@
             <h2 class="mb-0">Task Details</h2>
 
             <div class="d-flex gap-2">
-                <a href="@Url.Action("Index", "TodoTask")@Context.Request.QueryString" class="btn btn-outline-secondary">
+                @if (Model.Status != TodoTaskStatus.Completed)
+                {
+                    <a asp-controller="TodoTask" asp-action="CreateEdit" asp-route-id="@Model.Id" asp-route-listId="@Model.TodoListId" class="btn btn-outline-primary btn-sm mb-1">
+                        <i class="bi bi-pen"></i> Edit
+                    </a>
+                }
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-controller="TodoTask" asp-action="Delete" asp-route-id="@Model.Id" asp-route-listId="@Model.TodoListId" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-trash3"></i> Delete
+                </a>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="@Url.Action("Details", "TodoList")@Context.Request.QueryString" class="btn btn-outline-secondary">
                     Back to List
                 </a>
             </div>
@@ -28,7 +41,7 @@
                     <!-- NotStarted or InProgress: show dropdown -->
                     <div class="dropdown">
                         <button class="badge border-0
-                            @(Model.Status == TodoTaskStatus.InProgress ? "bg-primary" : "bg-secondary") fs-6 dropdown-toggle"
+                                @(Model.Status == TodoTaskStatus.InProgress ? "bg-primary" : "bg-secondary") fs-6 dropdown-toggle"
                                 type="button" id="statusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             @Model.Status
                         </button>
@@ -45,7 +58,7 @@
                                             <span class="pe-2">Start Task</span>
                                             <span class="d-flex align-items-center gap-1">
                                                 <i class="bi bi-arrow-right"></i>
-                                            <span class="bg-primary px-2 rounded">In Progress</span>
+                                                <span class="bg-primary px-2 rounded">In Progress</span>
                                             </span>
                                         </button>
                                     </form>
@@ -60,7 +73,7 @@
                                         <input type="hidden" name="status" value="@TodoTaskStatus.NotStarted" />
                                         <button type="submit" class="dropdown-item d-flex justify-content-between align-items-center">
                                             <span class="d-flex align-items-center gap-1">
-                                            <span class="pe-2">Postpone Task</span>
+                                                <span class="pe-2">Postpone Task</span>
                                                 <i class="bi bi-arrow-right"></i>
                                             </span>
                                             <span class="bg-secondary px-2 rounded">Not Started</span>
@@ -77,7 +90,7 @@
                                             <span class="pe-2">Finish Task</span>
                                             <span class="d-flex align-items-center gap-1">
                                                 <i class="bi bi-arrow-right"></i>
-                                            <span class="bg-success px-2 rounded">Completed</span>
+                                                <span class="bg-success px-2 rounded">Completed</span>
                                             </span>
                                         </button>
                                     </form>

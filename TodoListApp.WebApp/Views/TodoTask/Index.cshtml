@@ -146,9 +146,6 @@
                                 }
                             </div>
                             <small class="d-block">
-                                <i class="bi bi-calendar-event me-1 text-muted"></i> <strong class="text-muted">Created:</strong>
-                                @(task.CreatedAtDate == default ? "No date" : task.CreatedAtDate.ToString("MMM dd"))
-                                &nbsp;|&nbsp;
                                 <i class="bi bi-calendar-event me-1 text-muted"></i> <strong class="text-muted">Due:</strong>
                                 @(task.DueToDate == default ? "No date" : task.DueToDate.ToString("MMM dd"))
                             </small>
@@ -232,13 +229,6 @@
     .border-task {
         border: 1px solid #2a2a2a !important;
         /* background: #1f2937 !important; */
-    }
-
-    .list-group-item-action:hover {
-        /* background-color: #1e1e1e !important; */
-        background: #1f2937 !important;
-        transform: translateY(-2px);
-        transition: 0.2s ease;
     }
 
     .task-overdue {
