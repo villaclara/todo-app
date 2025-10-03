@@ -51,7 +51,7 @@ builder.Services.AddHttpClient<ITodoTaskCommentWebApiService, TodoTaskCommentWeb
     client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseAddress"]);
 });
 
-builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddTransient<IEmailSender, StubEmailSender>();
 
 var app = builder.Build();
 
