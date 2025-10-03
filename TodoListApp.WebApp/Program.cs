@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using TodoListApp.WebApp.Areas.Identity.Data;
+using TodoListApp.WebApp.Services.EmailSender;
 using TodoListApp.WebApp.Services.Implementations;
 using TodoListApp.WebApp.Services.Interfaces;
 
@@ -48,6 +50,8 @@ builder.Services.AddHttpClient<ITodoTaskCommentWebApiService, TodoTaskCommentWeb
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseAddress"]);
 });
+
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 var app = builder.Build();
 

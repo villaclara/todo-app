@@ -32,45 +32,48 @@
         </div>
     }
 
-    <nav aria-label="Todo lists pagination">
-        <ul class="pagination pagination-sm justify-content-center">
-            <li class="page-item @(Model.HasPrevious ? "" : "disabled")">
-                <a class="page-link"
-                   asp-controller="TodoList"
-                   asp-action="Index"
-                   asp-route-pageNumber="@(Model.CurrentPage - 1)"
-                   asp-route-pageSize="@Model.PageSize">
-                    Previous
-                </a>
-            </li>
-            @for (int i = 1; i <= Model.TotalPages; i++)
-            {
-                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Todo lists pagination">
+            <ul class="pagination pagination-sm justify-content-center">
+                <li class="page-item @(Model.HasPrevious ? "" : "disabled")">
                     <a class="page-link"
                        asp-controller="TodoList"
                        asp-action="Index"
-                       asp-route-pageNumber="@i"
+                       asp-route-pageNumber="@(Model.CurrentPage - 1)"
                        asp-route-pageSize="@Model.PageSize">
-                        @i
+                        Previous
                     </a>
                 </li>
-            }
-            <li class="page-item @(Model.HasNext ? "" : "disabled")">
-                <a class="page-link"
-                   asp-controller="TodoList"
-                   asp-action="Index"
-                   asp-route-pageNumber="@(Model.CurrentPage + 1)"
-                   asp-route-pageSize="@Model.PageSize">
-                    Next
-                </a>
-            </li>
-        </ul>
-        <div class="text-center text-muted">
-            <small>
-                Showing page @Model.CurrentPage of @Model.TotalPages (Total items: @Model.TotalCount)
-            </small>
-        </div>
-    </nav>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link"
+                           asp-controller="TodoList"
+                           asp-action="Index"
+                           asp-route-pageNumber="@i"
+                           asp-route-pageSize="@Model.PageSize">
+                            @i
+                        </a>
+                    </li>
+                }
+                <li class="page-item @(Model.HasNext ? "" : "disabled")">
+                    <a class="page-link"
+                       asp-controller="TodoList"
+                       asp-action="Index"
+                       asp-route-pageNumber="@(Model.CurrentPage + 1)"
+                       asp-route-pageSize="@Model.PageSize">
+                        Next
+                    </a>
+                </li>
+            </ul>
+            <div class="text-center text-muted">
+                <small>
+                    Showing page @Model.CurrentPage of @Model.TotalPages (Total items: @Model.TotalCount)
+                </small>
+            </div>
+        </nav>
+    }
 </div>
 
 <style>

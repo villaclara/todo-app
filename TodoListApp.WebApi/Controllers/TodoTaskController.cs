@@ -48,7 +48,6 @@ public class TodoTaskController : ControllerBase
         }
 
         // TODO - check if the list exists by listId before getting data next.
-
         var todoTasks = await this.taskService.GetAllTodoTasksWithParamsAsync(listId, assigneeId, pagination, filter, statusFilterOption, sorting);
         var result = todoTasks.todoTasks.Select(x => WebApiMapper.MapTodoTask<TodoTask, TodoTaskModel>(x)).ToList();
 
@@ -68,7 +67,7 @@ public class TodoTaskController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<TodoTaskModel>>> GetTaskById(int id, [FromQuery] int listId)
     {
-        var a = listId;
+        _ = listId;
         var todotask = await this.taskService.GetByIdAsync(id);
 
         if (todotask == null)
@@ -152,12 +151,6 @@ public class TodoTaskController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> UpdateTodoTask(int id, [FromQuery] int listId, [FromBody] UpdateTodoTaskModel model)
     {
-        // TODO - Not sure if this is correct. As I dont know if I want to expose the Id to TodoListModel.
-        //if (id != model.Id)
-        //{
-        //    return this.BadRequest();
-        //}
-
         // Check if the correct value is passed as enum.
         if (!Enum.IsDefined(model.Status))
         {

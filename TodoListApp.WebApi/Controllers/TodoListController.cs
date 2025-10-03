@@ -97,7 +97,7 @@ public class TodoListController : ControllerBase
 
             if (result == null)
             {
-                //return this.StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error happened.");
+                // return this.StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error happened.");
                 return this.StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<TodoListModel>());
             }
 

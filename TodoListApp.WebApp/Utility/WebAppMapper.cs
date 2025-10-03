@@ -126,7 +126,7 @@ public static class WebAppMapper
                 Description = vm.Description,
                 DueToDate = vm.DueToDate,
                 Status = vm.Status,
-                CreatedByUserName = vm.CreatedByUserName,
+                CreatedByUserName = vm.CreatedByUserName ?? "unknown",
                 CreatedByUserId = vm.CreatedByUserId,
                 AssigneeName = vm.AssigneeName,
                 AssigneeId = vm.AssigneeId,
