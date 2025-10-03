@@ -25,7 +25,7 @@ public class TodoTaskEntity
     /// Gets or sets the description of the todo task.
     /// </summary>
     [MaxLength(200)]
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when the todo task was created.
@@ -41,6 +41,16 @@ public class TodoTaskEntity
     /// Gets or sets the status of the todo task.
     /// </summary>
     public TodoTaskStatus Status { get; set; }
+
+    /// <summary>
+    /// Gets or sets the id of user who created this task.
+    /// </summary>
+    public int CreatedByUserId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the username who created this task.
+    /// </summary>
+    public string CreatedByUserName { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the unique identifier of the assignee for the task.

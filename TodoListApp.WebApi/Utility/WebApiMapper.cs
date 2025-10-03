@@ -69,6 +69,8 @@ public static class WebApiMapper
             {
                 TodoListId = entity.TodoListId,
                 Id = entity.Id,
+                CreatedByUserId = entity.CreatedByUserId,
+                CreatedByUserName = entity.CreatedByUserName,
                 AssigneeName = entity.AssigneeName,
                 AssigneeId = entity.AssigneeId,
                 CreatedAtDate = entity.CreatedAtDate,
@@ -85,6 +87,8 @@ public static class WebApiMapper
             {
                 TodoListId = domain.TodoListId,
                 Id = domain.Id,
+                CreatedByUserId = domain.CreatedByUserId,
+                CreatedByUserName = domain.CreatedByUserName,
                 AssigneeName = domain.AssigneeName,
                 AssigneeId = domain.AssigneeId,
                 CreatedAtDate = domain.CreatedAtDate,
@@ -99,6 +103,8 @@ public static class WebApiMapper
             TodoTask domain when typeof(TOut) == typeof(TodoTaskModel) => new TodoTaskModel
             {
                 Id = domain.Id,
+                CreatedByUserId = domain.CreatedByUserId,
+                CreatedByUserName = domain.CreatedByUserName,
                 AssigneeName = domain.AssigneeName,
                 AssigneeId = domain.AssigneeId,
                 CreatedAtDate = domain.CreatedAtDate,
@@ -120,6 +126,8 @@ public static class WebApiMapper
                 Description = model.Description,
                 DueToDate = model.DueToDate,
                 Status = model.Status,
+                CreatedByUserId = model.CreatedByUserId,
+                CreatedByUserName = model.CreatedByUserName,
                 AssigneeName = model.AssigneeName,
                 AssigneeId = model.AssigneeId,
                 TodoListId = model.TodoListId,

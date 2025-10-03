@@ -46,7 +46,7 @@ public class TodoTaskController : BaseController
         TodoTaskStatusFilterOption statusFilterOption = TodoTaskStatusFilterOption.NotCompleted,
         TaskSortingOptions sorting = TaskSortingOptions.DueDateAsc)
     {
-        var userId = await this.GetCurrentUserId();
+        var userId = await this.GetCurrentUserIdAsync();
 
         var apiResponse = await this.taskService.GetPagedTodoTasksByAssigneeAsync(userId, pagination, filter, statusFilterOption, sorting);
 
@@ -85,7 +85,7 @@ public class TodoTaskController : BaseController
             return this.NotFound();
         }
 
-        var userId = await this.GetCurrentUserId();
+        var userId = await this.GetCurrentUserIdAsync();
 
         var isCurrentUserTaskOwner = true;
         var list = await this.listService.GetTodoListByIdAsync(viewModel.TodoListId, userId);
@@ -155,6 +155,8 @@ public class TodoTaskController : BaseController
                 TodoListId = listId,
                 AssigneeName = user.UserName,
                 AssigneeId = user.UserIntId,
+                CreatedByUserName = user.UserName,
+                CreatedByUserId = user.UserIntId,
             });
         }
 
@@ -187,6 +189,14 @@ public class TodoTaskController : BaseController
             return this.View("Error", new ErrorViewModel { RequestId = $"Validation Errors occurred.", ReturnUrl = new Uri($"/todolist/details?listId={model.TodoListId}", UriKind.Relative) });
         }
 
+        if (string.IsNullOrEmpty(model.AssigneeName))
+        {
+            this.ModelState.AddModelError(model.AssigneeName ?? "uknown", "User does not exist.");
+            this.TempData["ErrorMessage"] = $"Validation failed, please enter the field for assignee.({model.AssigneeName}).";
+
+            return this.RedirectToAction("CreateEdit", new { id = model.Id, listId = model.TodoListId });
+        }
+
         // Additional check if the user acutally exists since any input can still be entered.
         var assignedUser = await this.context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == model.AssigneeName.Trim().ToLower());
         if (assignedUser == null)
@@ -209,6 +219,8 @@ public class TodoTaskController : BaseController
                 Title = model.Title,
                 Description = model.Description,
                 DueToDate = model.DueToDate,
+                CreatedByUserId = user.UserIntId,
+                CreatedByUserName = user.UserName,
                 AssigneeName = assignedUser.UserName,
                 AssigneeId = assignedUser.UserIntId,    // TODO - Change USER id to another
                 TodoListId = model.TodoListId,

@@ -31,6 +31,8 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
             Title = todo.Title,
             Description = todo.Description,
             DueToDate = todo.DueToDate,
+            CreatedByUserName = todo.CreatedByUserName,
+            CreatedByUserId = todo.CreatedByUserId,
             AssigneeName = todo.AssigneeName,
             AssigneeId = todo.AssigneeId,
             TodoListId = todo.TodoListId,

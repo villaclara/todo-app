@@ -17,14 +17,23 @@ public class CreateTodoTaskModel
     /// <summary>
     /// Gets or sets the description of the todo task.
     /// </summary>
-    [Required(ErrorMessage = "Description is mandatory.")]
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; }
 
     /// <summary>
     /// Gets or sets the due date for the todo task.
     /// </summary>
     [Required(ErrorMessage = "Due to Date is mandatory.")]
     public DateTime DueToDate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the id of user who created this task.
+    /// </summary>
+    public int CreatedByUserId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the username who created this task.
+    /// </summary>
+    public string CreatedByUserName { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the unique identifier of the assignee for the task.

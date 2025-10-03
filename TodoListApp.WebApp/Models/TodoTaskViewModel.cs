@@ -10,7 +10,7 @@ public class TodoTaskViewModel : BaseViewModel
     [Required(ErrorMessage = "Title is mandatory.")]
     public string Title { get; set; } = null!;
 
-    public string Description { get; set; } = null!;
+    public string? Description { get; set; }
 
     public DateTime CreatedAtDate { get; set; }
 
@@ -18,8 +18,13 @@ public class TodoTaskViewModel : BaseViewModel
 
     public TodoTaskStatus Status { get; set; }
 
+    public int CreatedByUserId { get; set; }
+
+    public string? CreatedByUserName { get; set; }
+
     public int AssigneeId { get; set; }
 
+    [Required(ErrorMessage = "Assignee Name is mandatory")]
     public string AssigneeName { get; set; } = null!;
 
     public int TodoListId { get; set; }

@@ -186,6 +186,16 @@
                         @((Model.DueToDate == default) ? "No due date" : Model.DueToDate.ToString("MMM dd, yyyy"))
                     </div>
                 </div>
+
+                <!-- Created by -->
+                <div class="mb-3">
+                    <div class="text-muted fs-6 mb-1 fw-bold">
+                        <i class="bi bi-calendar2-check me-1"></i>Created by:
+                    </div>
+                    <div class="fs-6">
+                        @Model.CreatedByUserName
+                    </div>
+                </div>
             </div>
         </div>
     </div>

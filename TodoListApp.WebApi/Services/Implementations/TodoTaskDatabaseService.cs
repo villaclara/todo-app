@@ -35,6 +35,8 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
         {
             TodoListId = todoTask.TodoListId,
             Id = todoTask.Id,
+            CreatedByUserId = todoTask.CreatedByUserId,
+            CreatedByUserName = todoTask.CreatedByUserName,
             AssigneeName = todoTask.AssigneeName,
             AssigneeId = todoTask.AssigneeId,
             CreatedAtDate = todoTask.CreatedAtDate,

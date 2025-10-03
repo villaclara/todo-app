@@ -104,6 +104,8 @@ public class TodoTaskController : ControllerBase
             var todoTask = new TodoTask()
             {
                 Title = model.Title,
+                CreatedByUserId = model.CreatedByUserId,
+                CreatedByUserName = model.CreatedByUserName,
                 AssigneeName = model.AssigneeName,
                 AssigneeId = model.AssigneeId,
                 CreatedAtDate = DateTime.UtcNow,

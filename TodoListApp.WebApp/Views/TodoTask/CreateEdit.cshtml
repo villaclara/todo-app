@@ -49,16 +49,10 @@
                     <span asp-validation-for="Status" class="text-danger"></span>
                 </div>
             }
-            else
-            {
-                <input type="hidden" asp-for="AssigneeId" />
-                <input type="hidden" asp-for="AssigneeName" />
-            }
 
             <div class="mb-3 col-md-12">
                 <label asp-for="Description" class="form-label fw-bold"></label>
                 <textarea asp-for="Description" rows="2" class="form-control shadow-sm rounded border-0" placeholder="Enter task description"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
             @* Assignee is shown only if editing an existing task *@

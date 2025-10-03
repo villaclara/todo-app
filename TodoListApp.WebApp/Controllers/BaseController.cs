@@ -20,7 +20,7 @@ public class BaseController : Controller
         return this.cachedUser;
     }
 
-    protected async Task<int> GetCurrentUserId()
+    protected async Task<int> GetCurrentUserIdAsync()
     {
         var user = await this.GetCurrentUserAsync();
         return user.UserIntId;

@@ -27,7 +27,7 @@ public class TodoListController : BaseController
     [HttpGet]
     public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5)
     {
-        var userId = await this.GetCurrentUserId();
+        var userId = await this.GetCurrentUserIdAsync();
 
         var apiResponse = await this.listService.GetPagedTodoListsAsync(userId, pageNumber, pageSize);
 
@@ -53,7 +53,7 @@ public class TodoListController : BaseController
         TodoTaskStatusFilterOption statusFilterOption = TodoTaskStatusFilterOption.All,
         TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc)
     {
-        var userId = await this.GetCurrentUserId();
+        var userId = await this.GetCurrentUserIdAsync();
 
         var todo = await this.listService.GetTodoListByIdAsync(listId, userId);
 
@@ -89,7 +89,7 @@ public class TodoListController : BaseController
             return this.View(new TodoListViewModel());
         }
 
-        var userId = await this.GetCurrentUserId();
+        var userId = await this.GetCurrentUserIdAsync();
         var todo = await this.listService.GetTodoListByIdAsync(id, userId);   // userId
 
         if (todo == null)
@@ -111,7 +111,7 @@ public class TodoListController : BaseController
             return this.View("CreateEdit", model);
         }
 
-        var userId = await this.GetCurrentUserId();
+        var userId = await this.GetCurrentUserIdAsync();
 
         try
         {
@@ -148,7 +148,7 @@ public class TodoListController : BaseController
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var userId = await this.GetCurrentUserId();
+        var userId = await this.GetCurrentUserIdAsync();
 
         var todo = await this.listService.GetTodoListByIdAsync(id, userId);
 

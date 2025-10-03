@@ -111,3 +111,17 @@ a {
     transform: translateY(-2px);
     transition: 0.2s ease;
 }
+
+input.form-control:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #2d3748 inset !important;
+    -webkit-text-fill-color: #fff !important;
+    caret-color: #fff !important;
+    border: none !important;
+    background-color: #2d3748;
+}
+
+.form-control:focus {
+    background-color: #111 !important; /* slightly lighter */
+    color: #fff !important;
+    box-shadow: 0 0 0 0.2rem rgba(255,255,255,0.25);
+}
