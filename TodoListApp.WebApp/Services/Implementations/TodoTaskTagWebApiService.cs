@@ -17,6 +17,6 @@ public class TodoTaskTagWebApiService : ITodoTaskTagWebApiService
     {
         var request = await this.http.GetFromJsonAsync<List<TodoTaskTagModel>>("api/todotasktag");
 
-        return request.Select(x => new TodoTaskTag { Id = x.Id, Title = x.Title }).ToList();
+        return request!.Select(x => new TodoTaskTag { Id = x.Id, Title = x.Title }).ToList();
     }
 }

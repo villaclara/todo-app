@@ -28,6 +28,7 @@
             <!-- Hidden Id field -->
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="TodoListId" />
+            <div asp-validation-summary="All" class="text-danger"></div>
 
             <div class="mb-3 col-md-12">
                 <label asp-for="Title" class="form-label fw-bold"></label>
@@ -64,9 +65,19 @@
             @if (Model.Id != 0)
             {
                 <div class="mb-3 col-md-12">
-                    <label asp-for="AssigneeName" class="form-label fw-bold"></label>
-                    <input asp-for="AssigneeName" class="form-control shadow-sm rounded border-0" placeholder="Enter assignee name" />
+                    <input asp-for="AssigneeName" list="users" name="AssigneeName" class="form-control shadow-sm rounded border-0" placeholder="Enter assignee" />
+
+                    <datalist id="users">
+                        @foreach (var userName in (List<string>)ViewData["AllUsers"]!)
+                        {
+                            <option value="@userName"></option>
+                        }
+                    </datalist>
                     <span asp-validation-for="AssigneeName" class="text-danger"></span>
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                    }
                 </div>
             }
 
@@ -127,7 +138,7 @@
                 <button type="submit" class="btn btn-primary shadow-sm rounded px-4">
                     <i class="bi bi-floppy me-1"></i> Save Task
                 </button>
-                <a asp-action="Details" asp-controller="TodoList" asp-route-listId="@Model.TodoListId" class="btn btn-outline-secondary shadow-sm rounded px-4">
+                <a asp-action="Details" asp-controller="TodoTask" asp-route-Id="@Model.Id" asp-route-listId="@Model.TodoListId" class="btn btn-outline-secondary shadow-sm rounded px-4">
                     Cancel
                 </a>
             </div>

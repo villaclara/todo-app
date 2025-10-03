@@ -62,7 +62,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
         var a = this.ctx.TodoTasks.Add(entity);
         _ = await this.ctx.SaveChangesAsync();
 
-        // TODO - doing this to include the TodoList navigation property
+        // Doing this to include the TodoList navigation property
         return await this.ctx.TodoTasks
             .Include(t => t.TodoList)
             .Include(t => t.TagList)
@@ -200,6 +200,8 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
         {
             entity.AssigneeName = todoTask.AssigneeName;
         }
+
+        entity.AssigneeId = todoTask.AssigneeId;
 
         // TODO - idk if its okay. This works, but we should allow user only specify the dateonly, not full datetime.
         if (todoTask.DueToDate.TimeOfDay.Hours == 0)

@@ -31,7 +31,7 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
             Title = todo.Title,
             Description = todo.Description,
             DueToDate = todo.DueToDate,
-            AssigneeName = todo.AssigneeName ?? "user", // TODO - Change user
+            AssigneeName = todo.AssigneeName,
             AssigneeId = todo.AssigneeId,
             TodoListId = todo.TodoListId,
             TagList = todo.TagList.Select(x => new Common.Models.TodoTaskTagModes.TodoTaskTagModel { Id = x.Id, Title = x.Title }).ToList(),
@@ -192,7 +192,7 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
             TodoListId = todo.TodoListId,
             Description = todo.Description,
             DueToDate = todo.DueToDate,
-            AssigneeName = todo.AssigneeName ?? "user", // TODO - Change user
+            AssigneeName = todo.AssigneeName,
             AssigneeId = todo.AssigneeId,
             TagList = todo.TagList.Select(x => new Common.Models.TodoTaskTagModes.TodoTaskTagModel { Id = x.Id, Title = x.Title }).ToList(),
         };

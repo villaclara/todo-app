@@ -34,7 +34,7 @@ public class CreateTodoTaskModel
     /// <summary>
     /// Gets or sets the name of the assignee for the task.
     /// </summary>
-    public string? AssigneeName { get; set; }
+    public string AssigneeName { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the unique identifier of the todo list to which this task belongs.

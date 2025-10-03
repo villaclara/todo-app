@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Common.Parameters.Filtering;
 using TodoListApp.Common.Parameters.Sorting;
+using TodoListApp.WebApp.Areas.Identity.Data;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services.Interfaces;
 using TodoListApp.WebApp.Services.Models;
@@ -8,12 +11,14 @@ using TodoListApp.WebApp.Utility;
 
 namespace TodoListApp.WebApp.Controllers;
 
-public class TodoListController : Controller
+[Authorize]
+public class TodoListController : BaseController
 {
     private readonly ITodoListWebApiService listService;
     private readonly ITodoTaskWebApiService taskService;
 
-    public TodoListController(ITodoListWebApiService service, ITodoTaskWebApiService taskService)
+    public TodoListController(ITodoListWebApiService service, ITodoTaskWebApiService taskService, UserManager<ApplicationUser> userManager)
+        : base(userManager)
     {
         this.listService = service;
         this.taskService = taskService;
@@ -22,7 +27,9 @@ public class TodoListController : Controller
     [HttpGet]
     public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 5)
     {
-        var apiResponse = await this.listService.GetPagedTodoListsAsync(1, pageNumber, pageSize);
+        var userId = await this.GetCurrentUserId();
+
+        var apiResponse = await this.listService.GetPagedTodoListsAsync(userId, pageNumber, pageSize);
 
         var viewModel = new TodoListIndexViewModel
         {
@@ -46,7 +53,9 @@ public class TodoListController : Controller
         TodoTaskStatusFilterOption statusFilterOption = TodoTaskStatusFilterOption.All,
         TaskSortingOptions sorting = TaskSortingOptions.CreatedDateDesc)
     {
-        var todo = await this.listService.GetTodoListByIdAsync(listId, 1);
+        var userId = await this.GetCurrentUserId();
+
+        var todo = await this.listService.GetTodoListByIdAsync(listId, userId);
 
         if (todo == null)
         {
@@ -80,7 +89,8 @@ public class TodoListController : Controller
             return this.View(new TodoListViewModel());
         }
 
-        var todo = await this.listService.GetTodoListByIdAsync(id, 1);   // userId
+        var userId = await this.GetCurrentUserId();
+        var todo = await this.listService.GetTodoListByIdAsync(id, userId);   // userId
 
         if (todo == null)
         {
@@ -101,6 +111,8 @@ public class TodoListController : Controller
             return this.View("CreateEdit", model);
         }
 
+        var userId = await this.GetCurrentUserId();
+
         try
         {
             TodoList todo = new TodoList
@@ -108,7 +120,7 @@ public class TodoListController : Controller
                 Id = model.Id,
                 Title = model.Title,
                 Description = model.Description,
-                UserId = 1, // TODO - Set user Id and use Mapper
+                UserId = userId,
             };
 
             var act = model.Id switch
@@ -136,7 +148,9 @@ public class TodoListController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var todo = await this.listService.GetTodoListByIdAsync(id, 1);  // TODO - id
+        var userId = await this.GetCurrentUserId();
+
+        var todo = await this.listService.GetTodoListByIdAsync(id, userId);
 
         if (todo == null)
         {
@@ -144,7 +158,7 @@ public class TodoListController : Controller
             return this.View("Error");
         }
 
-        var result = await this.listService.DeleteTodoListAsync(id, 1); // TODO - id
+        var result = await this.listService.DeleteTodoListAsync(id, userId);
 
         if (!result)
         {

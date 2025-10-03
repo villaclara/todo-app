@@ -85,13 +85,22 @@ public class TodoListWebApiService : ITodoListWebApiService
 
     public async Task<TodoList?> GetTodoListByIdAsync(int listId, int userId)
     {
-        var request = await this.http.GetFromJsonAsync<ApiResponse<TodoListModel>>($"api/todolist/{listId}?userId={userId}");
-        if (request == null)
+        var response = await this.http.GetAsync($"api/todolist/{listId}?userId={userId}");
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
         {
             return null;
         }
 
-        return request.Data.Select(x => new TodoList()
+        response.EnsureSuccessStatusCode();
+
+        var content = await response.Content.ReadFromJsonAsync<ApiResponse<TodoListModel>>();
+        if (content == null)
+        {
+            return null;
+        }
+
+        return content.Data.Select(x => new TodoList()
         {
             Id = x.Id,
             Description = x.Description,

@@ -33,9 +33,11 @@
                             <a class="nav-link @(ViewData["ActiveSection"]?.ToString() == "Task" ? "active" : "" )" asp-area="" asp-controller="TodoTask" asp-action="Index">My Todo Tasks</a>
                         </li>
                     </ul>
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
+
     </header>
     <div class="container">
         <main role="main" class="pb-3">

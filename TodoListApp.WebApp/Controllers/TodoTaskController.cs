@@ -1,28 +1,43 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TodoListApp.Common.Models.Enums;
 using TodoListApp.Common.Models.TodoTaskCommentModels;
 using TodoListApp.Common.Parameters.Filtering;
 using TodoListApp.Common.Parameters.Pagination;
 using TodoListApp.Common.Parameters.Sorting;
+using TodoListApp.WebApp.Areas.Identity.Data;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services.Interfaces;
 using TodoListApp.WebApp.Services.Models;
 using TodoListApp.WebApp.Utility;
 
 namespace TodoListApp.WebApp.Controllers;
-public class TodoTaskController : Controller
+
+[Authorize]
+public class TodoTaskController : BaseController
 {
     private readonly ITodoTaskWebApiService taskService;
     private readonly ITodoTaskTagWebApiService tagService;
     private readonly ITodoTaskCommentWebApiService commentService;
     private readonly ITodoListWebApiService listService;
+    private readonly UsersDbContext context;
 
-    public TodoTaskController(ITodoTaskWebApiService taskService, ITodoTaskTagWebApiService tagService, ITodoTaskCommentWebApiService commentService, ITodoListWebApiService listService)
+    public TodoTaskController(
+        ITodoTaskWebApiService taskService,
+        ITodoTaskTagWebApiService tagService,
+        ITodoTaskCommentWebApiService commentService,
+        ITodoListWebApiService listService,
+        UserManager<ApplicationUser> userManager,
+        UsersDbContext context)
+        : base(userManager)
     {
         this.taskService = taskService;
         this.tagService = tagService;
         this.commentService = commentService;
         this.listService = listService;
+        this.context = context;
     }
 
     public async Task<IActionResult> Index(
@@ -31,7 +46,9 @@ public class TodoTaskController : Controller
         TodoTaskStatusFilterOption statusFilterOption = TodoTaskStatusFilterOption.NotCompleted,
         TaskSortingOptions sorting = TaskSortingOptions.DueDateAsc)
     {
-        var apiResponse = await this.taskService.GetPagedTodoTasksByAssigneeAsync(1, pagination, filter, statusFilterOption, sorting); // TODO - Assignee Id put
+        var userId = await this.GetCurrentUserId();
+
+        var apiResponse = await this.taskService.GetPagedTodoTasksByAssigneeAsync(userId, pagination, filter, statusFilterOption, sorting);
 
         var viewModel = new TodoTaskIndexViewModel
         {
@@ -50,7 +67,7 @@ public class TodoTaskController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Details(int id, int listId)
+    public async Task<IActionResult> Details(int id, int listId, bool fromTodoList = false)
     {
         var apiResponse = await this.taskService.GetTodoTaskByIdAsync(id, listId);
 
@@ -68,19 +85,24 @@ public class TodoTaskController : Controller
             return this.NotFound();
         }
 
-        var list = await this.listService.GetTodoListByIdAsync(viewModel.TodoListId, 1); // TODO - user is
+        var userId = await this.GetCurrentUserId();
+
+        var isCurrentUserTaskOwner = true;
+        var list = await this.listService.GetTodoListByIdAsync(viewModel.TodoListId, userId);
         if (list == null)
         {
-            return this.NotFound();
+            isCurrentUserTaskOwner = false;
+            viewModel.ReturnUrl = new Uri($"/todotask", UriKind.Relative);
+        }
+        else
+        {
+            viewModel.ReturnUrl = fromTodoList ? new Uri($"/todolist/details?listId={viewModel.TodoListId}", UriKind.Relative) : new Uri($"/todotask", UriKind.Relative);
         }
 
-        // TODO - Add check if user owner when editing
-        var isCurrentUserTaskOwner = list.UserId == 1; // TODO - user id
         this.ViewData["isCurrentUserTaskOwner"] = isCurrentUserTaskOwner;
 
-        // TODO - Add Return URL to viewmodels.
+        // TODO - Add Return URL to other viewmodels.
         viewModel.CommentsList = comments.Select(x => WebAppMapper.MapTodoTaskComment<TodoTaskComment, TodoTaskCommentVIewModel>(x));
-        viewModel.ReturnUrl = new Uri($"/todolist/details?listId={viewModel.TodoListId}", UriKind.Relative);
         return this.View(viewModel);
     }
 
@@ -119,6 +141,8 @@ public class TodoTaskController : Controller
         this.ViewBag.AvailableTags = await this.tagService.GetAllTasksAsync();
         this.ViewBag.SelectedTagIds = new List<int>();
 
+        var user = await this.GetCurrentUserAsync();
+
         if (id == 0)
         {
             return this.View(new TodoTaskViewModel()
@@ -129,12 +153,12 @@ public class TodoTaskController : Controller
                 DueToDate = DateTime.Now,
                 Status = TodoTaskStatus.NotStarted,
                 TodoListId = listId,
-                AssigneeName = "user", // TODO - Change to user
-                AssigneeId = 1,
+                AssigneeName = user.UserName,
+                AssigneeId = user.UserIntId,
             });
         }
 
-        var todo = await this.taskService.GetTodoTaskByIdAsync(id, listId);   // TODO - id userId
+        var todo = await this.taskService.GetTodoTaskByIdAsync(id, listId);
 
         if (todo == null)
         {
@@ -143,7 +167,12 @@ public class TodoTaskController : Controller
 
         var model = WebAppMapper.MapTodoTask<TodoTask, TodoTaskViewModel>(todo);
 
+        // Get actual tags for the editing Task.
         this.ViewBag.SelectedTagIds = new List<int>(todo!.TagList.Select(x => x.Id));
+
+        // Get All users UseNames to display in select in Assignee field when editing the Assignee.
+        var allUsers = await this.context.Users.Select(x => x.UserName).ToListAsync();
+        this.ViewData["allUsers"] = allUsers;
 
         return this.View(model);
     }
@@ -158,7 +187,19 @@ public class TodoTaskController : Controller
             return this.View("Error", new ErrorViewModel { RequestId = $"Validation Errors occurred.", ReturnUrl = new Uri($"/todolist/details?listId={model.TodoListId}", UriKind.Relative) });
         }
 
+        // Additional check if the user acutally exists since any input can still be entered.
+        var assignedUser = await this.context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == model.AssigneeName.Trim().ToLower());
+        if (assignedUser == null)
+        {
+            this.ModelState.AddModelError(model.AssigneeName, "User does not exist.");
+            this.TempData["ErrorMessage"] = $"Validation failed, no such user - {model.AssigneeName}.";
+
+            return this.RedirectToAction("CreateEdit", new { id = model.Id, listId = model.TodoListId });
+        }
+
         var allTags = await this.tagService.GetAllTasksAsync();
+
+        var user = await this.GetCurrentUserAsync();
 
         try
         {
@@ -168,8 +209,8 @@ public class TodoTaskController : Controller
                 Title = model.Title,
                 Description = model.Description,
                 DueToDate = model.DueToDate,
-                AssigneeName = model.AssigneeName ?? "bruh", // TODO - assignee and use Mapper
-                AssigneeId = 1, // TODO - should get user Id from Context or whatever
+                AssigneeName = assignedUser.UserName,
+                AssigneeId = assignedUser.UserIntId,    // TODO - Change USER id to another
                 TodoListId = model.TodoListId,
                 Status = model.Status,
                 TagList = allTags.Where(x => selectedTagIds.Contains(x.Id)).ToList(),
@@ -200,7 +241,7 @@ public class TodoTaskController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete(int id, int listId)
     {
-        var todo = await this.taskService.GetTodoTaskByIdAsync(id, listId);  // TODO - id
+        var todo = await this.taskService.GetTodoTaskByIdAsync(id, listId);
 
         if (todo == null)
         {
@@ -208,7 +249,7 @@ public class TodoTaskController : Controller
             return this.View("Error");
         }
 
-        var result = await this.taskService.DeleteTodoTaskAsync(id, listId); // TODO - id
+        var result = await this.taskService.DeleteTodoTaskAsync(id, listId);
 
         if (!result)
         {
@@ -223,7 +264,7 @@ public class TodoTaskController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateStatus(int id, int listId, TodoTaskStatus status)
     {
-        var todo = await this.taskService.GetTodoTaskByIdAsync(id, listId);  // TODO - id
+        var todo = await this.taskService.GetTodoTaskByIdAsync(id, listId);
 
         if (todo == null)
         {
@@ -248,13 +289,15 @@ public class TodoTaskController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddComment(int taskId, int listId, CreateTodoTaskCommentModel model)
     {
+        var user = await this.GetCurrentUserAsync();
+
         var comment = new TodoTaskComment
         {
             Text = model.Text,
             DatePosted = DateTime.Now,
-            UserId = 1, // TODO - user Id
+            UserId = user.UserIntId,
             TodoTaskId = taskId,
-            UserName = "user", // TODO - username
+            UserName = user.UserName,
         };
 
         var request = await this.commentService.AddCommentAsync(comment);
